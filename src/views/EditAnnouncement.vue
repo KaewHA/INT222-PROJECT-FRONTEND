@@ -1,5 +1,5 @@
 <script setup>
-import { getCategory, updateAnnouncement, getAnnouncementByIddata } from '../assets/data.js'
+import { getCategory, updateAnnouncement, getAnnouncementByIddata } from "../composable/data.js"
 import { onBeforeMount, onMounted, ref, computed } from 'vue';
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
@@ -391,7 +391,8 @@ const status = ref(true)
                         @click="router.push('/admin/announcement')">Cancel</button>
                 </div>
             </div>
-            <AlertModal v-if="isAlertToggle" :action="'edit'" @changeToggle="changeAlertToggle" :status="status"></AlertModal>
+            <AlertModal v-if="isAlertToggle" :action="'edit'" @changeToggle="changeAlertToggle" :status="status">
+            </AlertModal>
         </div>
     </div>
 </template>

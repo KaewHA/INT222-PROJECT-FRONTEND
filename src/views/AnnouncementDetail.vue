@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onBeforeMount } from 'vue';
 import { useRoute } from 'vue-router';
-import { getAnnouncementById } from '../assets/data.js'
+import { getAnnouncementById } from "../composable/data.js"
 import router from '../router/index.js'
 import categoryico from '../components/icon/MdiListBox.vue'
 import cdate from '../components/icon/TeenyiconsCalendarNoAccessOutline.vue'
@@ -12,7 +12,6 @@ const { params } = useRoute()
 const announcement = ref('')
 onBeforeMount(async () => {
     announcement.value = await getAnnouncementById(params.id)
-
 })
 
 const options = { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: false };
@@ -92,7 +91,8 @@ const dateformat = (date) => {
             </div>
         </div>
         <div v-if="announcement === false" class="fixed inset-0 flex items-center justify-center bg-gray-700 bg-opacity-75">
-            <div class="max-w-2xl p-6 w-96 shadow-xl overflow-y-auto flex flex-col items-center rounded-lg bg-red-600 text-white">
+            <div
+                class="max-w-2xl p-6 w-96 shadow-xl overflow-y-auto flex flex-col items-center rounded-lg bg-red-600 text-white">
                 <div class="flex items-center">
                     <img src="/icons/no-results.png" alt="" class="">
                 </div>
@@ -121,24 +121,27 @@ td {
 }
 
 
-h1{
+h1 {
 
-font-size: 2em;
+    font-size: 2em;
 }
 
-h2{
+h2 {
     font-size: 1.5em;
 }
-h3{
+
+h3 {
     font-size: 1.5em;
 }
-h4{
+
+h4 {
     font-size: 1.17em;
 }
-h5{
+
+h5 {
     font-size: .83em;
 }
-h6{
+
+h6 {
     font-size: .67em;
-}
-</style>
+}</style>

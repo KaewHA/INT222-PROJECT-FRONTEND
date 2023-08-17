@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onBeforeMount, computed } from "vue";
-import { getAnnouncement, deleteannocement, getCategory } from "../assets/data.js";
+import { getAnnouncement, deleteannocement, getCategory } from "../composable/data.js";
 import router from '../router/index.js'
 import Navbar from "../components/Navbar.vue";
 import AkarIconsEye from '../components/icon/AkarIconsEye.vue'

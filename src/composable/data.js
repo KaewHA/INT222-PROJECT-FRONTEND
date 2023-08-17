@@ -6,7 +6,7 @@ async function getAnnouncement(mode = "admin", category = 0) {
   try {
     const res = await fetch(api);
     if (res.ok) {
-      const announc = res.json();
+      const announc = await res.json();
       return announc;
     } else throw new Error("Error, data is error! with DTO");
   } catch (error) {
@@ -19,7 +19,7 @@ async function getuserAnnouncement(mode = "active", page = 0, category = 0) {
   try {
     const res = await fetch(api);
     if (res.ok) {
-      const announc = res.json();
+      const announc = await res.json();
       return announc;
     } else throw new Error("Error, data is error! with DTO");
   } catch (error) {
@@ -32,7 +32,7 @@ async function getAnnouncementById(id) {
       `${import.meta.env.VITE_BASE_URL}/api/announcements/${id}?count=false`
     );
     if (res.ok) {
-      const announc = res.json();
+      const announc = await res.json();
       return announc;
     } else {
       // alert("The requested page is not available!");
@@ -51,7 +51,7 @@ async function getAnnouncementByIddata(id) {
       `${import.meta.env.VITE_BASE_URL}/api/announcements/${id}/data`
     );
     if (res.ok) {
-      const announc = res.json();
+      const announc = await res.json();
       return announc;
     } else {
       // alert("The requested page is not available!");
@@ -68,16 +68,11 @@ async function getAnnouncementByIduser(id) {
     const res = await fetch(
       `${import.meta.env.VITE_BASE_URL}/api/announcements/${id}?count=true`
     );
-
+    const announce = await res.json()
     if (res.ok) {
-      const announc = res.json();
-
-      return announc;
+      return announce
     } else {
-      // alert("The requested page is not available!");
-      // router.push("/announcement");
-      return false
-      // throw new Error("Error, data is error! with ID");
+      return {ok: res.ok, status: res.status, message: announce.message}
     }
   } catch (error) {
     console.error(error);
@@ -88,7 +83,7 @@ async function getCategory() {
   try {
     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/api/categories`);
     if (res.ok) {
-      const category = res.json();
+      const category = await res.json();
       return category;
     } else {
       throw new Error("Error, data is error!");
@@ -106,10 +101,7 @@ async function deleteannocement(id) {
     );
     if (res.ok) {
       return true
-      // router.push("/admin/announcement");
     } else {
-      console.log(res.status);
-      // throw new Error("Error, data is error!");
       return false
     }
   } catch (error) {
@@ -131,14 +123,12 @@ async function addAnnouncement(announcement) {
       }
     );
     if (res.ok) {
-      // alert("create announcement");
-      // router.push("/admin/announcement");
+      return true
     } else {
-      throw new Error("Error, data is error!");
+      return false
     }
   } catch (error) {
     console.log(error);
-    return false
   }
 }
 
