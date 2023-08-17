@@ -1,10 +1,10 @@
 <script setup>
-import { getCategory, addAnnouncement } from '../assets/data.js'
+import { getCategory, addAnnouncement } from "../composable/data.js"
 import { onMounted, ref, computed } from 'vue';
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
 import router from '../router/index.js'
-import AlertModal from '../components/AlertModal.vue';
+import Swal from 'sweetalert2'
 
 const categoryAll = ref([])
 
@@ -158,7 +158,6 @@ const isDisabled = computed(() => {
         closeTime.value = "18:00"
     }
     return checkfill() || lencheck() || datecheckpb() || datecheckcl()
-    // return checkfill()
 })
 
 const addnewdata = async () => {
@@ -166,7 +165,7 @@ const addnewdata = async () => {
     newAnnouncement.value.closeDate = convertDate(closeDate.value, closeTime.value)
     newAnnouncement.value.announcementDisplay = display.value == true ? 'Y' : 'N'
     status.value = await addAnnouncement(newAnnouncement.value)
-    changeAlertToggle()
+    showAlert()
 }
 function clearcd() {
     closeDate.value = null
@@ -184,13 +183,25 @@ function clearpd() {
     }
 }
 
-const isAlertToggle = ref(false)
-
-const changeAlertToggle = () => {
-    isAlertToggle.value = !isAlertToggle.value
-}
-
 const status = ref(true)
+
+const showAlert = () => {
+    if (status.value === true) {
+        Swal.fire({
+            icon: 'success',
+            title: 'Create Announcement Success!',
+            confirmButtonText: 'Continue',
+        })
+    } else {
+        Swal.fire({
+            icon: 'error',
+            title: 'Something went wrong!',
+            text: 'Cannot create announcement.',
+            confirmButtonText: 'Continue'
+        })
+    }
+    router.push('/admin/announcement')
+}
 </script>
 
 <template>
@@ -219,11 +230,8 @@ const status = ref(true)
                 </div>
                 <div class="flex flex-col w-full px-4 py-2 space-y-1">
                     <label for="description" class="text-base font-bold">Description</label>
-                    <!-- <textarea v-model="newAnnouncement.announcementDescription" maxlength="10000" rows="6" id="description"
-                        class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-description"
-                        placeholder="Imagination is more important than knowledge...">
-                    </textarea> -->
-                    <QuillEditor v-model:content="newAnnouncement.announcementDescription" theme="snow" toolbar="full" contentType="html"></QuillEditor>
+                    <QuillEditor v-model:content="newAnnouncement.announcementDescription" theme="snow" toolbar="full"
+                        contentType="html"></QuillEditor>
                     <p class="flex justify-end">{{ newAnnouncement.announcementDescription.trim().length }}/10000</p>
                 </div>
                 <div class="flex flex-col w-full px-4 py-2 space-y-1">
@@ -265,11 +273,9 @@ const status = ref(true)
                         </label>
                     </div>
                 </div>
-                <p class=" ml-5 flex text-red-600" v-show="newAnnouncement.announcementTitle.trim().length == 0">PLEASE FILL
-                    THE TITLE</p>
-                <p class=" ml-5 flex text-red-600" v-show="newAnnouncement.categoryId == ''">PLEASE Select CATEGORY</p>
-                <p class=" ml-5 flex text-red-600" v-show="newAnnouncement.announcementDescription.trim().length == 0">PLEASE
-                    FILL THE DESCRIPTION</p>
+                <p class=" ml-5 flex text-red-600" v-show="newAnnouncement.announcementTitle.trim().length == 0">PLEASE FILL THE TITLE</p>
+                <p class=" ml-5 flex text-red-600" v-show="newAnnouncement.categoryId == ''">PLEASE SELECT CATEGORY</p>
+                <p class=" ml-5 flex text-red-600" v-show="newAnnouncement.announcementDescription.trim().length == 0">PLEASE FILL THE DESCRIPTION</p>
                 <div class="w-full flex justify-start p-4 space-x-2">
                     <button :disabled="isDisabled"
                         class="px-4 py-2 rounded-md bg-green-500 text-white text-base font-bold disabled:bg-zinc-500 ann-button"
@@ -278,7 +284,6 @@ const status = ref(true)
                         @click="router.push('/admin/announcement')">Cancel</button>
                 </div>
             </div>
-            <AlertModal v-if="isAlertToggle" :action="'add'" :status="status" @changeToggle="changeAlertToggle"></AlertModal>
         </div>
     </div>
 </template>

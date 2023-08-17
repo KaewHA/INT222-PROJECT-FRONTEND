@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onBeforeMount, computed } from "vue";
-import { getuserAnnouncement, getCategory } from "../assets/data.js";
+import { getuserAnnouncement, getCategory } from "../composable/data.js";
 import { useMode } from "../stores/mode.js";
 import router from "../router/index.js";
 import { RouterLink } from "vue-router";

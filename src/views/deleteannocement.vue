@@ -1,5 +1,5 @@
 <script setup>
-import { deleteannocement, getAnnouncementById, getCategory } from '../assets/data.js'
+import { deleteannocement, getAnnouncementById, getCategory } from "../composable/data.js"
 import { onBeforeMount, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import router from '../router';
