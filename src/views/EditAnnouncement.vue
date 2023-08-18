@@ -1,11 +1,12 @@
 <script setup>
-import { getCategory, updateAnnouncement, getAnnouncementByIddata } from '../assets/data.js'
+import { getCategory, updateAnnouncement, getAnnouncementByIddata } from "../composable/data.js"
 import { onBeforeMount, onMounted, ref, computed } from 'vue';
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
 import { useRoute } from 'vue-router';
 import router from '../router';
-import AlertModal from '../components/AlertModal.vue';
+import Swal from 'sweetalert2'
+
 const { params } = useRoute()
 const olddata = ref({})
 const publishDate = ref(null)
@@ -64,10 +65,7 @@ onBeforeMount(async () => {
             let timeM = date.getMinutes()
             publishDate.value = createdate(DATE)
             publishTime.value = createtime(timeH, timeM)
-            // newAnnouncement.value[key] = createdate(date)
         } else if (key.includes("close") && value != null) {
-            // let date = new Date(value).toLocaleString()
-            // newAnnouncement.value[key] = createdate(date)
             let date = new Date(value)
             let opt = { year: 'numeric', month: 'numeric', day: 'numeric' };
             let DATE = date.toLocaleDateString("en-US", opt)
@@ -267,12 +265,9 @@ const newAnnouncement = ref({
 const createanno = async () => {
     await updateAnnouncement(newAnnouncement.value, params.id)
     status.value = await updateAnnouncement(newAnnouncement.value, params.id)
-    changeAlertToggle()
+    showAlert()
 }
-function showdata() {
-    ///show something
-    console.log(olddata.value);
-}
+
 function clearcd() {
     closeDate.value = null
     fillcurdatecl.value = false
@@ -289,19 +284,29 @@ function clearpd() {
     }
 }
 
-const isAlertToggle = ref(false)
-
-const changeAlertToggle = () => {
-    isAlertToggle.value = !isAlertToggle.value
-}
-
 const status = ref(true)
+const showAlert = () => {
+    if (status.value === true) {
+        Swal.fire({
+            icon: 'success',
+            title: 'Update Announcement Success!',
+            confirmButtonText: 'Continue',
+        })
+    } else {
+        Swal.fire({
+            icon: 'error',
+            title: 'Something went wrong!',
+            text: 'Cannot Update Announcement.',
+            confirmButtonText: 'Continue',
+        })
+    }
+    router.push('/admin/announcement')
+}
 </script>
 
 <template>
     <div class="w-full h-full">
         <div class="w-full h-full items-center flex flex-col font-noto">
-            <!-- <h1 class="font-extrabold text-3xl self-center my-4 ">Create Announcement</h1> -->
             <div class="w-3/4 h-auto flex flex-col border rounded-md mt-5 bg-white shadow-xl">
                 <div class="flex px-4 pt-4">
                     <h2 class="font-bold text-2xl">Update Announcement </h2>
@@ -325,10 +330,6 @@ const status = ref(true)
                 </div>
                 <div class="flex flex-col w-full px-4 py-2 space-y-1">
                     <label for="description" class="text-base font-bold">Description</label>
-                    <!-- <textarea v-model="newAnnouncement.announcementDescription" maxlength="10000" rows="6" id="description"
-                        class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-description"
-                        placeholder="Imagination is more important than knowledge...">
-                    </textarea> -->
                     <QuillEditor v-model:content="newAnnouncement.announcementDescription" theme="snow" toolbar="full"
                         contentType="html"></QuillEditor>
                     <p class="flex justify-end">{{ newAnnouncement.announcementDescription.trim().length }}/10000</p>
@@ -361,10 +362,7 @@ const status = ref(true)
                         </div>
                         <div class="text-red-500 ml-3" v-show="fillcurdatecl">must be later than publish date</div>
                     </div>
-
                 </div>
-
-
                 <div class="flex flex-col w-full px-4 py-2 space-y-1">
                     <div class="space-x-2">
                         <label class="relative inline-flex items-center cursor-pointer">
@@ -376,13 +374,10 @@ const status = ref(true)
                                 Announcement</span>
                         </label>
                     </div>
-
                 </div>
-                <p class=" ml-5 flex text-red-600" v-show="newAnnouncement.announcementTitle.trim().length == 0">PLESE FILL
-                    THE TITLE</p>
-                <p class=" ml-5 flex text-red-600" v-show="choosecategory == '0'">PLEASE Select CATEGORY</p>
-                <p class=" ml-5 flex text-red-600" v-show="newAnnouncement.announcementDescription.trim().length == 0">PLESE
-                    FILL THE DESCRIPTION</p>
+                <p class=" ml-5 flex text-red-600" v-show="newAnnouncement.announcementTitle.trim().length == 0">PLEASE FILL THE TITLE</p>
+                <p class=" ml-5 flex text-red-600" v-show="choosecategory == '0'">PLEASE SELECT CATEGORY</p>
+                <p class=" ml-5 flex text-red-600" v-show="newAnnouncement.announcementDescription.trim().length == 0">PLEASE FILL THE DESCRIPTION</p>
                 <div class="w-full flex justify-start p-4 space-x-2">
                     <button :disabled="isDisabled"
                         class="px-4 py-2 rounded-md bg-green-500 text-white text-base font-bold disabled:bg-zinc-500 ann-button"
@@ -391,7 +386,6 @@ const status = ref(true)
                         @click="router.push('/admin/announcement')">Cancel</button>
                 </div>
             </div>
-            <AlertModal v-if="isAlertToggle" :action="'edit'" @changeToggle="changeAlertToggle" :status="status"></AlertModal>
         </div>
     </div>
 </template>

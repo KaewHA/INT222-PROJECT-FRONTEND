@@ -1,12 +1,13 @@
 <script setup>
 import { ref, onBeforeMount, computed } from "vue";
-import { getAnnouncement, deleteannocement, getCategory } from "../assets/data.js";
+import { getAnnouncement, deleteannocement, getCategory } from "../composable/data.js";
 import router from '../router/index.js'
 import Navbar from "../components/Navbar.vue";
 import AkarIconsEye from '../components/icon/AkarIconsEye.vue'
 import Trash from '../components/icon/Trash.vue'
 import pluss from '../components/icon/IcRoundAddCircle.vue'
 import search from '../components/icon/search.vue'
+import Swal from 'sweetalert2'
 
 onBeforeMount(async () => {
     const receivedData = ref([]);
@@ -39,16 +40,33 @@ const dateformat = (date) => {
 };
 const timezoneName = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-const deleteanno = async (id) => {
-    isDeleteSuccess.value = await deleteannocement(id)
-    // changeAlertToggle()
+const showAlert = (id) => {
+    Swal.fire({
+        title: 'Delete this announcement?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'No, keep it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            deleteanno(id)
+            Swal.fire(
+                'Deleted!',
+                'This announcement has been delete.',
+                'success'
+            ).then(() => {
+                location.reload()
+            })
+        }
+    })
 }
-// const cf = (id) => {
-//     if (confirm(`Do you want to delete announcemmnet ID:${id}`) == true) {
-//         deleteanno(id)
-//         location.reload();
-//     }
-// }
+
+const deleteanno = async (id) => {
+    status.value = await deleteannocement(id)
+}
 
 const changeCategory = async () => {
     await fetchData();
@@ -83,19 +101,8 @@ const searchvalue = computed(() => {
     return allAnnouncement.value.filter((x) => x.announcementTitle.toLowerCase().includes(searchkeyword.value.toLowerCase()))
 })
 
-const isAlertToggle = ref(false)
-const isDeleteSuccess = ref(null)
+const status = ref(null)
 
-const changeAlertToggle = (id) => {
-    id !== null ? deleteId.value = id : deleteId.value = 0
-    isAlertToggle.value = !isAlertToggle.value
-    if (isDeleteSuccess.value !== null) {
-        location.reload()
-    }
-    isDeleteSuccess.value = null
-}
-
-const deleteId = ref(0)
 </script>
 
 <template>
@@ -182,7 +189,7 @@ const deleteId = ref(0)
                                         </button>
                                         <button
                                             class="flex justify-center items-center rounded-md bg-red-600 px-3 py-1 text-base font-bold w-20 h-10 text-white hover:bg-red-700 ann-button delete"
-                                            @click="changeAlertToggle(announcement.id)">
+                                            @click="showAlert(announcement.id)">
                                             <span class="c">delete</span>
                                             <Trash class="d"></Trash>
                                         </button>
@@ -202,39 +209,6 @@ const deleteId = ref(0)
                         class=" w-3/4 rounded-md bg-emerald-500 px-4 py-3 text-sm font-bold text-white hover:bg-emerald-600 flex justify-center noad">
                         <pluss class="e"></pluss> <span class="f">ADD THE FIRST ANNOUNCEMENT</span>
                     </button>
-                </div>
-            </div>
-            <div v-if="isAlertToggle" class="fixed inset-0 flex items-center justify-center bg-gray-700 bg-opacity-75">
-                <div class="max-w-2xl p-6 w-96 bg-white shadow-xl overflow-y-auto flex flex-col items-center rounded-lg">
-                    <div class="flex items-center">
-                        <img v-if="isDeleteSuccess === null" src="/icons/warning.svg" alt="">
-                        <img v-else-if="isDeleteSuccess === true" src="/icons/success.svg" alt="">
-                        <img v-else src="/icons/error.svg" alt="">
-                    </div>
-                    <div class="flex items-center justify-between my-2">
-                        <h3 v-if="isDeleteSuccess === null" class="text-xl">Want to delete announcement?</h3>
-                        <h3 v-else-if="isDeleteSuccess === true" class="text-xl">Delete announcement success!</h3>
-                        <h3 v-else class="text-xl">Error, cannot delete announcement!</h3>
-                    </div>
-                    <div v-if="isDeleteSuccess === null" class="mt-4 space-x-4">
-                        <button
-                            class="px-4 py-2 border border-red-600 bg-white text-red-600 rounded hover:bg-red-600 hover:text-white duration-100 font-bold"
-                            @click="deleteanno(deleteId)">
-                            Yes, delete it!
-                        </button>
-                        <button
-                            class="px-4 py-2 border border-emerald-500 bg-white text-emerald-500 rounded hover:bg-emerald-500 hover:text-white duration-100 font-bold"
-                            @click="changeAlertToggle">
-                            No, keep it!
-                        </button>
-                    </div>
-                    <div class="mt-4 space-x-4" v-else>
-                        <button
-                            class="px-4 py-2 border border-emerald-500 bg-white text-emerald-500 rounded hover:bg-emerald-500 hover:text-white duration-100 font-bold"
-                            @click="changeAlertToggle">
-                            Okay!
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>
