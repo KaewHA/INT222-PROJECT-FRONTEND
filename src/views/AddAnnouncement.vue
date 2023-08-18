@@ -184,7 +184,6 @@ function clearpd() {
 }
 
 const status = ref(true)
-
 const showAlert = () => {
     if (status.value === true) {
         Swal.fire({
@@ -197,7 +196,7 @@ const showAlert = () => {
             icon: 'error',
             title: 'Something went wrong!',
             text: 'Cannot create announcement.',
-            confirmButtonText: 'Continue'
+            confirmButtonText: 'Back'
         })
     }
     router.push('/admin/announcement')

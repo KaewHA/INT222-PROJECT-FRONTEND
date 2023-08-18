@@ -31,14 +31,11 @@ async function getAnnouncementById(id) {
     const res = await fetch(
       `${import.meta.env.VITE_BASE_URL}/api/announcements/${id}?count=false`
     );
+    const announce = await res.json()
     if (res.ok) {
-      const announc = await res.json();
-      return announc;
+      return announce
     } else {
-      // alert("The requested page is not available!");
-      // router.push("/admin/announcement");
-      return false
-      // throw new Error("Error, data is error! with ID");
+      return {ok: res.ok, status: res.status, message: announce.message}
     }
   } catch (error) {
     console.error(error);
@@ -54,8 +51,6 @@ async function getAnnouncementByIddata(id) {
       const announc = await res.json();
       return announc;
     } else {
-      // alert("The requested page is not available!");
-      // router.push("/admin/announcement");
       throw new Error("Error, data is error! with ID");
     }
   } catch (error) {
@@ -145,14 +140,12 @@ async function updateAnnouncement(announcement, id) {
       }
     );
     if (res.ok) {
-      // alert("UPDATE announcement");
-      // router.push("/admin/announcement");
+      return true
     } else {
-      throw new Error("Error, data is error!");
+      return false
     }
   } catch (error) {
     console.log(error);
-    return false
   }
 }
 async function getcount(id) {
