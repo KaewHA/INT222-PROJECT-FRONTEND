@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onBeforeMount } from 'vue';
+import { ref, onBeforeMount, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { getAnnouncementByIduser } from "../composable/data.js"
 import router from '../router/index.js'
@@ -7,12 +7,15 @@ import cdate from '../components/icon/TeenyiconsCalendarNoAccessOutline.vue'
 import categoryico from '../components/icon/MdiListBox.vue'
 import back from '../components/icon/back.vue'
 import views from '../components/icon/IcBaselineRemoveRedEye.vue'
-import AlertModal from '../components/AlertModal.vue';
+import Swal from 'sweetalert2'
+
 const { params } = useRoute()
 const announcement = ref('')
+const status = ref(true)
 onBeforeMount(async () => {
     announcement.value = await getAnnouncementByIduser(params.id)
-    console.log(announcement.value);
+    status.value = announcement.value.ok
+    if (status.value === false) { showAlert() }
 })
 
 const options = { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: false };
@@ -25,6 +28,15 @@ const dateformat = (date) => {
     }
 }
 
+const showAlert = () => {
+    if (status.value === false) {
+        Swal.fire({
+            icon: 'error',
+            title: announcement.value.message,
+            confirmButtonText: 'Back',
+        }).then(() => router.push('/announcement'))
+    }
+}
 </script>
 
 <template>
@@ -72,15 +84,13 @@ const dateformat = (date) => {
                             class="ann-description text-xl flex justify-center mt-10 h-96 overflow-y-auto bg-slate-200 rounded-2xl ql-editor">
                             <span class="mt-3" v-html="announcement.announcementDescription"></span>
                         </div>
-
                     </div>
                 </div>
             </div>
-            <div class="fixed bottom-0 left-0 flex justify-between p-4">
-            </div>
+            <!-- <div class="fixed bottom-0 left-0 flex justify-between p-4">
+            </div> -->
         </div>
-        <AlertModal v-if="announcement.ok === false" :ok="announcement.ok" :status="announcement.status" :message="announcement.message">
-        </AlertModal>
+
     </div>
 </template>
 
@@ -132,4 +142,5 @@ h5 {
 
 h6 {
     font-size: .67em;
-}</style>
+}
+</style>

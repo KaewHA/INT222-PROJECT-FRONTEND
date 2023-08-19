@@ -7,11 +7,15 @@ import categoryico from '../components/icon/MdiListBox.vue'
 import cdate from '../components/icon/TeenyiconsCalendarNoAccessOutline.vue'
 import pdate from '../components/icon/TeenyiconsCalendarTickOutline.vue'
 import views from '../components/icon/IcBaselineRemoveRedEye.vue'
+import Swal from 'sweetalert2'
 
 const { params } = useRoute()
 const announcement = ref('')
+const status = ref(true)
 onBeforeMount(async () => {
     announcement.value = await getAnnouncementById(params.id)
+    status.value = announcement.value.ok
+    if (status.value === false) { showAlert() }
 })
 
 const options = { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: false };
@@ -20,12 +24,19 @@ const dateformat = (date) => {
         return "-"
     } else {
         let mydate = new Date(date)
-        //  let timezone = mydate.getTimezoneOffset() * 60 * 1000;
-        //   const localDate = new Date(mydate.getTime() - timezone);
         return mydate.toLocaleDateString('en-GB', options)
     }
 }
 
+const showAlert = () => {
+    if (status.value === false) {
+        Swal.fire({
+            icon: 'error',
+            title: announcement.value.message,
+            confirmButtonText: 'Back',
+        }).then(() => router.push('/admin/announcement'))
+    }
+}
 </script>
 
 <template>
@@ -89,25 +100,7 @@ const dateformat = (date) => {
             <div class=" fixed flex bottom-0  right-52 left-52  justify-center p-4 ann-counter ">
                 <views class="mt-1 mr-3"></views>VIEW : {{ announcement.viewCount }}
             </div>
-        </div>
-        <div v-if="announcement === false" class="fixed inset-0 flex items-center justify-center bg-gray-700 bg-opacity-75">
-            <div
-                class="max-w-2xl p-6 w-96 shadow-xl overflow-y-auto flex flex-col items-center rounded-lg bg-red-600 text-white">
-                <div class="flex items-center">
-                    <img src="/icons/no-results.png" alt="" class="">
-                </div>
-                <div class="flex flex-col items-center justify-between my-2">
-                    <p class="text-xl font-bold text-center">Announcement is not exist!</p>
-                </div>
-                <div class="mt-4 space-x-4">
-                    <button
-                        class="px-4 py-2 border border-red-400 bg-white text-red-400 rounded hover:bg-red-500 hover:text-white duration-100 font-bold"
-                        @click="router.push('/admin/announcement')">
-                        Okay!
-                    </button>
-                </div>
-            </div>
-        </div>
+        </div> 
     </div>
 </template>
 
