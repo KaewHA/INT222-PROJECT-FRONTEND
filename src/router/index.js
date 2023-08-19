@@ -9,6 +9,7 @@ import userview from '../views/userview.vue'
 import UserViewDetail from '../views/UserViewDetail.vue'
 import show from '../views/paginashow.vue'
 import PageNotFound from '../views/PageNotFound.vue'
+import UserManagement from '../views/UserManagement.vue'
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -62,6 +63,11 @@ const router = createRouter({
             path: '/:notfoundpath(.*)',
             name: 'PageNotFound',
             component: PageNotFound        
+        },
+        {
+            path: '/admin/user',
+            name: 'UserManagement',
+            component: UserManagement
         }
     ]
 })
