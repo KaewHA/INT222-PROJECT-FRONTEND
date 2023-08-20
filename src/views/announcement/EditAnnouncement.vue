@@ -1,10 +1,10 @@
 <script setup>
-import { getCategory, updateAnnouncement, getAnnouncementByIddata } from "../composable/data.js"
+import { getCategory, updateAnnouncement, getAnnouncementByIddata } from "../../composable/data.js"
 import { onBeforeMount, onMounted, ref, computed } from 'vue';
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
 import { useRoute } from 'vue-router';
-import router from '../router';
+import router from '../../router';
 import Swal from 'sweetalert2'
 
 const { params } = useRoute()

@@ -1,15 +1,16 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import AnnouncementDetail from '../views/AnnouncementDetail.vue'
-import createapp from '../views/create.vue'
-import indexinit from '../views/indexinit.vue'
-import EditAnnouncement from '../views/EditAnnouncement.vue'
-import AnnouncementTable from '../views/AnnouncementTable.vue'
-import AddAnnouncement from '../views/AddAnnouncement.vue'
-import userview from '../views/userview.vue'
-import UserViewDetail from '../views/UserViewDetail.vue'
-import show from '../views/paginashow.vue'
-import PageNotFound from '../views/PageNotFound.vue'
-import UserManagement from '../views/UserManagement.vue'
+import AnnouncementDetail from '../views/announcement/AnnouncementDetail.vue'
+import createapp from '../views/announcement/create.vue'
+import indexinit from '../views/announcement/indexinit.vue'
+import EditAnnouncement from '../views/announcement/EditAnnouncement.vue'
+import AnnouncementTable from '../views/announcement/AnnouncementTable.vue'
+import AddAnnouncement from '../views/announcement/AddAnnouncement.vue'
+import userview from '../views/announcement/userview.vue'
+import adminnewui from '../views/announcement/announcementManagement.vue'
+import UserViewDetail from '../views/announcement/UserViewDetail.vue'
+import show from '../views/announcement/paginashow.vue'
+import PageNotFound from '../views/announcement/PageNotFound.vue'
+import UserManagement from '../views/usermanage/UserManagement.vue'
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -27,7 +28,7 @@ const router = createRouter({
         {
             path: '/admin/announcement',
             name: 'Announcement',
-            component: AnnouncementTable
+            component: adminnewui
         },
         {
             path: '/admin/announcement/:id',
@@ -42,7 +43,7 @@ const router = createRouter({
         {
             path: '/announcement',
             name: 'userview',
-            component: userview
+            component: show
         },
         {
             path: '/announcement/:id',

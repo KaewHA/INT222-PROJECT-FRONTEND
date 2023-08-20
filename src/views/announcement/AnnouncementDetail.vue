@@ -1,12 +1,12 @@
 <script setup>
 import { ref, onBeforeMount } from 'vue';
 import { useRoute } from 'vue-router';
-import { getAnnouncementById } from "../composable/data.js"
-import router from '../router/index.js'
-import categoryico from '../components/icon/MdiListBox.vue'
-import cdate from '../components/icon/TeenyiconsCalendarNoAccessOutline.vue'
-import pdate from '../components/icon/TeenyiconsCalendarTickOutline.vue'
-import views from '../components/icon/IcBaselineRemoveRedEye.vue'
+import { getAnnouncementById } from "../../composable/data.js"
+import router from '../../router/index.js'
+import categoryico from '../../components/icon/MdiListBox.vue'
+import cdate from '../../components/icon/TeenyiconsCalendarNoAccessOutline.vue'
+import pdate from '../../components/icon/TeenyiconsCalendarTickOutline.vue'
+import views from '../../components/icon/IcBaselineRemoveRedEye.vue'
 import Swal from 'sweetalert2'
 
 const { params } = useRoute()
