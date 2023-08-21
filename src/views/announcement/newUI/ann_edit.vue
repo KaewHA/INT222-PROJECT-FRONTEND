@@ -418,7 +418,7 @@ const showAlert = () => {
                 <div class="flex flex-col w-full h-2/6 px-4 py-2 space-y-1">
                     <label for="description" class="text-base font-bold">Description</label>
                     <QuillEditor v-model:content="newAnnouncement.announcementDescription" theme="snow" toolbar="full"
-                        contentType="html"></QuillEditor>
+                        contentType="html" class="h-[11.8rem] overflow-y-auto"></QuillEditor>
                     <p class="flex justify-end">{{ newAnnouncement.announcementDescription.trim().length }}/10000</p>
                 </div>
 
