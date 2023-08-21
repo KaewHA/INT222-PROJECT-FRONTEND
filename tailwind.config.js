@@ -13,7 +13,8 @@ module.exports = {
       }
     },
     fontFamily: {
-      'noto': ['Noto Sans Thai', 'sans-serif']
+      'noto': ['Noto Sans Thai', 'sans-serif'],
+      'poppins': ['Poppins', 'sans-serif']
     }
   },
   plugins: [require('flowbite/plugin')],

@@ -1,9 +1,9 @@
 <script setup>
-import { getCategory, addAnnouncement } from "../composable/data.js"
+import { getCategory, addAnnouncement } from "../../composable/data.js"
 import { onMounted, ref, computed } from 'vue';
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
-import router from '../router/index.js'
+import router from '../../router/index.js'
 import Swal from 'sweetalert2'
 
 const categoryAll = ref([])
