@@ -10,6 +10,9 @@ module.exports = {
       colors: {
         'custom-blue': '#4D9DE0',
         'custom-black': '#2B2B2B'
+      },
+      boxShadow: {
+        'equal-shadow': '0 0 8px rgba(0, 0, 0, 0.1)'
       }
     },
     fontFamily: {

@@ -9,6 +9,8 @@ import UserViewDetail from '../views/announcement/oldUI/UserViewDetail.vue'
 import show from '../views/announcement/paginashow.vue'
 import PageNotFound from '../views/announcement/PageNotFound.vue'
 import UserManagement from '../views/usermanage/UserManagement.vue'
+import AddUser from '../views/usermanage/AddUser.vue'
+import EditUser from '../views/usermanage/EditUser.vue'
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -67,6 +69,16 @@ const router = createRouter({
             path: '/admin/user',
             name: 'UserManagement',
             component: UserManagement
+        },
+        {
+            path: '/admin/user/add',
+            name: 'AddUser',
+            component: AddUser
+        },
+        {
+            path: '/admin/user/:id/edit',
+            name: 'EditUser',
+            component: EditUser
         }
     ]
 })

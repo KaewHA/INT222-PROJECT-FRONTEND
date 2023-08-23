@@ -224,17 +224,6 @@ const dateformat = (date) => {
               Next
             </button>
           </div>
-          <!-- <div v-else>
-                <h1 :class="allAnnouncement.length === 0 ? 'opacity-0' : 'opacity-100'"
-                    class="mt-2 mb-3 ml-6 text-custom-black">
-                    <span class="font-bold">Date/Time Show in Timezone :</span>
-                    {{ timezoneName }}
-                </h1>
-                <h1 :class="allAnnouncement.length === 0 ? 'opacity-0' : 'opacity-100'"
-                    class="text-4xl flex w-full items-center justify-center font-noto">
-                    No Announcements
-                </h1>
-            </div> -->
         </div>
       </div>
     </div>

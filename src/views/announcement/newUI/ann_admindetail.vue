@@ -1,7 +1,7 @@
 <script setup>
-import { ref ,computed} from 'vue';
+import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
-import {getAnnouncementById } from '../../../composable/data.js';
+import { getAnnouncementById } from '../../../composable/data.js';
 import { onBeforeMount } from 'vue';
 import router from '../../../router/index.js'
 import Swal from 'sweetalert2'
@@ -34,7 +34,7 @@ const showAlert = () => {
     }
 }
 </script>
-<template>  
+<template>
     <div class="min-h-screen bg-slate-50 flex flex-col font-noto">
         <!-- Header -->
         <div class="flex items-center justify-between p-8">
@@ -66,25 +66,70 @@ const showAlert = () => {
             </div>
 
             <!-- User Table -->
-            <div class="w-full md:w-4/5 bg-white rounded-2xl shadow-md overflow-hidden">
-                    <div class="text-3xl flex justify-center   mt-8">
-                            <span>Announcement Detail</span>
+            <div class="w-full md:w-4/5 bg-white rounded-2xl shadow-md overflow-hidden space-y-8">
+                <div class="flex flex-row mt-8 w-full justify-center first:justify-start">
+                    <span @click="router.push('/admin/announcement')" class="material-symbols-outlined flex items-center justify-center ml-12 p-2
+                    text-slate-500 fixed cursor-pointer hover:rounded-full hover:bg-blue-500 hover:text-white duration-150">arrow_back</span>
+                    <h1 class="font-extrabold text-gray-600 text-3xl text-center w-full">Announcement Detail</h1>
+                    <p class="text-center flex justify-center items-center absolute right-16 font-extrabold text-base rounded-3xl 
+                      text-white px-4 py-2 from-cyan-500 to-blue-500 bg-gradient-to-r">
+                        <span class="material-symbols-outlined">visibility</span>&nbsp;&nbsp;
+                        {{ announcement.viewCount }}
+                    </p>
+                    <p class="text-center flex justify-center items-center absolute right-44 font-extrabold text-base rounded-3xl 
+                      text-white px-4 py-2 bg-gradient-to-r"
+                        :class="announcement.announcementDisplay !== 'Y' ? 'from-rose-700 to-red-600' : 'from-green-500 to-emerald-600'">
+                        <span v-if="announcement.announcementDisplay === 'Y'"
+                            class="material-symbols-outlined">check_circle</span>
+                        <span v-else class="material-symbols-outlined">cancel</span>
+                        &nbsp;&nbsp;{{ announcement.announcementDisplay }}
+                    </p>
+                </div>
+                <div class="w-full py-4 px-14 flex flex-row">
+                    <div class="w-full space-y-9">
+                        <h1 class="text-2xl text-gray-600 font-bold w-full">{{ announcement.announcementTitle }}</h1>
+                        <div class="w-full flex flex-row space-x-8">
+                            <p
+                                class="w-1/12 font-bold py-2 rounded-3xl bg-gradient-to-r from-cyan-500 to-blue-500 text-white text-center">
+                                {{ announcement.announcementCategory }}
+                            </p>
                         </div>
-
-             
-                        <div class="w-16 h-16 bg-blue-500 rounded-full flex justify-center items-center absolute  bottom-10 right-14"></div>
+                        <div class="w-full flex flex-row space-x-6">
+                            <p
+                                class="w-1/3 flex justify-center items-center font-bold py-2 rounded-3xl bg-gradient-to-r from-green-500 to-emerald-600 text-white text-center space-x-4">
+                                <span class="material-symbols-outlined">event_available</span>
+                                <span>Published on : {{ dateformat(announcement.publishDate) }}</span>
+                            </p>
+                            <p
+                                class="w-1/3 flex justify-center items-center font-bold py-2 rounded-3xl bg-gradient-to-r from-rose-700 to-red-600 text-white text-center space-x-4">
+                                <span class="material-symbols-outlined">event_busy</span>
+                                <span>Close on : {{ dateformat(announcement.closeDate) }}</span>
+                            </p>
+                        </div>
+                        <div
+                            class="w-full h-80 overflow-y-scroll text-lg font-bold text-gray-700 border rounded-md py-6 px-8">
+                            <p class="indent-8" v-html="announcement.announcementDescription"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-16 h-16 bg-blue-500 rounded-full flex justify-center items-center absolute bottom-10 right-14 hover:scale-110 transition duration-75 cursor-pointer hover:bg-blue-700"
+                    @click="router.push(`/admin/announcement/${params.id}/edit`)">
+                    <span class="material-symbols-outlined text-white">edit</span>
+                </div>
             </div>
         </div>
     </div>
 </template>
 <style scoped>
 table {
-  border-collapse: collapse;
-  width: 100%;
+    border-collapse: collapse;
+    width: 100%;
 }
+
 tbody tr:hover {
-  background-color: rgba(107, 114, 128, 0.05);
+    background-color: rgba(107, 114, 128, 0.05);
 }
+
 th {
     padding: 1.5rem;
 }
@@ -95,5 +140,26 @@ th:last-child {
 
 td {
     padding: 1.5rem;
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: rgb(55, 65, 81);
+    border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: rgb(31, 41, 55);
 }
 </style>

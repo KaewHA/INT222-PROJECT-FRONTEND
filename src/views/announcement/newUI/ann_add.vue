@@ -5,6 +5,7 @@ import { QuillEditor } from "@vueup/vue-quill";
 import "@vueup/vue-quill/dist/vue-quill.snow.css";
 import router from "../../../router/index.js";
 import Swal from "sweetalert2";
+import SideBar from "../../../components/SideBar.vue";
 
 const categoryAll = ref([]);
 
@@ -243,136 +244,98 @@ const showAlert = () => {
     </div>
 
     <!-- Main Content -->
-    <div
-      class="flex-grow px-8 py-6 flex flex-col md:flex-row space-y-6 md:space-y-0 md:space-x-6"
-    >
+    <div class="flex-grow px-8 py-6 flex flex-col md:flex-row space-y-6 md:space-y-0 md:space-x-6">
       <!-- Sidebar -->
-      <div class="w-full md:w-1/5 bg-white rounded-2xl shadow-md text-gray-400">
-        <a
-          href="#"
-          @click="router.push('/admin/announcement')"
-          class="py-8 pr-4 text-xl flex items-center space-x-2 hover:bg-slate-100 rounded-t-2xl hover:text-custom-blue active:text-custom-blue group"
-        >
-          <span
-            class="w-4 h-8 bg-custom-blue invisible group-hover:visible rounded-r-lg"
-          ></span>
-          <span
-            class="text-4xl duration-200 material-symbols-outlined group-hover:ml-4"
-            >campaign</span
-          >
-          <span
-            class="flex items-center text-lg duration-200 font-bold group-hover:ml-4"
-            >Announcement</span
-          >
-        </a>
-        <a
-          href="#"
-          @click="router.push('/admin/user')"
-          class="py-8 pr-4 text-xl flex items-center space-x-2 hover:bg-slate-100 hover:text-custom-blue active:text-custom-blue group"
-        >
-          <span
-            class="w-4 h-8 bg-custom-blue invisible group-hover:visible rounded-r-lg"
-          ></span>
-          <span
-            class="text-4xl duration-200 material-symbols-outlined group-hover:ml-4"
-            >person</span
-          >
-          <span
-            class="flex items-center text-lg duration-200 font-bold group-hover:ml-4"
-            >User</span
-          >
-        </a>
-      </div>
+      <SideBar />
 
       <!-- User Table -->
-      <div
-        class="w-full md:w-4/5 bg-white rounded-2xl shadow-md overflow-hidden"
-      >
-          <!-- title input -->
-          <div class="flex px-4 pt-4 ">
-                    <h2 class="font-bold text-2xl">Create Announcement </h2>
-                </div>
-                <div class="flex flex-col w-full px-4 py-2 space-y-1 ">
-                    <label for="title" class="text-base font-bold">Title</label>
-                    <input v-model="newAnnouncement.announcementTitle" type="text" id="title" maxlength="200"
-                        class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-title"
-                        placeholder="Learning Exchanging">
-                    <p class="flex justify-end">{{ newAnnouncement.announcementTitle.trim().length }}/200</p>
-                </div>
-                
-                <div class="flex -mt-5 ">
-                    <div class="flex flex-col w-full px-4 py-2 space-y-1">
-                    <label class="text-base font-bold">Publish Date</label>
-                    <div class=" flex flex-row space-x-4">
-                        <input v-model="publishDate" type="date" placeholder="01/05/2023" :min="startdate" :max="enddate"
-                            class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-publish-date" id="publishDate">
-                        <input :disabled="!publishDate" v-model="publishTime" type="time" placeholder="12:30"
-                            class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-publish-time" id="publishDate">
-                        <button :disabled="!publishDate"
-                            class="px-4 py-2 rounded-md bg-orange-400 text-white text-base font-bold disabled:hidden"
-                            @click="clearpd()">clear</button>
-                    </div>
-                    <div class="text-red-500 ml-3" v-show="fillcurdatepb">publishdate must be a future</div>
-                </div>
-                <div class="flex flex-col w-full px-4 py-2 space-y-1 -ml-96">
-                    <label class="text-base font-bold">Close Date</label>
-                    <div class=" flex flex-row space-x-4">
-                        <input v-model="closeDate" type="date" placeholder="01/05/2023" :min="closestartdate"
-                            class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-close-date " id="closeDate">
-                        <input :disabled="!closeDate" v-model="closeTime" type="time" placeholder="12:30"
-                            class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-close-time" id="closeDate">
-                        <button :disabled="!closeDate"
-                            class="px-4 py-2 rounded-md bg-orange-400 text-white text-base font-bold disabled:hidden"
-                            @click="clearcd()">clear</button>
-
-                    </div>
-                    <div class="text-red-500 ml-3" v-show="fillcurdatecl"><span>must be later than publish date</span></div>
-                </div>
-                
-                </div>
-                <div class="flex flex-col w-1/6 px-4 py-2 space-y-1">
-                    <label for="category-select" class="text-base font-bold">Category</label>
-                    <select v-model="newAnnouncement.categoryId" name="category" id="category-select"
-                        class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-category">
-                        <option value="" disabled>Select a category</option>
-                        <option v-for="(item, index) in categoryAll" :key="index" :value="item.categoryID">
-                            {{ item.categoryName }}
-                        </option>
-                    </select>
-                </div>
-                <div class="flex flex-col w-full h-2/6 px-4 py-2 space-y-1">
-                    <label for="description" class="text-base font-bold">Description</label>
-                    <QuillEditor v-model:content="newAnnouncement.announcementDescription" theme="snow" toolbar="full"
-                        contentType="html" class="h-[11.8rem] overflow-y-auto"></QuillEditor>
-                    <p class="flex justify-end">{{ newAnnouncement.announcementDescription.trim().length }}/10000</p>
-                </div>
-
-                <div class="flex flex-col w-full px-4 py-2 space-y-1 -mt-8">
-                    <div class="space-x-2">
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" value="" class="sr-only peer" v-model="display">
-                            <div
-                                class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
-                            </div>
-                            <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Display
-                                Announcement</span>
-                        </label>
-                    </div>
-                </div>
-                <p class=" ml-5 flex text-red-600" v-show="newAnnouncement.announcementTitle.trim().length == 0">PLEASE FILL THE TITLE</p>
-                <p class=" ml-5 flex text-red-600" v-show="newAnnouncement.categoryId == ''">PLEASE SELECT CATEGORY</p>
-                <p class=" ml-5 flex text-red-600" v-show="newAnnouncement.announcementDescription.trim().length == 0">PLEASE FILL THE DESCRIPTION</p>
-                <div class="w-full flex justify-start p-4 space-x-2">
-                    <button :disabled="isDisabled"
-                        class="px-4 py-2 rounded-md bg-green-500 text-white text-base font-bold disabled:bg-zinc-500 ann-button"
-                        @click="addnewdata()">submit</button>
-                    <button class="px-4 py-2 rounded-md bg-red-500 text-white text-base font-bold"
-                        @click="router.push('/admin/announcement')">Cancel</button>
-                </div>
-          <!-- END -->
+      <div class="w-full md:w-4/5 bg-white rounded-2xl shadow-md overflow-hidden">
+        <!-- title input -->
+        <div class="flex px-4 pt-4 ">
+          <h2 class="font-bold text-2xl">Create Announcement </h2>
         </div>
+        <div class="flex flex-col w-full px-4 py-2 space-y-1 ">
+          <label for="title" class="text-base font-bold">Title</label>
+          <input v-model="newAnnouncement.announcementTitle" type="text" id="title" maxlength="200"
+            class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-title" placeholder="Learning Exchanging">
+          <p class="flex justify-end">{{ newAnnouncement.announcementTitle.trim().length }}/200</p>
+        </div>
+
+        <div class="flex -mt-5 ">
+          <div class="flex flex-col w-full px-4 py-2 space-y-1">
+            <label class="text-base font-bold">Publish Date</label>
+            <div class=" flex flex-row space-x-4">
+              <input v-model="publishDate" type="date" placeholder="01/05/2023" :min="startdate" :max="enddate"
+                class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-publish-date" id="publishDate">
+              <input :disabled="!publishDate" v-model="publishTime" type="time" placeholder="12:30"
+                class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-publish-time" id="publishDate">
+              <button :disabled="!publishDate"
+                class="px-4 py-2 rounded-md bg-orange-400 text-white text-base font-bold disabled:hidden"
+                @click="clearpd()">clear</button>
+            </div>
+            <div class="text-red-500 ml-3" v-show="fillcurdatepb">publishdate must be a future</div>
+          </div>
+          <div class="flex flex-col w-full px-4 py-2 space-y-1 -ml-96">
+            <label class="text-base font-bold">Close Date</label>
+            <div class=" flex flex-row space-x-4">
+              <input v-model="closeDate" type="date" placeholder="01/05/2023" :min="closestartdate"
+                class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-close-date " id="closeDate">
+              <input :disabled="!closeDate" v-model="closeTime" type="time" placeholder="12:30"
+                class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-close-time" id="closeDate">
+              <button :disabled="!closeDate"
+                class="px-4 py-2 rounded-md bg-orange-400 text-white text-base font-bold disabled:hidden"
+                @click="clearcd()">clear</button>
+
+            </div>
+            <div class="text-red-500 ml-3" v-show="fillcurdatecl"><span>must be later than publish date</span></div>
+          </div>
+
+        </div>
+        <div class="flex flex-col w-1/6 px-4 py-2 space-y-1">
+          <label for="category-select" class="text-base font-bold">Category</label>
+          <select v-model="newAnnouncement.categoryId" name="category" id="category-select"
+            class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-category">
+            <option value="" disabled>Select a category</option>
+            <option v-for="(item, index) in categoryAll" :key="index" :value="item.categoryID">
+              {{ item.categoryName }}
+            </option>
+          </select>
+        </div>
+        <div class="flex flex-col w-full h-2/6 px-4 py-2 space-y-1">
+          <label for="description" class="text-base font-bold">Description</label>
+          <QuillEditor v-model:content="newAnnouncement.announcementDescription" theme="snow" toolbar="full"
+            contentType="html" class="h-[11.8rem] overflow-y-auto"></QuillEditor>
+          <p class="flex justify-end">{{ newAnnouncement.announcementDescription.trim().length }}/10000</p>
+        </div>
+
+        <div class="flex flex-col w-full px-4 py-2 space-y-1 -mt-8">
+          <div class="space-x-2">
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" value="" class="sr-only peer" v-model="display">
+              <div
+                class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+              </div>
+              <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Display
+                Announcement</span>
+            </label>
+          </div>
+        </div>
+        <p class=" ml-5 flex text-red-600" v-show="newAnnouncement.announcementTitle.trim().length == 0">PLEASE FILL THE
+          TITLE</p>
+        <p class=" ml-5 flex text-red-600" v-show="newAnnouncement.categoryId == ''">PLEASE SELECT CATEGORY</p>
+        <p class=" ml-5 flex text-red-600" v-show="newAnnouncement.announcementDescription.trim().length == 0">PLEASE FILL
+          THE DESCRIPTION</p>
+        <div class="w-full flex justify-start p-4 space-x-2">
+          <button :disabled="isDisabled"
+            class="px-4 py-2 rounded-md bg-green-500 text-white text-base font-bold disabled:bg-zinc-500 ann-button"
+            @click="addnewdata()">submit</button>
+          <button class="px-4 py-2 rounded-md bg-red-500 text-white text-base font-bold"
+            @click="router.push('/admin/announcement')">Cancel</button>
+        </div>
+        <!-- END -->
       </div>
     </div>
+  </div>
 </template>
 
 <style scoped>
@@ -390,9 +353,11 @@ table {
   border-collapse: collapse;
   width: 100%;
 }
+
 tbody tr:hover {
   background-color: rgba(107, 114, 128, 0.05);
 }
+
 th {
   padding: 1.5rem;
   text-align: left;

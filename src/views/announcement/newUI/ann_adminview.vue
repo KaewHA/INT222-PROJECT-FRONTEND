@@ -1,9 +1,11 @@
 <script setup>
-import { ref ,computed} from 'vue';
-import { getAnnouncement,getCategory,deleteannocement } from '../../../composable/data.js';
+import { ref, computed } from 'vue';
+import { getAnnouncement, getCategory, deleteannocement } from '../../../composable/data.js';
 import { onBeforeMount } from 'vue';
 import router from '../../../router/index.js'
 import Swal from 'sweetalert2'
+import pluss from '../../../components/icon/IcRoundAddCircle.vue'
+import SideBar from '../../../components/SideBar.vue';
 onBeforeMount(async () => {
     const receivedData = ref([]);
     receivedData.value = await getAnnouncement();
@@ -50,7 +52,7 @@ const showAlert = (id) => {
             deleteanno(id)
             Swal.fire(
                 'Deleted!',
-                'This announcement has been delete.',
+                'This announcement has been delete',
                 'success'
             ).then(() => {
                 location.reload()
@@ -61,7 +63,6 @@ const showAlert = (id) => {
 
 const deleteanno = async (id) => {
     status.value = await deleteannocement(id)
-    console.log(status.value);
 }
 
 const changeCategory = async () => {
@@ -97,9 +98,9 @@ const searchvalue = computed(() => {
     return allAnnouncement.value.filter((x) => x.announcementTitle.toLowerCase().includes(searchkeyword.value.toLowerCase()))
 })
 
-const status = ref(null)
+const status = ref(true)
 </script>
-<template>  
+<template>
     <div class="min-h-screen bg-slate-50 flex flex-col font-noto">
         <!-- Header -->
         <div class="flex items-center justify-between p-8">
@@ -115,20 +116,7 @@ const status = ref(null)
         <!-- Main Content -->
         <div class="flex-grow px-8 py-6 flex flex-col md:flex-row space-y-6 md:space-y-0 md:space-x-6">
             <!-- Sidebar -->
-            <div class="w-full md:w-1/5 bg-white rounded-2xl shadow-md text-gray-400">
-                <a href="#" @click="router.push('/admin/announcement')"
-                    class="py-8 pr-4 text-xl flex items-center space-x-2 hover:bg-slate-100 rounded-t-2xl hover:text-custom-blue active:text-custom-blue group">
-                    <span class="w-4 h-8 bg-custom-blue invisible group-hover:visible rounded-r-lg"></span>
-                    <span class="text-4xl duration-200 material-symbols-outlined group-hover:ml-4">campaign</span>
-                    <span class="flex items-center text-lg duration-200 font-bold group-hover:ml-4">Announcement</span>
-                </a>
-                <a href="#" @click="router.push('/admin/user')"
-                    class="py-8 pr-4 text-xl flex items-center space-x-2 hover:bg-slate-100 hover:text-custom-blue active:text-custom-blue group">
-                    <span class="w-4 h-8 bg-custom-blue invisible group-hover:visible rounded-r-lg"></span>
-                    <span class="text-4xl duration-200 material-symbols-outlined group-hover:ml-4">person</span>
-                    <span class="flex items-center text-lg duration-200 font-bold group-hover:ml-4">User</span>
-                </a>
-            </div>
+            <SideBar />
 
             <!-- User Table -->
             <div class="w-full md:w-4/5 bg-white rounded-2xl shadow-md  h-[47rem] overflow-auto">
@@ -146,48 +134,56 @@ const status = ref(null)
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(ann, index) in searchvalue" :key="index" class="text-gray-500 font-bold border-b last:border-0">
+                        <tr v-for="(ann, index) in searchvalue" :key="index"
+                            class="text-gray-500 font-bold border-b last:border-0">
                             <td class="py-2 text-center">{{ index + 1 }}</td>
-                            <td class="py-2 text-left">{{ ann.announcementTitle  }}</td>
+                            <td class="py-2 text-left">{{ ann.announcementTitle }}</td>
                             <td class="py-2 text-left">{{ ann.announcementCategory }}</td>
                             <td class="py-2 text-left">{{ dateformat(ann.publishDate) }}</td>
                             <td class="py-2 text-left">{{ dateformat(ann.closeDate) }}</td>
                             <td class="py-2 text-center">{{ ann.announcementDisplay }}</td>
                             <td class="py-2 text-center">{{ ann.viewCount }}</td>
                             <td class="flex items-center justify-center space-x-2 py-2">
-                                <button class="rounded-lg hover:bg-sky-900 px-4 py-2 bg-sky-600 text-white " @click="router.push(`/admin/announcement/${ann.id}`)">Edit</button>
-                                <button class="rounded-lg hover:bg-red-900 px-4 py-2 bg-red-500 text-white" @click="showAlert(ann.id)">Delete</button>
+                                <button class="rounded-lg hover:bg-sky-700 px-4 py-2 bg-sky-600 text-white "
+                                    @click="router.push(`/admin/announcement/${ann.id}`)">View</button>
+                                <button class="rounded-lg hover:bg-red-900 px-4 py-2 bg-red-500 text-white"
+                                    @click="showAlert(ann.id)">Delete</button>
                             </td>
                         </tr>
                     </tbody>
-                    <div class="w-16 h-16 bg-emerald-500 rounded-full flex justify-center items-center absolute  top-20 right-5 z-10 hover:scale-110 transition duration-100 hover:cursor-pointer " @click="router.push('/admin/announcement/add')"><h1 class="text-xl text-white">+</h1></div>    
+                    <div class="w-16 h-16 bg-emerald-500 rounded-full flex justify-center items-center absolute top-20 right-5 z-10 hover:scale-110 transition duration-100 hover:cursor-pointer"
+                        @click="router.push('/admin/announcement/add')">
+                        <h1 class="text-xl text-white">+</h1>
+                    </div>
                 </table>
-                
+
                 <div v-else class="w-full h-full  flex flex-col justify-center bg-white">
                     <div class="flex justify-center items-center"><img src="/images/empty.png" class="w-3/12 h-3/12"></div>
-           
-                <h1 class="text-4xl flex w-full items-center justify-center font-noto  text-sky-900">
-                    No Announcements
-                </h1>
-                <div class="w-full   flex justify-center mt-6">
-                    <button @click="router.push('/admin/announcement/add')"
-                        class=" w-2/6 rounded-md bg-emerald-500 px-4 py-3 text-sm font-bold text-white hover:bg-emerald-600 flex justify-center noad">
-                        <pluss class="e"></pluss> <span class="f">ADD THE FIRST ANNOUNCEMENT</span>
-                    </button>
+
+                    <h1 class="text-4xl flex w-full items-center justify-center font-noto text-sky-900">
+                        No Announcements
+                    </h1>
+                    <div class="w-full flex justify-center mt-6">
+                        <button @click="router.push('/admin/announcement/add')"
+                            class=" w-2/6 rounded-md bg-emerald-500 px-4 py-3 text-sm font-bold text-white hover:bg-emerald-600 flex justify-center noad">
+                            <pluss class="e"></pluss> <span class="f">ADD THE FIRST ANNOUNCEMENT</span>
+                        </button>
+                    </div>
                 </div>
-            </div>
             </div>
         </div>
     </div>
 </template>
 <style scoped>
 table {
-  border-collapse: collapse;
-  width: 100%;
+    border-collapse: collapse;
+    width: 100%;
 }
+
 tbody tr:hover {
-  background-color: rgba(107, 114, 128, 0.05);
+    background-color: rgba(107, 114, 128, 0.05);
 }
+
 th {
     padding: 1.5rem;
 }
@@ -198,5 +194,4 @@ th:last-child {
 
 td {
     padding: 1.5rem;
-}
-</style>
+}</style>
