@@ -231,26 +231,28 @@ const showAlert = () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-slate-50 flex flex-col font-noto">
-    <!-- Header -->
-    <div class="flex items-center justify-between p-8">
-      <div class="flex items-center space-x-4">
-        <img src="/images/logo.png" alt="SIT Logo" class="h-14 w-14" />
-        <div class="flex flex-col">
-          <h1 class="text-4xl font-bold text-custom-black">SAS</h1>
-          <h2 class="text-custom-blue font-bold">SIT Announcement System</h2>
+  <div class="w-screen h-screen bg-slate-50 flex flex-row font-noto pb-16 pt-4">
+    <div class="w-1/5 h-full pl-12 pr-8 space-y-2 sticky">
+      <div class="flex flex-row items-center ann-app-title w-full h-1/6">
+        <div class="flex items-center space-x-4 w-full">
+          <img src="/images/logo.png" alt="SIT Logo" class="h-14 w-14">
+          <div class="flex flex-col">
+            <h1 class="text-4xl font-bold text-custom-black">SAS</h1>
+            <h2 class="text-custom-blue font-bold">SIT Announcement System</h2>
+          </div>
         </div>
       </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="flex-grow px-8 py-6 flex flex-col md:flex-row space-y-6 md:space-y-0 md:space-x-6">
-      <!-- Sidebar -->
       <SideBar />
-
-      <!-- User Table -->
-      <div class="w-full md:w-4/5 bg-white rounded-2xl shadow-md overflow-hidden">
-        <!-- title input -->
+    </div>
+    <div class="w-4/5 h-full bg-slate-50 rounded-2xl flex flex-col pr-12 space-y-2">
+      <div class="flex flex-row items-center ann-app-title w-full h-1/6">
+        <div class="flex flex-col items-center w-full h-full">
+          <div class="flex flex-col justify-center items-center w-full h-full">
+            
+          </div>
+        </div>
+      </div>
+      <div class="w-full h-5/6 bg-white shadow-md rounded-2xl overflow-y-scroll">
         <div class="flex px-4 pt-4 ">
           <h2 class="font-bold text-2xl">Create Announcement </h2>
         </div>
@@ -260,7 +262,6 @@ const showAlert = () => {
             class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-title" placeholder="Learning Exchanging">
           <p class="flex justify-end">{{ newAnnouncement.announcementTitle.trim().length }}/200</p>
         </div>
-
         <div class="flex -mt-5 ">
           <div class="flex flex-col w-full px-4 py-2 space-y-1">
             <label class="text-base font-bold">Publish Date</label>
@@ -285,11 +286,9 @@ const showAlert = () => {
               <button :disabled="!closeDate"
                 class="px-4 py-2 rounded-md bg-orange-400 text-white text-base font-bold disabled:hidden"
                 @click="clearcd()">clear</button>
-
             </div>
             <div class="text-red-500 ml-3" v-show="fillcurdatecl"><span>must be later than publish date</span></div>
           </div>
-
         </div>
         <div class="flex flex-col w-1/6 px-4 py-2 space-y-1">
           <label for="category-select" class="text-base font-bold">Category</label>
@@ -307,7 +306,6 @@ const showAlert = () => {
             contentType="html" class="h-[11.8rem] overflow-y-auto"></QuillEditor>
           <p class="flex justify-end">{{ newAnnouncement.announcementDescription.trim().length }}/10000</p>
         </div>
-
         <div class="flex flex-col w-full px-4 py-2 space-y-1 -mt-8">
           <div class="space-x-2">
             <label class="relative inline-flex items-center cursor-pointer">
@@ -315,16 +313,13 @@ const showAlert = () => {
               <div
                 class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
               </div>
-              <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Display
-                Announcement</span>
+              <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Display Announcement</span>
             </label>
           </div>
         </div>
-        <p class=" ml-5 flex text-red-600" v-show="newAnnouncement.announcementTitle.trim().length == 0">PLEASE FILL THE
-          TITLE</p>
+        <p class=" ml-5 flex text-red-600" v-show="newAnnouncement.announcementTitle.trim().length == 0">PLEASE FILL THE TITLE</p>
         <p class=" ml-5 flex text-red-600" v-show="newAnnouncement.categoryId == ''">PLEASE SELECT CATEGORY</p>
-        <p class=" ml-5 flex text-red-600" v-show="newAnnouncement.announcementDescription.trim().length == 0">PLEASE FILL
-          THE DESCRIPTION</p>
+        <p class=" ml-5 flex text-red-600" v-show="newAnnouncement.announcementDescription.trim().length == 0">PLEASE FILL THE DESCRIPTION</p>
         <div class="w-full flex justify-start p-4 space-x-2">
           <button :disabled="isDisabled"
             class="px-4 py-2 rounded-md bg-green-500 text-white text-base font-bold disabled:bg-zinc-500 ann-button"
@@ -332,7 +327,6 @@ const showAlert = () => {
           <button class="px-4 py-2 rounded-md bg-red-500 text-white text-base font-bold"
             @click="router.push('/admin/announcement')">Cancel</button>
         </div>
-        <!-- END -->
       </div>
     </div>
   </div>
@@ -349,26 +343,7 @@ const showAlert = () => {
   text-align: center;
 }
 
-table {
-  border-collapse: collapse;
-  width: 100%;
-}
-
-tbody tr:hover {
-  background-color: rgba(107, 114, 128, 0.05);
-}
-
-th {
-  padding: 1.5rem;
-  text-align: left;
-}
-
-th:last-child {
-  text-align: center;
-}
-
-td {
-  padding: 1.5rem;
-  text-align: left;
+::-webkit-scrollbar {
+    display: none;
 }
 </style>

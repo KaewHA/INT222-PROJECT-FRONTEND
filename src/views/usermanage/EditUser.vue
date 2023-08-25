@@ -39,12 +39,12 @@ const dateformat = (date) => {
 const timezoneName = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 const validateUserUpdate = computed(() => {
-    return (oldUser.value.username === updatedUser.value.username && oldUser.value.name === updatedUser.value.name 
-    && oldUser.value.email === updatedUser.value.email && oldUser.value.role === updatedUser.value.role) || validateUsername.value || validateName.value || validateEmail.value
+    return (oldUser.value.username === updatedUser.value.username && oldUser.value.name === updatedUser.value.name
+        && oldUser.value.email === updatedUser.value.email && oldUser.value.role === updatedUser.value.role) || validateUsername.value || validateName.value || validateEmail.value
 })
-const validateUsername = computed(() => updatedUser.value.username?.trim().length > 45 || updatedUser.value.username?.trim().length <= 0 )
-const validateName = computed(() => updatedUser.value.name?.trim().length > 100 || updatedUser.value.name?.trim().length <= 0 )
-const validateEmail = computed(() => updatedUser.value.email?.trim().length > 150 || updatedUser.value.email?.trim().length <= 0 )
+const validateUsername = computed(() => updatedUser.value.username?.trim().length > 45 || updatedUser.value.username?.trim().length <= 0)
+const validateName = computed(() => updatedUser.value.name?.trim().length > 100 || updatedUser.value.name?.trim().length <= 0)
+const validateEmail = computed(() => updatedUser.value.email?.trim().length > 150 || updatedUser.value.email?.trim().length <= 0)
 
 const status = ref(true)
 const updateUser = async (user, id) => {
@@ -72,33 +72,34 @@ const showAlert = () => {
 </script>
 
 <template>
-    <div class="min-h-screen bg-slate-50 flex flex-col font-noto">
-        
-        <div class="flex items-center justify-between p-8">
-            <div class="flex items-center space-x-4">
-                <img src="/images/logo.png" alt="SIT Logo" class="h-14 w-14">
-                <div class="flex flex-col">
-                    <h1 class="text-4xl font-bold text-custom-black">SAS</h1>
-                    <h2 class="text-custom-blue font-bold">SIT Announcement System</h2>
+    <div class="w-screen h-screen bg-slate-50 flex flex-row font-noto pb-16 pt-4">
+        <div class="w-1/5 h-full pl-12 pr-8 space-y-2 sticky">
+            <div class="flex flex-row items-center ann-app-title w-full h-1/6">
+                <div class="flex items-center space-x-4 w-full">
+                    <img src="/images/logo.png" alt="SIT Logo" class="h-14 w-14">
+                    <div class="flex flex-col">
+                        <h1 class="text-4xl font-bold text-custom-black">SAS</h1>
+                        <h2 class="text-custom-blue font-bold">SIT Announcement System</h2>
+                    </div>
                 </div>
             </div>
-        </div>
-
-        
-        <div class="flex-grow px-8 py-6 flex flex-col md:flex-row space-y-6 md:space-y-0 md:space-x-6">
             <SideBar />
-
-            
-            <div class="w-full md:w-4/5 bg-white rounded-2xl shadow-md overflow-hidden flex flex-col">
-                <div class="w-full py-6 px-10 justify-center">
-                    <h1 class="text-gray-600 text-3xl text-start font-bold">Update User</h1>
+        </div>
+        <div class="w-4/5 h-full bg-slate-50 rounded-2xl flex flex-col pr-12 space-y-2">
+            <div class="flex flex-row items-center ann-app-title w-full h-1/6">
+                <div class="flex flex-col items-center w-full h-full">
                 </div>
-                <div class="w-full text-xl py-4 px-10 font-bold justify-center flex flex-col space-y-2">
+            </div>
+            <div class="w-full h-5/6 flex flex-col bg-white shadow-md rounded-2xl justify-evenly">
+                <div class="w-full px-10 justify-center">
+                    <h1 class="text-gray-600 text-4xl text-start font-bold">Update User</h1>
+                </div>
+                <div class="w-full text-xl py-2 px-10 font-bold justify-center flex flex-col space-y-2">
                     <p class="text-slate-600">Username</p>
                     <input type="text" v-model="updatedUser.username" placeholder="SpringJava17" maxlength="45"
                         class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-username"
                         :class="validateUsername === true ? 'border-red-600 shadow-red-500' : 'border-green-500 shadow-green-500'">
-                    <p class="flex items-center space-x-2">
+                    <p class="flex items-center space-x-2" :class="validateUsername === true?'animate-pulse':''">
                         <Correct v-if="validateUsername === false" />
                         <Error v-else />
                         <span class="text-center text-sm"
@@ -107,12 +108,12 @@ const showAlert = () => {
                         </span>
                     </p>
                 </div>
-                <div class="w-full text-xl py-4 px-10 font-bold justify-center flex flex-col space-y-2">
+                <div class="w-full text-xl py-2 px-10 font-bold justify-center flex flex-col space-y-2">
                     <p class="text-slate-600">Name</p>
                     <input type="text" v-model="updatedUser.name" placeholder="Path Param" maxlength="45"
                         class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-name"
                         :class="validateName === true ? 'border-red-600 shadow-red-500' : 'border-green-500 shadow-green-500'">
-                    <p class="flex items-center space-x-2">
+                    <p class="flex items-center space-x-2" :class="validateName === true?'animate-pulse':''">
                         <Correct v-if="validateName === false" />
                         <Error v-else />
                         <span class="text-center text-sm"
@@ -121,12 +122,12 @@ const showAlert = () => {
                         </span>
                     </p>
                 </div>
-                <div class="w-full text-xl py-4 px-10 font-bold justify-center flex flex-col space-y-2">
+                <div class="w-full text-xl py-2 px-10 font-bold justify-center flex flex-col space-y-2">
                     <p class="text-slate-600">Email</p>
                     <input type="text" v-model="updatedUser.email" placeholder="example@email.com" maxlength="45"
                         class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-email"
                         :class="validateEmail ? 'border-red-600 shadow-red-500' : 'border-green-500 shadow-green-500'">
-                    <p class="flex items-center space-x-2">
+                    <p class="flex items-center space-x-2" :class="validateEmail === true?'animate-pulse':''">
                         <Correct v-if="validateEmail === false" />
                         <Error v-else />
                         <span class="text-center text-sm"
@@ -135,7 +136,7 @@ const showAlert = () => {
                         </span>
                     </p>
                 </div>
-                <div class="w-full text-xl py-4 px-10 font-bold justify-center flex flex-col space-y-2">
+                <div class="w-full text-xl py-2 px-10 font-bold justify-center flex flex-col space-y-2">
                     <p class="text-slate-600">Role</p>
                     <div class="flex flex-row items-center space-x-4">
                         <select name="role" v-model="updatedUser.role"
@@ -151,12 +152,15 @@ const showAlert = () => {
                         </div>
                     </div>
                 </div>
-                <div class="w-full text-base py-4 px-10 font-bold flex flex-row space-x-28 text-slate-600">
-                    <p>Created On &nbsp; <span class="underline text-gray-800 ann-created-on">{{ dateformat(updatedUser.createdOn) }}</span></p>
-                    <p>Updated On &nbsp; <span class="underline text-gray-800 ann-updated-on">{{ dateformat(updatedUser.createdOn) }}</span></p>
+                <div class="w-full text-base py-2 px-10 font-bold flex flex-row space-x-28 text-slate-600">
+                    <p>Created On &nbsp; <span class="underline text-gray-800 ann-created-on">{{
+                        dateformat(updatedUser.createdOn) }}</span></p>
+                    <p>Updated On &nbsp; <span class="underline text-gray-800 ann-updated-on">{{
+                        dateformat(updatedUser.updatedOn) }}</span></p>
                 </div>
-                <div class="w-full text-lg py-4 px-10 font-bold flex flex-row space-x-4">
-                    <button class="py-2 px-4 rounded-md bg-green-500 text-white disabled:bg-zinc-500 hover:bg-green-600 ann-button"
+                <div class="w-full text-lg py-2 px-10 font-bold flex flex-row space-x-4">
+                    <button
+                        class="py-2 px-4 rounded-md bg-green-500 text-white disabled:bg-zinc-500 hover:bg-green-600 ann-button"
                         @click="updateUser(updatedUser, updatedUser.id)" :disabled="validateUserUpdate">Update</button>
                     <button class="py-2 px-4 rounded-md bg-red-500 text-white hover:bg-red-700 ann-button"
                         @click="router.push(`/admin/user/`)">Cancel</button>
@@ -166,20 +170,4 @@ const showAlert = () => {
     </div>
 </template>
   
-<style scoped>
-.table-container {
-    position: relative;
-    overflow: hidden;
-}
-
-.table-container table {
-    border-collapse: collapse;
-    width: 100%;
-}
-
-.table-body {
-    max-height: 300px;
-    /* Set a max height for the tbody to enable scrolling */
-    overflow-y: auto;
-}
-</style>
+<style scoped></style>

@@ -4,7 +4,7 @@ import { getAnnouncement, getCategory, deleteannocement } from '../../../composa
 import { onBeforeMount } from 'vue';
 import router from '../../../router/index.js'
 import Swal from 'sweetalert2'
-import pluss from '../../../components/icon/IcRoundAddCircle.vue'
+import AddIcon from '../../../components/icon/AddIcon.vue'
 import SideBar from '../../../components/SideBar.vue';
 onBeforeMount(async () => {
     const receivedData = ref([]);
@@ -101,75 +101,70 @@ const searchvalue = computed(() => {
 const status = ref(true)
 </script>
 <template>
-    <div class="min-h-screen bg-slate-50 flex flex-col font-noto">
-        <!-- Header -->
-        <div class="flex items-center justify-between p-8">
-            <div class="flex items-center space-x-4">
-                <img src="/images/logo.png" alt="SIT Logo" class="h-14 w-14">
-                <div class="flex flex-col">
-                    <h1 class="text-4xl font-bold text-custom-black">SAS</h1>
-                    <h2 class="text-custom-blue font-bold">SIT Announcement System</h2>
+    <div class="w-screen h-screen bg-slate-50 flex flex-row font-noto pb-16 pt-4">
+        <div class="w-1/5 h-full pl-12 pr-8 space-y-2 sticky">
+            <div class="flex flex-row items-center ann-app-title w-full h-1/6">
+                <div class="flex items-center space-x-4 w-full">
+                    <img src="/images/logo.png" alt="SIT Logo" class="h-14 w-14">
+                    <div class="flex flex-col">
+                        <h1 class="text-4xl font-bold text-custom-black">SAS</h1>
+                        <h2 class="text-custom-blue font-bold">SIT Announcement System</h2>
+                    </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Main Content -->
-        <div class="flex-grow px-8 py-6 flex flex-col md:flex-row space-y-6 md:space-y-0 md:space-x-6">
-            <!-- Sidebar -->
             <SideBar />
-
-            <!-- User Table -->
-            <div class="w-full md:w-4/5 bg-white rounded-2xl shadow-md  h-[47rem] overflow-auto">
-                <table class="w-full  table-fixed" v-if="allAnnouncement.length != 0">
-                    <thead>
-                        <tr class="bg-custom-blue text-gray-50 text-lg font-bold ">
-                            <th class="w-1/12 py-4 text-center">No.</th>
-                            <th class="w-2/6 py-4 text-left">Title</th>
-                            <th class="w-1/6 py-4 text-left">Category</th>
-                            <th class="w-1/6 py-4 text-left">Publish Date</th>
-                            <th class="w-1/6 py-4 text-left">Close Date</th>
-                            <th class="w-1/12 py-2 text-center">Display</th>
-                            <th class="w-1/12 py-2 text-center">View</th>
-                            <th class="w-1/6 py-2 text-center">Action</th>
+        </div>
+        <div class="w-4/5 h-full bg-slate-50 rounded-2xl flex flex-col pr-12 space-y-2">
+            <div class="flex flex-row items-center ann-app-title w-full h-1/6">
+                <div class="flex flex-col items-center w-full h-full">
+                    <div class="flex flex-col justify-center items-center w-full h-2/3">
+                        <p class="text-4xl font-extrabold ann-title">Announcement Management</p>
+                    </div>
+                    <div class="w-full h-1/3 text-start flex flex-row items-center justify-between pb-4">
+                        <p class="font-bold ann-timezone">
+                            Date/Time shown in Timezone: <span class="underline">{{ timezoneName }}</span>
+                        </p>
+                        <button
+                            class="bg-emerald-500 rounded-full py-2 px-4 flex justify-center items-center hover:scale-110 transition duration-100 hover:cursor-pointer text-base text-white font-bold ann-button"
+                            @click="router.push('/admin/announcement/add')">
+                            <AddIcon />&nbsp;Add Announcement
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="w-full h-5/6 bg-white shadow-md rounded-2xl overflow-y-scroll">
+                <table class="w-full table-fixed">
+                    <thead class="">
+                        <tr class="bg-custom-blue text-gray-50 text-lg font-bold sticky top-0">
+                            <th class="w-1/12 py-4">No.</th>
+                            <th class="w-1/4 py-4">Title</th>
+                            <th class="w-1/6 py-4">Category</th>
+                            <th class="w-1/6 py-4">Publish Date</th>
+                            <th class="w-1/6 py-4">Close Date</th>
+                            <th class="w-1/6 py-4 text-center">Display</th>
+                            <th class="w-1/6 py-4">View</th>
+                            <th class="w-1/6 py-4">Action</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="">
                         <tr v-for="(ann, index) in searchvalue" :key="index"
-                            class="text-gray-500 font-bold border-b last:border-0">
-                            <td class="py-2 text-center">{{ index + 1 }}</td>
-                            <td class="py-2 text-left">{{ ann.announcementTitle }}</td>
-                            <td class="py-2 text-left">{{ ann.announcementCategory }}</td>
-                            <td class="py-2 text-left">{{ dateformat(ann.publishDate) }}</td>
-                            <td class="py-2 text-left">{{ dateformat(ann.closeDate) }}</td>
-                            <td class="py-2 text-center">{{ ann.announcementDisplay }}</td>
-                            <td class="py-2 text-center">{{ ann.viewCount }}</td>
+                            class="text-gray-500 font-bold border-b last:border-0 ann-item">
+                            <td class="py-2">{{ index + 1 }}</td>
+                            <td class="py-2">{{ ann.announcementTitle }}</td>
+                            <td class="py-2">{{ ann.announcementCategory }}</td>
+                            <td class="py-2 text-center">{{ dateformat(ann.publishDate) }}</td>
+                            <td class="py-2 text-center">{{ dateformat(ann.closeDate) }}</td>
+                            <td class="py-2">{{ ann.announcementDisplay }}</td>
+                            <td class="py-2">{{ ann.viewCount }}</td>
                             <td class="flex items-center justify-center space-x-2 py-2">
-                                <button class="rounded-lg hover:bg-sky-700 px-4 py-2 bg-sky-600 text-white "
+                                <button class="rounded-lg px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white ann-button"
                                     @click="router.push(`/admin/announcement/${ann.id}`)">View</button>
-                                <button class="rounded-lg hover:bg-red-900 px-4 py-2 bg-red-500 text-white"
+                                <button class="rounded-lg hover:bg-red-700 px-4 py-2 bg-red-500 text-white ann-button"
                                     @click="showAlert(ann.id)">Delete</button>
                             </td>
                         </tr>
                     </tbody>
-                    <div class="w-16 h-16 bg-emerald-500 rounded-full flex justify-center items-center absolute top-20 right-5 z-10 hover:scale-110 transition duration-100 hover:cursor-pointer"
-                        @click="router.push('/admin/announcement/add')">
-                        <h1 class="text-xl text-white">+</h1>
-                    </div>
                 </table>
-
-                <div v-else class="w-full h-full  flex flex-col justify-center bg-white">
-                    <div class="flex justify-center items-center"><img src="/images/empty.png" class="w-3/12 h-3/12"></div>
-
-                    <h1 class="text-4xl flex w-full items-center justify-center font-noto text-sky-900">
-                        No Announcements
-                    </h1>
-                    <div class="w-full flex justify-center mt-6">
-                        <button @click="router.push('/admin/announcement/add')"
-                            class=" w-2/6 rounded-md bg-emerald-500 px-4 py-3 text-sm font-bold text-white hover:bg-emerald-600 flex justify-center noad">
-                            <pluss class="e"></pluss> <span class="f">ADD THE FIRST ANNOUNCEMENT</span>
-                        </button>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -186,6 +181,7 @@ tbody tr:hover {
 
 th {
     padding: 1.5rem;
+    text-align: left;
 }
 
 th:last-child {
@@ -194,4 +190,10 @@ th:last-child {
 
 td {
     padding: 1.5rem;
-}</style>
+    text-align: left;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+</style>

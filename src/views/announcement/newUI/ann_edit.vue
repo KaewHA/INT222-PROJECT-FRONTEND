@@ -306,28 +306,30 @@ const showAlert = () => {
 </script>
 
 <template>
-    <div class="min-h-screen bg-slate-50 flex flex-col font-noto">
-        <!-- Header -->
-        <div class="flex items-center justify-between p-8">
-            <div class="flex items-center space-x-4">
-                <img src="/images/logo.png" alt="SIT Logo" class="h-14 w-14" />
-                <div class="flex flex-col">
-                    <h1 class="text-4xl font-bold text-custom-black">SAS</h1>
-                    <h2 class="text-custom-blue font-bold">SIT Announcement System</h2>
+    <div class="w-screen h-screen bg-slate-50 flex flex-row font-noto pb-16 pt-4">
+        <div class="w-1/5 h-full pl-12 pr-8 space-y-2 sticky">
+            <div class="flex flex-row items-center ann-app-title w-full h-1/6">
+                <div class="flex items-center space-x-4 w-full">
+                    <img src="/images/logo.png" alt="SIT Logo" class="h-14 w-14">
+                    <div class="flex flex-col">
+                        <h1 class="text-4xl font-bold text-custom-black">SAS</h1>
+                        <h2 class="text-custom-blue font-bold">SIT Announcement System</h2>
+                    </div>
                 </div>
             </div>
+            <SideBar />
         </div>
+        <div class="w-4/5 h-full bg-slate-50 rounded-2xl flex flex-col pr-12 space-y-2">
+            <div class="flex flex-row items-center ann-app-title w-full h-1/6">
+                <div class="flex flex-col items-center w-full h-full">
+                    <div class="flex flex-col justify-center items-center w-full h-full">
 
-        <!-- Main Content -->
-        <div class="flex-grow px-8 py-6 flex flex-col md:flex-row space-y-6 md:space-y-0 md:space-x-6">
-            <!-- Sidebar -->
-            <SideBar/>
-
-            <!-- User Table -->
-            <div class="w-full md:w-4/5 bg-white rounded-2xl shadow-md overflow-hidden">
-                <!-- title input -->
+                    </div>
+                </div>
+            </div>
+            <div class="w-full h-5/6 bg-white shadow-md rounded-2xl overflow-y-scroll">
                 <div class="flex px-4 pt-4 ">
-                    <h2 class="font-bold text-2xl">Create Announcement </h2>
+                    <h2 class="font-bold text-2xl">Update Announcement </h2>
                 </div>
                 <div class="flex flex-col w-full px-4 py-2 space-y-1 ">
                     <label for="title" class="text-base font-bold">Title</label>
@@ -336,7 +338,6 @@ const showAlert = () => {
                         placeholder="Learning Exchanging">
                     <p class="flex justify-end">{{ newAnnouncement.announcementTitle.trim().length }}/200</p>
                 </div>
-
                 <div class="flex -mt-5">
                     <div class="flex flex-col w-full px-4 py-2 space-y-1">
                         <label class="text-base font-bold">Publish Date</label>
@@ -366,7 +367,6 @@ const showAlert = () => {
                         <div class="text-red-500 ml-3" v-show="fillcurdatecl"><span>must be later than publish date</span>
                         </div>
                     </div>
-
                 </div>
                 <div class="flex flex-col w-1/6 px-4 py-2 space-y-1">
                     <label for="category-select" class="text-base font-bold">Category</label>
@@ -409,7 +409,6 @@ const showAlert = () => {
                     <button class="px-4 py-2 rounded-md bg-red-500 text-white text-base font-bold"
                         @click="router.push(`/admin/announcement/${params.id}`)">Cancel</button>
                 </div>
-                <!-- END -->
             </div>
         </div>
     </div>
@@ -426,26 +425,7 @@ const showAlert = () => {
     text-align: center;
 }
 
-table {
-    border-collapse: collapse;
-    width: 100%;
-}
-
-tbody tr:hover {
-    background-color: rgba(107, 114, 128, 0.05);
-}
-
-th {
-    padding: 1.5rem;
-    text-align: left;
-}
-
-th:last-child {
-    text-align: center;
-}
-
-td {
-    padding: 1.5rem;
-    text-align: left;
+::-webkit-scrollbar {
+    display: none;
 }
 </style>
