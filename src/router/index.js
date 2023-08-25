@@ -1,14 +1,16 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import AnnouncementDetail from '../views/AnnouncementDetail.vue'
-import createapp from '../views/create.vue'
-import indexinit from '../views/indexinit.vue'
-import EditAnnouncement from '../views/EditAnnouncement.vue'
-import AnnouncementTable from '../views/AnnouncementTable.vue'
-import AddAnnouncement from '../views/AddAnnouncement.vue'
-import userview from '../views/userview.vue'
-import UserViewDetail from '../views/UserViewDetail.vue'
-import show from '../views/paginashow.vue'
-import PageNotFound from '../views/PageNotFound.vue'
+import AnnouncementDetail from '../views/announcement/newUI/ann_admindetail.vue'
+import createapp from '../views/announcement/create.vue'
+import indexinit from '../views/announcement/indexinit.vue'
+import EditAnnouncement from '../views/announcement/newUI/ann_edit.vue'//new
+import AddAnnouncement from '../views/announcement/newUI/ann_add.vue'//new
+import adminnewui from '../views/announcement/newUI/ann_adminview.vue'//new
+import UserViewDetail from '../views/announcement/oldUI/UserViewDetail.vue'
+import show from '../views/announcement/paginashow.vue'
+import PageNotFound from '../views/announcement/PageNotFound.vue'
+import UserManagement from '../views/usermanage/UserManagement.vue'
+import AddUser from '../views/usermanage/AddUser.vue'
+import EditUser from '../views/usermanage/EditUser.vue'
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -26,7 +28,7 @@ const router = createRouter({
         {
             path: '/admin/announcement',
             name: 'Announcement',
-            component: AnnouncementTable
+            component: adminnewui
         },
         {
             path: '/admin/announcement/:id',
@@ -41,7 +43,7 @@ const router = createRouter({
         {
             path: '/announcement',
             name: 'userview',
-            component: userview
+            component: show
         },
         {
             path: '/announcement/:id',
@@ -62,6 +64,21 @@ const router = createRouter({
             path: '/:notfoundpath(.*)',
             name: 'PageNotFound',
             component: PageNotFound        
+        },
+        {
+            path: '/admin/user',
+            name: 'UserManagement',
+            component: UserManagement
+        },
+        {
+            path: '/admin/user/add',
+            name: 'AddUser',
+            component: AddUser
+        },
+        {
+            path: '/admin/user/:id/edit',
+            name: 'EditUser',
+            component: EditUser
         }
     ]
 })

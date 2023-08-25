@@ -1,11 +1,12 @@
 <script setup>
-import { getCategory, updateAnnouncement, getAnnouncementByIddata } from "../composable/data.js"
+import { getCategory, updateAnnouncement, getAnnouncementByIddata } from "../../../composable/data.js"
 import { onBeforeMount, onMounted, ref, computed } from 'vue';
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
 import { useRoute } from 'vue-router';
-import router from '../router';
+import router from '../../../router';
 import Swal from 'sweetalert2'
+import SideBar from "../../../components/SideBar.vue";
 
 const { params } = useRoute()
 const olddata = ref({})
@@ -305,39 +306,42 @@ const showAlert = () => {
 </script>
 
 <template>
-    <div class="w-full h-full">
-        <div class="w-full h-full items-center flex flex-col font-noto">
-            <div class="w-3/4 h-auto flex flex-col border rounded-md mt-5 bg-white shadow-xl">
-                <div class="flex px-4 pt-4">
+    <div class="w-screen h-screen bg-slate-50 flex flex-row font-noto pb-16 pt-4">
+        <div class="w-1/5 h-full pl-12 pr-8 space-y-2 sticky">
+            <div class="flex flex-row items-center ann-app-title w-full h-1/6">
+                <div class="flex items-center space-x-4 w-full">
+                    <img src="/images/logo.png" alt="SIT Logo" class="h-14 w-14">
+                    <div class="flex flex-col">
+                        <h1 class="text-4xl font-bold text-custom-black">SAS</h1>
+                        <h2 class="text-custom-blue font-bold">SIT Announcement System</h2>
+                    </div>
+                </div>
+            </div>
+            <SideBar />
+        </div>
+        <div class="w-4/5 h-full bg-slate-50 rounded-2xl flex flex-col pr-12 space-y-2">
+            <div class="flex flex-row items-center ann-app-title w-full h-1/6">
+                <div class="flex flex-col items-center w-full h-full">
+                    <div class="flex flex-col justify-center items-center w-full h-full">
+
+                    </div>
+                </div>
+            </div>
+            <div class="w-full h-5/6 bg-white shadow-md rounded-2xl overflow-y-scroll">
+                <div class="flex px-4 pt-4 ">
                     <h2 class="font-bold text-2xl">Update Announcement </h2>
                 </div>
-                <div class="flex flex-col w-full px-4 py-2 space-y-1">
+                <div class="flex flex-col w-full px-4 py-2 space-y-1 ">
                     <label for="title" class="text-base font-bold">Title</label>
-                    <input v-model="newAnnouncement.announcementTitle" type="text" id="title" axlength="200"
+                    <input v-model="newAnnouncement.announcementTitle" type="text" id="title" maxlength="200"
                         class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-title"
                         placeholder="Learning Exchanging">
                     <p class="flex justify-end">{{ newAnnouncement.announcementTitle.trim().length }}/200</p>
                 </div>
-                <div class="flex flex-col w-2/5 px-4 py-2 space-y-1">
-                    <label for="category-select" class="text-base font-bold">Category</label>
-                    <select v-model="choosecategory" name="category" id="category-select"
-                        class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-category">
-                        <option value="0" disabled>Select a category</option>
-                        <option v-for="item  in categoryAll">
-                            {{ item.categoryName }}
-                        </option>
-                    </select>
-                </div>
-                <div class="flex flex-col w-full px-4 py-2 space-y-1">
-                    <label for="description" class="text-base font-bold">Description</label>
-                    <QuillEditor v-model:content="newAnnouncement.announcementDescription" theme="snow" toolbar="full"
-                        contentType="html"></QuillEditor>
-                    <p class="flex justify-end">{{ newAnnouncement.announcementDescription.trim().length }}/10000</p>
-                </div>
-                <div class="">
+                <div class="flex -mt-5">
                     <div class="flex flex-col w-full px-4 py-2 space-y-1">
                         <label class="text-base font-bold">Publish Date</label>
-                        <div class="w-1/3 flex flex-row space-x-4">
+                        <div class=" flex flex-row space-x-4">
                             <input v-model="publishDate" type="date" placeholder="01/05/2023" :min="startdate"
                                 :max="enddate" class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-publish-date"
                                 id="publishDate">
@@ -349,21 +353,39 @@ const showAlert = () => {
                         </div>
                         <div class="text-red-500 ml-3" v-show="fillcurdatepb">publishdate must be a future</div>
                     </div>
-                    <div class="flex flex-col w-full px-4 py-2 space-y-1">
+                    <div class="flex flex-col w-full px-4 py-2 space-y-1 -ml-96">
                         <label class="text-base font-bold">Close Date</label>
-                        <div class="w-1/3 flex flex-row space-x-4">
+                        <div class=" flex flex-row space-x-4">
                             <input v-model="closeDate" type="date" placeholder="01/05/2023" :min="closestartdate"
-                                class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-close-date" id="closeDate">
+                                class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-close-date " id="closeDate">
                             <input :disabled="!closeDate" v-model="closeTime" type="time" placeholder="12:30"
                                 class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-close-time" id="closeDate">
                             <button :disabled="!closeDate"
                                 class="px-4 py-2 rounded-md bg-orange-400 text-white text-base font-bold disabled:hidden"
                                 @click="clearcd()">clear</button>
                         </div>
-                        <div class="text-red-500 ml-3" v-show="fillcurdatecl">must be later than publish date</div>
+                        <div class="text-red-500 ml-3" v-show="fillcurdatecl"><span>must be later than publish date</span>
+                        </div>
                     </div>
                 </div>
-                <div class="flex flex-col w-full px-4 py-2 space-y-1">
+                <div class="flex flex-col w-1/6 px-4 py-2 space-y-1">
+                    <label for="category-select" class="text-base font-bold">Category</label>
+                    <select v-model="choosecategory" name="category" id="category-select"
+                        class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-category">
+                        <option value="0" disabled>Select a category</option>
+                        <option v-for="item  in categoryAll">
+                            {{ item.categoryName }}
+                        </option>
+                    </select>
+                </div>
+                <div class="flex flex-col w-full h-2/6 px-4 py-2 space-y-1">
+                    <label for="description" class="text-base font-bold">Description</label>
+                    <QuillEditor v-model:content="newAnnouncement.announcementDescription" theme="snow" toolbar="full"
+                        contentType="html" class="h-[11.8rem] overflow-y-auto"></QuillEditor>
+                    <p class="flex justify-end">{{ newAnnouncement.announcementDescription.trim().length }}/10000</p>
+                </div>
+
+                <div class="flex flex-col w-full px-4 py-2 space-y-1 -mt-8">
                     <div class="space-x-2">
                         <label class="relative inline-flex items-center cursor-pointer">
                             <input type="checkbox" value="" class="sr-only peer" v-model="display">
@@ -375,19 +397,35 @@ const showAlert = () => {
                         </label>
                     </div>
                 </div>
-                <p class=" ml-5 flex text-red-600" v-show="newAnnouncement.announcementTitle.trim().length == 0">PLEASE FILL THE TITLE</p>
-                <p class=" ml-5 flex text-red-600" v-show="choosecategory == '0'">PLEASE SELECT CATEGORY</p>
-                <p class=" ml-5 flex text-red-600" v-show="newAnnouncement.announcementDescription.trim().length == 0">PLEASE FILL THE DESCRIPTION</p>
+                <p class=" ml-5 flex text-red-600" v-show="newAnnouncement.announcementTitle.trim().length == 0">PLEASE FILL
+                    THE TITLE</p>
+                <p class=" ml-5 flex text-red-600" v-show="newAnnouncement.categoryId == ''">PLEASE SELECT CATEGORY</p>
+                <p class=" ml-5 flex text-red-600" v-show="newAnnouncement.announcementDescription.trim().length == 0">
+                    PLEASE FILL THE DESCRIPTION</p>
                 <div class="w-full flex justify-start p-4 space-x-2">
                     <button :disabled="isDisabled"
                         class="px-4 py-2 rounded-md bg-green-500 text-white text-base font-bold disabled:bg-zinc-500 ann-button"
                         @click="createanno()">Update</button>
                     <button class="px-4 py-2 rounded-md bg-red-500 text-white text-base font-bold"
-                        @click="router.push('/admin/announcement')">Cancel</button>
+                        @click="router.push(`/admin/announcement/${params.id}`)">Cancel</button>
                 </div>
             </div>
         </div>
     </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.frame {
+    border: 4px solid #3182ce;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+</style>

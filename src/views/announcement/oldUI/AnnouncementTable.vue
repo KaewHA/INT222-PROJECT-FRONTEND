@@ -1,12 +1,12 @@
 <script setup>
 import { ref, onBeforeMount, computed } from "vue";
-import { getAnnouncement, deleteannocement, getCategory } from "../composable/data.js";
-import router from '../router/index.js'
-import Navbar from "../components/Navbar.vue";
-import AkarIconsEye from '../components/icon/AkarIconsEye.vue'
-import Trash from '../components/icon/Trash.vue'
-import pluss from '../components/icon/IcRoundAddCircle.vue'
-import search from '../components/icon/search.vue'
+import { getAnnouncement, deleteannocement, getCategory } from "../../composable/data.js";
+import router from '../../router/index.js'
+import Navbar from "../../components/Navbar.vue";
+import AkarIconsEye from '../../components/icon/AkarIconsEye.vue'
+import Trash from '../../components/icon/Trash.vue'
+import pluss from '../../components/icon/IcRoundAddCircle.vue'
+import search from '../../components/icon/search.vue'
 import Swal from 'sweetalert2'
 
 onBeforeMount(async () => {

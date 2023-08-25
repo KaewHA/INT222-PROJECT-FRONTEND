@@ -1,12 +1,12 @@
 <script setup>
 import { ref, onBeforeMount } from 'vue';
 import { useRoute } from 'vue-router';
-import { getAnnouncementById } from "../composable/data.js"
-import router from '../router/index.js'
-import categoryico from '../components/icon/MdiListBox.vue'
-import cdate from '../components/icon/TeenyiconsCalendarNoAccessOutline.vue'
-import pdate from '../components/icon/TeenyiconsCalendarTickOutline.vue'
-import views from '../components/icon/IcBaselineRemoveRedEye.vue'
+import { getAnnouncementById } from "../../composable/data.js"
+import router from '../../router/index.js'
+import categoryico from '../../components/icon/MdiListBox.vue'
+import cdate from '../../components/icon/TeenyiconsCalendarNoAccessOutline.vue'
+import pdate from '../../components/icon/TeenyiconsCalendarTickOutline.vue'
+import views from '../../components/icon/IcBaselineRemoveRedEye.vue'
 import Swal from 'sweetalert2'
 
 const { params } = useRoute()
@@ -41,7 +41,7 @@ const showAlert = () => {
 
 <template>
     <div class="w-screen font-noto h-screen">
-        <div v-if="announcement" class="w-full h-full  flex-row justify-center items-center">
+        <div v-if="announcement" class="w-full h-full flex-row justify-center items-center">
             <div class="w-full flex justify-center bg-sky-600 pt-7 ">
                 <div class="flex justify-start w-full items-center ">
                     <div class="w-full flex justify-center">
@@ -83,7 +83,6 @@ const showAlert = () => {
                             class="ann-description text-xl flex justify-center mt-10 h-96 overflow-y-auto bg-slate-200 rounded-2xl ql-editor">
                             <span class="mt-3" v-html="announcement.announcementDescription"></span>
                         </div>
-
                     </div>
                 </div>
             </div>

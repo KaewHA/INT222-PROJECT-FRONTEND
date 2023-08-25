@@ -1,7 +1,8 @@
 <script setup>
-import router from '../router/index.js'
-import back from '../components/icon/next.vue'
+import router from '../../router/index.js'
+import back from '../../components/icon/next.vue'
 // router.push('/admin/announcement')
+
 </script>
  
 <template>
