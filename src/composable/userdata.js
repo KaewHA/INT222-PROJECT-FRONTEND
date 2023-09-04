@@ -36,10 +36,12 @@ async function addUser(user) {
         body: JSON.stringify(user),
       }
     );
+    const errRes = await res.json()
+    console.log(errRes);
     if (res.ok) {
       return true
     } else {
-      return false
+      return errRes.detail;
     }
   } catch (error) {
     console.log(error);

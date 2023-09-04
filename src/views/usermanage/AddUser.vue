@@ -12,7 +12,8 @@ import Swal from "sweetalert2";
 const newUser = ref({
     username: ''.trim(),
     name: ''.trim(),
-    email: ''.trim(),
+    password: '',
+    email: ''.trim().toLowerCase(),
     role: 'announcer'
 })
 
@@ -20,6 +21,7 @@ const addStatus = ref(true)
 
 const addNewUser = async (user) => {
     addStatus.value = await addUser(user)
+    console.log(addStatus.value);
     showAlert();
 }
 
@@ -28,6 +30,9 @@ const validateName = computed(() => newUser.value.name.trim().length > 100 || ne
 const validateEmail = computed(() => newUser.value.email.trim().length > 150 || newUser.value.email.trim().length <= 0)
 const validateNewUser = computed(() => validateUsername.value || validateName.value || validateEmail.value)
 
+const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/g
+const validateEmailPattern = computed(() => newUser.value.email.match(emailPattern) !== null)
+    
 const showAlert = () => {
     if (addStatus.value === true) {
         Swal.fire({
@@ -35,15 +40,15 @@ const showAlert = () => {
             title: "Create User Success!",
             confirmButtonText: "Continue",
         });
+        router.push("/admin/user");
     } else {
         Swal.fire({
             icon: "error",
             title: "Something went wrong!",
-            text: "Cannot create user.",
+            html: ``,
             confirmButtonText: "Back",
         });
     }
-    router.push("/admin/user");
 }
 </script>
 
@@ -66,57 +71,82 @@ const showAlert = () => {
                 <div class="flex flex-col items-center w-full h-full">
                 </div>
             </div>
-            <div class="w-full h-5/6 flex flex-col bg-white shadow-md rounded-2xl justify-evenly">
+            <div class="w-full h-5/6 flex flex-col bg-white shadow-md rounded-2xl justify-evenly py-4">
                 <div class="w-full justify-center px-10">
-                    <h1 class="text-gray-600 text-4xl text-start font-bold">Add User</h1>
+                    <h1 class="text-gray-600 text-3xl text-start font-bold">Add User</h1>
                 </div>
-                <div class="w-full text-xl py-2 px-10 font-bold justify-center flex flex-col space-y-2">
+                <div class="w-full text-lg py-2 px-10 font-bold justify-center flex flex-col space-y-2">
                     <p class="text-slate-600">Username</p>
                     <input type="text" v-model="newUser.username" placeholder="SpringJava17" maxlength="45"
-                        class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-username"
-                        :class="validateUsername === true ? 'border-red-600 shadow-red-500' : 'border-green-500 shadow-green-500'">
+                        class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-username">
                     <p class="flex items-center space-x-2" :class="validateUsername === true?'animate-pulse':''">
                         <Correct v-if="validateUsername === false" />
                         <Error v-else />
                         <span class="text-center text-sm"
                             :class="validateUsername === true ? 'text-red-600' : 'text-green-500'">
-                            {{ validateUsername === true ? 'Please provide a valid username' : 'Username is valid' }}
+                            {{ validateUsername === true ? 'Username is required' : 'Username is valid' }}
                         </span>
                     </p>
                 </div>
-                <div class="w-full text-xl py-2 px-10 font-bold justify-center flex flex-col space-y-2">
+                <div class="w-full text-lg py-2 px-10 font-bold justify-center flex flex-col space-y-2">
                     <p class="text-slate-600">Name</p>
                     <input type="text" v-model="newUser.name" placeholder="Path Param" maxlength="45"
-                        class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-name"
-                        :class="validateName === true ? 'border-red-600 shadow-red-500' : 'border-green-500 shadow-green-500'">
+                        class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-name">
                     <p class="flex items-center space-x-2" :class="validateName === true?'animate-pulse':''">
                         <Correct v-if="validateName === false" />
                         <Error v-else />
                         <span class="text-center text-sm"
                             :class="validateName === true ? 'text-red-600' : 'text-green-500'">
-                            {{ validateName === true ? 'Please enter name' : 'This name is valid' }}
+                            {{ validateName === true ? 'Name is required' : 'This name is valid' }}
                         </span>
                     </p>
                 </div>
-                <div class="w-full text-xl py-2 px-10 font-bold justify-center flex flex-col space-y-2">
+                <div class="w-full flex flex-row px-10 py-2 space-x-10">
+                    <div class="w-1/2 text-lg font-bold justify-center flex flex-col space-y-2">
+                        <p class="text-slate-600">Password</p>
+                        <input type="text" v-model="newUser.password" placeholder="********" minlength="8" maxlength="14"
+                            class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-username">
+                        <p class="flex items-center space-x-2" :class="true ?'animate-pulse':''">
+                            <Correct v-if="false" />
+                            <Error v-else />
+                            <span class="text-center text-sm"
+                                :class="true ? 'text-red-600' : 'text-green-500'">
+                                {{ true ? 'Password is required' : 'Username is valid' }}
+                            </span>
+                        </p>
+                    </div>
+                    <div class="w-1/2 text-lg font-bold justify-center flex flex-col space-y-2">
+                        <p class="text-slate-600">Confirm Password</p>
+                        <input type="text" placeholder="********" minlength="8" maxlength="14"
+                            class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-username">
+                        <p class="flex items-center space-x-2" :class="true ?'animate-pulse':''">
+                            <Correct v-if="false" />
+                            <Error v-else />
+                            <span class="text-center text-sm"
+                                :class="true ? 'text-red-600' : 'text-green-500'">
+                                {{ true ? 'Password is not match' : '' }}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+                <div class="w-full text-lg py-2 px-10 font-bold justify-center flex flex-col space-y-2">
                     <p class="text-slate-600">Email</p>
                     <input type="text" v-model="newUser.email" placeholder="example@email.com" maxlength="45"
-                        class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-email"
-                        :class="validateName === true ? 'border-red-600 shadow-red-500' : 'border-green-500 shadow-green-500'">
+                        class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-email">
                     <p class="flex items-center space-x-2" :class="validateEmail === true?'animate-pulse':''">
                         <Correct v-if="validateEmail === false" />
                         <Error v-else />
                         <span class="text-center text-sm"
                             :class="validateEmail === true ? 'text-red-600' : 'text-green-500'">
-                            {{ validateEmail === true ? 'Please provide a valid email' : 'Email is valid' }}
+                            {{ validateEmail === true ? 'Email is required' : 'Email is valid' }}
                         </span>
                     </p>
                 </div>
-                <div class="w-full text-xl py-2 px-10 font-bold justify-center flex flex-col space-y-2">
+                <div class="w-full text-lg py-2 px-10 font-bold justify-center flex flex-col space-y-2">
                     <p class="text-slate-600">Role</p>
                     <div class="flex flex-row items-center space-x-4">
                         <select name="role" v-model="newUser.role"
-                            class="w-1/3 rounded-md border-cyan-500 shadow-cyan-600 shadow-equal-shadow text-gray-600 ann-role">
+                            class="w-1/3 rounded-md text-gray-600 ann-role">
                             <option value="announcer">announcer</option>
                             <option value="admin">admin</option>
                         </select>
