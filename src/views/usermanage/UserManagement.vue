@@ -7,6 +7,8 @@ import router from '../../router/index.js'
 import SideBar from '../../components/SideBar.vue'
 import Swal from 'sweetalert2'
 import AddIcon from '../../components/icon/AddIcon.vue';
+import BurgerIcon from '../../components/icon/BurgerIcon.vue'
+import CloseIcon from '../../components/icon/CloseIcon.vue'
 
 const { params } = useRoute()
 
@@ -67,10 +69,13 @@ const deleteUser = async (id) => {
     status.value = await deleteUserData(id)
 }
 
+const isBurgerToggle = ref(false)
+const toggleBurger = () => isBurgerToggle.value = !isBurgerToggle.value
 </script>
 
 <template>
-    <div class="w-screen h-screen bg-slate-50 flex flex-row font-noto pb-16 pt-4">
+    <!-- Desktop -->
+    <div class="w-screen h-screen bg-slate-50 flex flex-row font-noto pb-16 pt-4 max-lg:hidden">
         <div class="w-1/5 h-full pl-12 pr-8 space-y-2 sticky">
             <div class="flex flex-row items-center ann-app-title w-full h-1/6">
                 <div class="flex items-center space-x-4 w-full">
@@ -134,6 +139,60 @@ const deleteUser = async (id) => {
                         </tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile -->
+    <div class="w-screen h-screen font-noto bg-slate-50 lg:hidden">
+        <div class="w-full flex flex-col justify-center py-6 px-8 space-y-2 bg-white sticky top-0">
+            <div class="flex flex-row items-center ann-app-title w-full h-full">
+                <div class="flex items-center space-x-4 w-full">
+                    <img src="/images/logo.png" alt="SIT Logo" class="h-14 w-14">
+                    <div class="flex flex-col">
+                        <h1 class="text-4xl font-bold text-custom-black">SAS</h1>
+                        <h2 class="text-custom-blue font-bold">SIT Announcement System</h2>
+                    </div>
+                </div>
+                <div @click="toggleBurger" class="h-[2em]">
+                    <BurgerIcon v-if="isBurgerToggle === false" />
+                    <CloseIcon v-if="isBurgerToggle === true" />
+                </div>
+            </div>
+            <SideBar v-if="isBurgerToggle === true"/>
+        </div>
+        <div class="w-full flex-col py-4 px-8 space-y-6 overflow-y-scroll">
+            <div class="flex flex-col justify-center items-center w-full">
+                <p class="text-3xl font-extrabold ann-title">User Management</p>
+            </div>
+            <div class="flex flex-row items-center w-full justify-between overflow-y-scroll">
+                <p class="font-bold ann-timezone text-sm w-2/3">
+                    Date/Time shown in Timezone: <span class="underline">{{ timezoneName }}</span>
+                </p>
+                <button
+                    class="bg-emerald-500 rounded-full py-2 px-4 flex justify-center items-center text-xs text-white font-bold ann-button"
+                    @click="router.push('/admin/user/add')">
+                    <AddIcon />&nbsp;Add User
+                </button>
+            </div>
+            <div v-for="(user, index) in userList" :key="user.id" class="w-full flex flex-col rounded-2xl shadow-md space-y-1 py-3 px-4 bg-gradient-to-tr from-custom-blue to-sky-500 text-white">
+                <div class="w-full flex flex-row space-x-6">
+                    <span class="font-bold">#{{ index + 1 }}</span>
+                    <span class="font-extrabold">{{ user.username }}</span>
+                </div>
+                <div>
+                    <p class="w-full text-sm">Name : {{ user.name }}</p>
+                    <p class="w-full text-sm">Role : {{ user.role }}</p>
+                    <p class="w-full text-sm">Email : {{ user.email }}</p>
+                    <p class="w-full text-sm">Created On : {{ dateformat(user.createdOn) }}</p>
+                    <p class="w-full text-sm">Updated On : {{ dateformat(user.updatedOn) }}</p>
+                </div>
+                <div class="flex justify-end space-x-2">
+                    <button class="rounded-full px-4 py-1 bg-gradient-to-r from-sky-600 to-cyan-600 text-white text-sm font-bold ann-button"
+                        @click="router.push(`/admin/user/${user.id}/edit`)">Edit</button>
+                    <button class="rounded-full px-4 bg-gradient-to-r from-red-500 to-rose-600 text-white text-sm font-bold ann-button"
+                        @click="showAlert(user.id)">Delete</button>
+                </div>
             </div>
         </div>
     </div>

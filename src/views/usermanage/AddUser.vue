@@ -1,7 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue';
 import { addUser } from '../../composable/userdata.js';
-import { onBeforeMount } from 'vue';
 import router from '../../router/index.js'
 import SideBar from '../../components/SideBar.vue';
 import Error from '../../components/icon/Error.vue';
@@ -12,21 +11,56 @@ import Swal from "sweetalert2";
 const newUser = ref({
     username: ''.trim(),
     name: ''.trim(),
-    email: ''.trim(),
+    password: '',
+    email: ''.trim().toLowerCase(),
     role: 'announcer'
 })
+const confirmPassword = ref('')
 
 const addStatus = ref(true)
-
+const errRes = ref({})
 const addNewUser = async (user) => {
     addStatus.value = await addUser(user)
-    showAlert();
+    if (addStatus.value === true) {
+        showAlert()
+    } else {
+        errRes.value = {}
+        for (const err of addStatus.value) {
+            errRes.value[err.field] = err.errorMessage
+        }
+        fieldValidWarn()
+    }
 }
 
-const validateUsername = computed(() => newUser.value.username.trim().length > 45 || newUser.value.username.trim().length <= 0)
-const validateName = computed(() => newUser.value.name.trim().length > 100 || newUser.value.name.trim().length <= 0)
-const validateEmail = computed(() => newUser.value.email.trim().length > 150 || newUser.value.email.trim().length <= 0)
-const validateNewUser = computed(() => validateUsername.value || validateName.value || validateEmail.value)
+
+
+// const validateUsername = computed(() => newUser.value.username.trim().length > 45 || newUser.value.username.trim().length <= 0)
+// const validateName = computed(() => newUser.value.name.trim().length > 100 || newUser.value.name.trim().length <= 0)
+// const validateEmail = computed(() => newUser.value.email.trim().length > 150 || newUser.value.email.trim().length <= 0)
+const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/g
+const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&!*])[A-Za-z\d@#$%^&!*]{8,}$/
+
+const isAllFill = computed(() => {
+    return newUser.value.username.trim().length <= 0 || newUser.value.name.trim().length <= 0 ||
+        newUser.value.email.trim().length <= 0 || newUser.value.password.trim().length <= 0 ||
+        confirmPassword.value.trim().length <= 0 || isPasswordMatch.value === false || newUser.value.email.match(emailPattern) === null
+})
+
+const isUsernameValid = ref(null)
+const isNameValid = ref(null)
+const isEmailValid = ref(null)
+const isPasswordValid = ref(null)
+const isPasswordMatch = computed(() => newUser.value.password.trim() === confirmPassword.value.trim())
+const isPasswordPatternValid = computed(() => newUser.value.password.match(passwordPattern) !== null)
+
+const fieldValidWarn = () => {
+    isUsernameValid.value = newUser.value.username.trim().length <= 45 && newUser.value.username.trim().length > 0 && !errRes.value.username
+    isNameValid.value = newUser.value.name.trim().length <= 100 && newUser.value.name.trim().length > 0 && !errRes.value.name
+    isEmailValid.value = newUser.value.email.trim().length <= 150 && newUser.value.email.trim().length > 0 &&
+        newUser.value.email.match(emailPattern) !== null && !errRes.value.email
+    isPasswordValid.value = (newUser.value.password.trim().length <= 14 && newUser.value.password.trim().length > 7 &&
+        isPasswordPatternValid.value && !errRes.value.password)
+}
 
 const showAlert = () => {
     if (addStatus.value === true) {
@@ -66,77 +100,99 @@ const showAlert = () => {
                 <div class="flex flex-col items-center w-full h-full">
                 </div>
             </div>
-            <div class="w-full h-5/6 flex flex-col bg-white shadow-md rounded-2xl justify-evenly">
+            <div class="w-full h-5/6 flex flex-col bg-white shadow-md rounded-2xl justify-evenly py-4">
                 <div class="w-full justify-center px-10">
-                    <h1 class="text-gray-600 text-4xl text-start font-bold">Add User</h1>
+                    <h1 class="text-gray-600 text-3xl text-start font-bold">Add User</h1>
                 </div>
-                <div class="w-full text-xl py-2 px-10 font-bold justify-center flex flex-col space-y-2">
+                <div class="w-full text-lg py-2 px-10 font-bold justify-center flex flex-col space-y-2">
                     <p class="text-slate-600">Username</p>
-                    <input type="text" v-model="newUser.username" placeholder="SpringJava17" maxlength="45"
-                        class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-username"
-                        :class="validateUsername === true ? 'border-red-600 shadow-red-500' : 'border-green-500 shadow-green-500'">
-                    <p class="flex items-center space-x-2" :class="validateUsername === true?'animate-pulse':''">
-                        <Correct v-if="validateUsername === false" />
-                        <Error v-else />
-                        <span class="text-center text-sm"
-                            :class="validateUsername === true ? 'text-red-600' : 'text-green-500'">
-                            {{ validateUsername === true ? 'Please provide a valid username' : 'Username is valid' }}
+                    <input @keydown="isUsernameValid = null" type="text" v-model="newUser.username"
+                        placeholder="SpringJava17" maxlength="45"
+                        class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-username">
+                    <p v-if="isUsernameValid !== null" class="flex items-center space-x-2">
+                        <Error v-if="isUsernameValid === false" />
+                        <span class="text-center text-sm text-red-600">
+                            {{ isUsernameValid === false ? `${errRes.username}` : '' }}
                         </span>
                     </p>
                 </div>
-                <div class="w-full text-xl py-2 px-10 font-bold justify-center flex flex-col space-y-2">
+                <div class="w-full text-lg py-2 px-10 font-bold justify-center flex flex-col space-y-2">
                     <p class="text-slate-600">Name</p>
-                    <input type="text" v-model="newUser.name" placeholder="Path Param" maxlength="45"
-                        class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-name"
-                        :class="validateName === true ? 'border-red-600 shadow-red-500' : 'border-green-500 shadow-green-500'">
-                    <p class="flex items-center space-x-2" :class="validateName === true?'animate-pulse':''">
-                        <Correct v-if="validateName === false" />
-                        <Error v-else />
-                        <span class="text-center text-sm"
-                            :class="validateName === true ? 'text-red-600' : 'text-green-500'">
-                            {{ validateName === true ? 'Please enter name' : 'This name is valid' }}
+                    <input @keydown="isNameValid = null" type="text" v-model="newUser.name" placeholder="Path Param"
+                        maxlength="45" class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-name">
+                    <p v-if="isNameValid !== null" class="flex items-center space-x-2">
+                        <Error v-if="isNameValid === false" />
+                        <span class="text-center text-sm text-red-600">
+                            {{ isNameValid === false ? `${errRes.name}` : '' }}
                         </span>
                     </p>
                 </div>
-                <div class="w-full text-xl py-2 px-10 font-bold justify-center flex flex-col space-y-2">
+                <div class="w-full flex flex-col">
+                    <div class="w-full flex flex-row px-10 py-2 space-x-10">
+                        <div class="w-1/2 text-lg font-bold justify-center flex flex-col space-y-2">
+                            <p class="text-slate-600">Password</p>
+                            <input @keydown="isPasswordValid = null" type="password" v-model="newUser.password"
+                                placeholder="********" minlength="8" maxlength="14"
+                                class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-username">
+                        </div>
+                        <div class="w-1/2 text-lg font-bold justify-center flex flex-col space-y-2">
+                            <p class="text-slate-600">Confirm Password</p>
+                            <input type="password" v-model="confirmPassword" placeholder="********" minlength="8"
+                                maxlength="14"
+                                class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-username">
+                        </div>
+                    </div>
+                    <p v-if="isPasswordPatternValid === false && newUser.password.trim().length > 0"
+                        class="w-full flex items-center px-10 py-2 space-x-2 font-bold">
+                        <Error v-if="isPasswordPatternValid === false" />
+                        <span v-if="isPasswordPatternValid === false" class="text-center text-sm text-red-600">
+                            {{ isPasswordPatternValid === false ? 'Password is not valid' : '' }}
+                        </span>
+                    </p>
+                    <p v-if="isPasswordMatch === false && newUser.password.trim().length > 0 && confirmPassword.trim().length > 0 && isPasswordPatternValid === true"
+                        class="w-full flex items-center px-10 py-2 space-x-2 font-bold">
+                        <Error/>
+                        <span v-if="isPasswordMatch === false" class="text-center text-sm text-red-600">
+                            {{ isPasswordMatch === false ? 'Password is not match' : '' }}
+                        </span>
+                    </p>
+                </div>
+                <div class="w-full text-lg py-2 px-10 font-bold justify-center flex flex-col space-y-2">
                     <p class="text-slate-600">Email</p>
-                    <input type="text" v-model="newUser.email" placeholder="example@email.com" maxlength="45"
-                        class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-email"
-                        :class="validateName === true ? 'border-red-600 shadow-red-500' : 'border-green-500 shadow-green-500'">
-                    <p class="flex items-center space-x-2" :class="validateEmail === true?'animate-pulse':''">
-                        <Correct v-if="validateEmail === false" />
-                        <Error v-else />
-                        <span class="text-center text-sm"
-                            :class="validateEmail === true ? 'text-red-600' : 'text-green-500'">
-                            {{ validateEmail === true ? 'Please provide a valid email' : 'Email is valid' }}
+                    <input @keydown="isEmailValid = null" type="email" v-model="newUser.email"
+                        placeholder="example@email.com" maxlength="45"
+                        class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-email">
+                    <p class="flex items-center space-x-2">
+                        <Error v-if="isEmailValid === false" />
+                        <span class="text-center text-sm text-red-600">
+                            {{ isEmailValid === false ? `${errRes.email}` : '' }}
                         </span>
                     </p>
                 </div>
-                <div class="w-full text-xl py-2 px-10 font-bold justify-center flex flex-col space-y-2">
+                <div class="w-full text-lg py-2 px-10 font-bold justify-center flex flex-col space-y-2">
                     <p class="text-slate-600">Role</p>
                     <div class="flex flex-row items-center space-x-4">
-                        <select name="role" v-model="newUser.role"
-                            class="w-1/3 rounded-md border-cyan-500 shadow-cyan-600 shadow-equal-shadow text-gray-600 ann-role">
+                        <select name="role" v-model="newUser.role" class="w-1/3 rounded-md text-gray-600 ann-role">
                             <option value="announcer">announcer</option>
                             <option value="admin">admin</option>
                         </select>
                         <div class="flex flex-row space-x-2">
                             <Info />
-                            <p class="text-center text-sm text-cyan-600">Chosen role is <span class="underline">{{
-                                newUser.role }}</span></p>
+                            <p class="text-center text-sm text-cyan-600">Chosen role is 
+                                <span class="underline">{{ newUser.role }}</span>
+                            </p>
                         </div>
                     </div>
                 </div>
                 <div class="w-full text-lg py-2 px-10 font-bold flex flex-row space-x-4">
                     <button
                         class="py-2 px-4 rounded-md bg-green-500 text-white disabled:bg-zinc-500 hover:bg-green-600 ann-button"
-                        @click="addNewUser(newUser)" :disabled="validateNewUser">Add</button>
+                        @click="addNewUser(newUser)" :disabled="isAllFill">Add</button>
                     <button class="py-2 px-4 rounded-md bg-red-500 text-white hover:bg-red-700 ann-button"
                         @click="router.push('/admin/user')">Cancel</button>
                 </div>
             </div>
         </div>
-    </div>
-</template>
+</div></template>
 
 <style scoped></style>

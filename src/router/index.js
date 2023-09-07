@@ -11,6 +11,7 @@ import PageNotFound from '../views/announcement/PageNotFound.vue'
 import UserManagement from '../views/usermanage/UserManagement.vue'
 import AddUser from '../views/usermanage/AddUser.vue'
 import EditUser from '../views/usermanage/EditUser.vue'
+import PasswordMatch from '../views/usermanage/PasswordMatch.vue'
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -79,6 +80,11 @@ const router = createRouter({
             path: '/admin/user/:id/edit',
             name: 'EditUser',
             component: EditUser
+        },
+        {
+            path: '/admin/user/match',
+            name: 'PasswordMatch',
+            component: PasswordMatch
         }
     ]
 })

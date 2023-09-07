@@ -9,7 +9,8 @@ module.exports = {
     extend: {
       colors: {
         'custom-blue': '#4D9DE0',
-        'custom-black': '#2B2B2B'
+        'custom-black': '#2B2B2B',
+        'red-to-bot': 'linear-gradient(to top, red, white) 1 100%'
       },
       boxShadow: {
         'equal-shadow': '0 0 8px rgba(0, 0, 0, 0.1)'
@@ -20,6 +21,9 @@ module.exports = {
       'poppins': ['Poppins', 'sans-serif']
     }
   },
-  plugins: [require('flowbite/plugin')],
+  plugins: [
+    require('flowbite/plugin'),
+    require('tailwindcss-animated')
+  ],
 }
 

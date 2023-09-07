@@ -39,8 +39,10 @@ const dateformat = (date) => {
 const timezoneName = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 const validateUserUpdate = computed(() => {
-    return (oldUser.value.username === updatedUser.value.username && oldUser.value.name === updatedUser.value.name
-        && oldUser.value.email === updatedUser.value.email && oldUser.value.role === updatedUser.value.role) || validateUsername.value || validateName.value || validateEmail.value
+    return ((oldUser.value.username === updatedUser.value.username || updatedUser.value.username.trim().length === oldUser.value.username.trim().length) && 
+            (oldUser.value.name === updatedUser.value.name || updatedUser.value.name.trim().length === oldUser.value.name.trim().length) && 
+            (oldUser.value.email === updatedUser.value.email || updatedUser.value.email.trim().length === oldUser.value.email.trim().length) && 
+            (oldUser.value.role === updatedUser.value.role)) || validateUsername.value || validateName.value || validateEmail.value
 })
 const validateUsername = computed(() => updatedUser.value.username?.trim().length > 45 || updatedUser.value.username?.trim().length <= 0)
 const validateName = computed(() => updatedUser.value.name?.trim().length > 100 || updatedUser.value.name?.trim().length <= 0)
@@ -104,7 +106,7 @@ const showAlert = () => {
                         <Error v-else />
                         <span class="text-center text-sm"
                             :class="validateUsername === true ? 'text-red-600' : 'text-green-500'">
-                            {{ validateUsername === true ? 'Please provide a valid username' : 'Username is valid' }}
+                            {{ validateUsername === true ? 'Username is required' : 'Username is valid' }}
                         </span>
                     </p>
                 </div>
@@ -118,7 +120,7 @@ const showAlert = () => {
                         <Error v-else />
                         <span class="text-center text-sm"
                             :class="validateName === true ? 'text-red-600' : 'text-green-500'">
-                            {{ validateName === true ? 'Please enter name' : 'This name is valid' }}
+                            {{ validateName === true ? 'Name is required' : 'This name is valid' }}
                         </span>
                     </p>
                 </div>
@@ -132,7 +134,7 @@ const showAlert = () => {
                         <Error v-else />
                         <span class="text-center text-sm"
                             :class="validateEmail === true ? 'text-red-600' : 'text-green-500'">
-                            {{ validateEmail === true ? 'Please provide a valid email' : 'Email is valid' }}
+                            {{ validateEmail === true ? 'Email is required' : 'Email is valid' }}
                         </span>
                     </p>
                 </div>
