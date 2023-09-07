@@ -1,5 +1,40 @@
 <script setup>
 import router from '../router';
+import Swal from "sweetalert2";
+const showAlert = () => {
+    Swal.fire({
+        title: 'Confirm Logout ?',
+        // text: "Confirm Logout ?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sure ',
+        cancelButtonText: 'No',
+        customClass: {
+    container: 'your-custom-class',
+    title: 'font-noto',
+    content: 'your-content-class',
+    confirmButton: 'w-30 h-15 border-none',
+    cancelButton: 'w-35 h-15',
+  
+        }
+
+
+
+    }).then((result) => {
+        if (result.isConfirmed) {
+            deleteUser(id)
+            Swal.fire(
+                'Deleted!',
+                'This user has been delete',
+                'success'
+            ).then(() => {
+                location.reload()
+            })
+        }
+    })
+}
 </script>
 
 <template>
@@ -23,7 +58,7 @@ import router from '../router';
             <span class="text-4xl duration-200 material-symbols-outlined group-hover:ml-4">key</span>
             <span class="flex items-center text-lg duration-200 font-bold group-hover:ml-4">Match Password</span>
         </a>
-        <a href="#" @click="router.push('/admin/user/match')"
+        <a href="#" @click="showAlert()"
             class="py-8 pr-4 text-xl flex items-center space-x-2 hover:bg-slate-100 hover:text-custom-blue active:text-custom-blue group ann-menu">
             <span class="w-4 h-8 bg-custom-blue invisible group-hover:visible rounded-r-lg"></span>
             <span class="text-4xl duration-200 material-symbols-outlined group-hover:ml-4">logout</span>
