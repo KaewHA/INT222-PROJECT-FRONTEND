@@ -85,5 +85,22 @@ async function deleteUserData(id) {
     console.log(error);
   }
 }
-
-export { getAllUser, getUserDetail, addUser, updateUserById, deleteUserData }
+async function Authenfund(user) {
+  try {
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/api/users/match`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(user),
+    });
+    if (res.ok) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+export { getAllUser, getUserDetail, addUser, updateUserById, deleteUserData, Authenfund }
