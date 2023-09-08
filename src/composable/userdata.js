@@ -37,7 +37,6 @@ async function addUser(user) {
       }
     );
     const errRes = await res.json()
-    console.log(errRes);
     if (res.ok) {
       return true
     } else {
@@ -60,10 +59,11 @@ async function updateUserById(user, id) {
         body: JSON.stringify(user),
       }
     );
+    const errRes = await res.json()
     if (res.ok) {
       return true
     } else {
-      return false
+      return errRes.detail
     }
   } catch (error) {
     console.log(error);

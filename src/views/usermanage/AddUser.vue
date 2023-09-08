@@ -32,20 +32,15 @@ const addNewUser = async (user) => {
     }
 }
 
-
-
-// const validateUsername = computed(() => newUser.value.username.trim().length > 45 || newUser.value.username.trim().length <= 0)
-// const validateName = computed(() => newUser.value.name.trim().length > 100 || newUser.value.name.trim().length <= 0)
-// const validateEmail = computed(() => newUser.value.email.trim().length > 150 || newUser.value.email.trim().length <= 0)
 const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/g
 const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&!*])[A-Za-z\d@#$%^&!*]{8,}$/
+const showPasswordPattern = ref(false)
 
 const isAllFill = computed(() => {
     return newUser.value.username.trim().length <= 0 || newUser.value.name.trim().length <= 0 ||
         newUser.value.email.trim().length <= 0 || newUser.value.password.trim().length <= 0 ||
         confirmPassword.value.trim().length <= 0 || isPasswordMatch.value === false || newUser.value.email.match(emailPattern) === null
 })
-
 const isUsernameValid = ref(null)
 const isNameValid = ref(null)
 const isEmailValid = ref(null)
@@ -56,8 +51,8 @@ const isPasswordPatternValid = computed(() => newUser.value.password.match(passw
 const fieldValidWarn = () => {
     isUsernameValid.value = newUser.value.username.trim().length <= 45 && newUser.value.username.trim().length > 0 && !errRes.value.username
     isNameValid.value = newUser.value.name.trim().length <= 100 && newUser.value.name.trim().length > 0 && !errRes.value.name
-    isEmailValid.value = newUser.value.email.trim().length <= 150 && newUser.value.email.trim().length > 0 &&
-        newUser.value.email.match(emailPattern) !== null && !errRes.value.email
+    isEmailValid.value = (newUser.value.email.trim().length <= 150 && newUser.value.email.trim().length > 0 &&
+        newUser.value.email.match(emailPattern) !== null && !errRes.value.email)
     isPasswordValid.value = (newUser.value.password.trim().length <= 14 && newUser.value.password.trim().length > 7 &&
         isPasswordPatternValid.value && !errRes.value.password)
 }
@@ -131,27 +126,35 @@ const showAlert = () => {
                     <div class="w-full flex flex-row px-10 py-2 space-x-10">
                         <div class="w-1/2 text-lg font-bold justify-center flex flex-col space-y-2">
                             <p class="text-slate-600">Password</p>
-                            <input @keydown="isPasswordValid = null" type="password" v-model="newUser.password"
-                                placeholder="********" minlength="8" maxlength="14"
-                                class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-username">
+                            <input @click="showPasswordPattern = true" @keydown="isPasswordValid = null" type="password"
+                                v-model="newUser.password" placeholder="********" minlength="8" maxlength="14"
+                                class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-password">
                         </div>
                         <div class="w-1/2 text-lg font-bold justify-center flex flex-col space-y-2">
                             <p class="text-slate-600">Confirm Password</p>
                             <input type="password" v-model="confirmPassword" placeholder="********" minlength="8"
                                 maxlength="14"
-                                class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-username">
+                                class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-confirm-password">
                         </div>
                     </div>
-                    <p v-if="isPasswordPatternValid === false && newUser.password.trim().length > 0"
-                        class="w-full flex items-center px-10 py-2 space-x-2 font-bold">
-                        <Error v-if="isPasswordPatternValid === false" />
-                        <span v-if="isPasswordPatternValid === false" class="text-center text-sm text-red-600">
-                            {{ isPasswordPatternValid === false ? 'Password is not valid' : '' }}
-                        </span>
+                    <p v-if="isPasswordPatternValid === false && newUser.password.trim().length >= 0 && showPasswordPattern === true"
+                        class="w-full flex items-center px-10 space-x-2 font-bold">
+                    <div class="p-2">
+                        <ul class="text-xs text-red-600">
+                            <li v-if="newUser.password.trim().length < 8 || newUser.password.trim().length > 14">&bull;
+                                Password must between 8-14 characters long.</li>
+                            <li v-if="newUser.password.trim().match(/(?=.*[a-z])(?=.*[A-Z])/) === null">&bull; Password must
+                                contain at least one upper case and one lower case letter.</li>
+                            <li v-if="newUser.password.trim().match(/(?=.*\d)/) === null">&bull; Password must contain at
+                                least one number.</li>
+                            <li v-if="newUser.password.trim().match(/(?=.*[@#$%^&!*])/) === null">&bull; Password must
+                                contain at least one special character.</li>
+                        </ul>
+                    </div>
                     </p>
                     <p v-if="isPasswordMatch === false && newUser.password.trim().length > 0 && confirmPassword.trim().length > 0 && isPasswordPatternValid === true"
                         class="w-full flex items-center px-10 py-2 space-x-2 font-bold">
-                        <Error/>
+                        <Error />
                         <span v-if="isPasswordMatch === false" class="text-center text-sm text-red-600">
                             {{ isPasswordMatch === false ? 'Password is not match' : '' }}
                         </span>
@@ -178,7 +181,7 @@ const showAlert = () => {
                         </select>
                         <div class="flex flex-row space-x-2">
                             <Info />
-                            <p class="text-center text-sm text-cyan-600">Chosen role is 
+                            <p class="text-center text-sm text-cyan-600">Chosen role is
                                 <span class="underline">{{ newUser.role }}</span>
                             </p>
                         </div>
@@ -193,6 +196,9 @@ const showAlert = () => {
                 </div>
             </div>
         </div>
-</div></template>
+    </div>
+</template>
 
-<style scoped></style>
+<style scoped>.ann-password:hover .tooltip {
+    visibility: visible;
+}</style>
