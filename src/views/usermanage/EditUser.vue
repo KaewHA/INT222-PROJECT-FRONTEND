@@ -18,6 +18,8 @@ onBeforeMount(async () => {
     const receivedData = await getUserDetail(params.id)
     Object.assign(updatedUser.value, receivedData)
     Object.assign(oldUser.value, receivedData)
+    // updatedUser.value = receivedData
+    // oldUser.value = receivedData
 })
 
 const options = {
@@ -38,20 +40,41 @@ const dateformat = (date) => {
 };
 const timezoneName = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
+const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/g
+
 const validateUserUpdate = computed(() => {
-    return ((oldUser.value.username === updatedUser.value.username || updatedUser.value.username.trim().length === oldUser.value.username.trim().length) && 
-            (oldUser.value.name === updatedUser.value.name || updatedUser.value.name.trim().length === oldUser.value.name.trim().length) && 
-            (oldUser.value.email === updatedUser.value.email || updatedUser.value.email.trim().length === oldUser.value.email.trim().length) && 
-            (oldUser.value.role === updatedUser.value.role)) || validateUsername.value || validateName.value || validateEmail.value
+    return (oldUser.value.username === updatedUser.value.username) && (oldUser.value.name === updatedUser.value.name) && 
+            (oldUser.value.email === updatedUser.value.email || updatedUser.value.email.match(emailPattern) === null) && 
+            (oldUser.value.role === updatedUser.value.role) || validateUsername.value || validateName.value || validateEmail.value
 })
 const validateUsername = computed(() => updatedUser.value.username?.trim().length > 45 || updatedUser.value.username?.trim().length <= 0)
 const validateName = computed(() => updatedUser.value.name?.trim().length > 100 || updatedUser.value.name?.trim().length <= 0)
 const validateEmail = computed(() => updatedUser.value.email?.trim().length > 150 || updatedUser.value.email?.trim().length <= 0)
 
+const isUsernameValid = ref(null)
+const isNameValid = ref(null)
+const isEmailValid = ref(null)
+
+const fieldValidWarn = () => {
+    isUsernameValid.value = updatedUser.value.username.trim().length <= 45 && updatedUser.value.username.trim().length > 0 && !errRes.value.username
+    isNameValid.value = updatedUser.value.name.trim().length <= 100 && updatedUser.value.name.trim().length > 0 && !errRes.value.name
+    isEmailValid.value = (updatedUser.value.email.trim().length <= 150 && updatedUser.value.email.trim().length > 0 &&
+        updatedUser.value.email.match(emailPattern) !== null && !errRes.value.email)
+}
+
 const status = ref(true)
+const errRes = ref({})
 const updateUser = async (user, id) => {
     status.value = await updateUserById(user, id)
-    showAlert()
+    if (status.value === true) {
+        showAlert()
+    } else {
+        errRes.value = {}
+        for (const err of status.value) {
+            errRes.value[err.field] = err.errorMessage
+        }
+        fieldValidWarn()
+    }
 }
 
 const showAlert = () => {
@@ -98,43 +121,34 @@ const showAlert = () => {
                 </div>
                 <div class="w-full text-xl py-2 px-10 font-bold justify-center flex flex-col space-y-2">
                     <p class="text-slate-600">Username</p>
-                    <input type="text" v-model="updatedUser.username" placeholder="SpringJava17" maxlength="45"
-                        class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-username"
-                        :class="validateUsername === true ? 'border-red-600 shadow-red-500' : 'border-green-500 shadow-green-500'">
-                    <p class="flex items-center space-x-2" :class="validateUsername === true?'animate-pulse':''">
-                        <Correct v-if="validateUsername === false" />
-                        <Error v-else />
-                        <span class="text-center text-sm"
-                            :class="validateUsername === true ? 'text-red-600' : 'text-green-500'">
-                            {{ validateUsername === true ? 'Username is required' : 'Username is valid' }}
+                    <input @keydown="isUsernameValid = null" type="text" v-model="updatedUser.username" placeholder="SpringJava17" maxlength="45"
+                        class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-username">
+                    <p v-if="isUsernameValid !== null" class="flex items-center space-x-2">
+                        <Error v-if="isUsernameValid === false" />
+                        <span class="text-center text-sm text-red-600">
+                            {{ isUsernameValid === false ? `${errRes.username}` : '' }}
                         </span>
                     </p>
                 </div>
                 <div class="w-full text-xl py-2 px-10 font-bold justify-center flex flex-col space-y-2">
                     <p class="text-slate-600">Name</p>
-                    <input type="text" v-model="updatedUser.name" placeholder="Path Param" maxlength="45"
-                        class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-name"
-                        :class="validateName === true ? 'border-red-600 shadow-red-500' : 'border-green-500 shadow-green-500'">
-                    <p class="flex items-center space-x-2" :class="validateName === true?'animate-pulse':''">
-                        <Correct v-if="validateName === false" />
-                        <Error v-else />
-                        <span class="text-center text-sm"
-                            :class="validateName === true ? 'text-red-600' : 'text-green-500'">
-                            {{ validateName === true ? 'Name is required' : 'This name is valid' }}
+                    <input @keydown="isNameValid = null" type="text" v-model="updatedUser.name" placeholder="Path Param" maxlength="45"
+                        class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-name">
+                    <p v-if="isNameValid !== null" class="flex items-center space-x-2">
+                        <Error v-if="isNameValid === false" />
+                        <span class="text-center text-sm text-red-600">
+                            {{ isNameValid === false ? `${errRes.name}` : '' }}
                         </span>
                     </p>
                 </div>
                 <div class="w-full text-xl py-2 px-10 font-bold justify-center flex flex-col space-y-2">
                     <p class="text-slate-600">Email</p>
-                    <input type="text" v-model="updatedUser.email" placeholder="example@email.com" maxlength="45"
-                        class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-email"
-                        :class="validateEmail ? 'border-red-600 shadow-red-500' : 'border-green-500 shadow-green-500'">
-                    <p class="flex items-center space-x-2" :class="validateEmail === true?'animate-pulse':''">
-                        <Correct v-if="validateEmail === false" />
-                        <Error v-else />
-                        <span class="text-center text-sm"
-                            :class="validateEmail === true ? 'text-red-600' : 'text-green-500'">
-                            {{ validateEmail === true ? 'Email is required' : 'Email is valid' }}
+                    <input @keydown="isEmailValid = null" type="text" v-model="updatedUser.email" placeholder="example@email.com" maxlength="45"
+                        class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-email">
+                    <p v-if="isEmailValid !== null" class="flex items-center space-x-2">
+                        <Error v-if="isEmailValid === false" />
+                        <span class="text-center text-sm text-red-600">
+                            {{ isEmailValid === false ? `${errRes.email}` : '' }}
                         </span>
                     </p>
                 </div>
@@ -142,7 +156,7 @@ const showAlert = () => {
                     <p class="text-slate-600">Role</p>
                     <div class="flex flex-row items-center space-x-4">
                         <select name="role" v-model="updatedUser.role"
-                            class="w-1/3 rounded-md border-cyan-500 shadow-cyan-600 shadow-equal-shadow text-gray-600 ann-role">
+                            class="w-1/3 rounded-md shadow-equal-shadow text-gray-600 ann-role">
                             <option value="announcer">announcer</option>
                             <option value="admin">admin</option>
                         </select>
