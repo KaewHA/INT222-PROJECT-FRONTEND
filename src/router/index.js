@@ -7,6 +7,7 @@ import AddAnnouncement from '../views/announcement/newUI/ann_add.vue'//new
 import adminnewui from '../views/announcement/newUI/ann_adminview.vue'//new
 import UserViewDetail from '../views/announcement/oldUI/UserViewDetail.vue'
 import show from '../views/announcement/paginashow.vue'
+import showui from '../views/announcement/newui.vue'
 import PageNotFound from '../views/announcement/PageNotFound.vue'
 import UserManagement from '../views/usermanage/UserManagement.vue'
 import AddUser from '../views/usermanage/AddUser.vue'
@@ -54,7 +55,7 @@ const router = createRouter({
         {
             path: '/ui/announcement/',
             name: 'userview PAGE',
-            component: show
+            component: showui
         },
         {
             path: '/admin/announcement/:id/edit',
