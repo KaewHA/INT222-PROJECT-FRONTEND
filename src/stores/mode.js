@@ -3,12 +3,8 @@ import { ref } from "vue";
 
 export const useMode = defineStore('mode', () => {
     const mode = ref('active')
-    const changeMode = () => {
-        if (mode.value === 'active') {
-            mode.value = 'close'
-        } else {
-            mode.value = 'active'
-        }
+    const changeMode = (setmode) => {
+        mode.value=setmode
     }
     return { mode, changeMode }
 })

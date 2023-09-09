@@ -45,7 +45,7 @@ const router = createRouter({
         {
             path: '/announcement',
             name: 'userview',
-            component: show
+            component: showui
         },
         {
             path: '/announcement/:id',
@@ -55,7 +55,7 @@ const router = createRouter({
         {
             path: '/ui/announcement/',
             name: 'userview PAGE',
-            component: showui
+            component: show
         },
         {
             path: '/admin/announcement/:id/edit',
