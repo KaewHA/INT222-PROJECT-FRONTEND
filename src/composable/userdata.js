@@ -95,9 +95,11 @@ async function Authenfund(user) {
       body: JSON.stringify(user),
     });
     if (res.ok) {
-      return true;
+      return 200;
+    } else if(res.status === 404) {
+      return 404;
     } else {
-      return false;
+      return 401
     }
   } catch (error) {
     console.log(error);
