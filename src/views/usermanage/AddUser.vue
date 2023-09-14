@@ -103,7 +103,7 @@ const showAlert = () => {
                     <p class="text-slate-600">Username</p>
                     <input @keydown="isUsernameValid = null" type="text" v-model.trim="newUser.username"
                         placeholder="SpringJava17" maxlength="45" minlength="1"
-                        class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-username" required >
+                        class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-username" required>
                     <p v-if="isUsernameValid !== null" class="flex items-center space-x-2">
                         <Error v-if="isUsernameValid === false" />
                         <span class="text-center text-sm text-red-600 ann-error-username">
@@ -114,7 +114,8 @@ const showAlert = () => {
                 <div class="w-full text-lg py-2 px-10 font-bold justify-center flex flex-col space-y-2">
                     <p class="text-slate-600">Name</p>
                     <input @keydown="isNameValid = null" type="text" v-model.trim="newUser.name" placeholder="Path Param"
-                        maxlength="100" minlength="1" class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-name" required>
+                        maxlength="100" minlength="1"
+                        class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-name" required>
                     <p v-if="isNameValid !== null" class="flex items-center space-x-2">
                         <Error v-if="isNameValid === false" />
                         <span class="text-center text-sm text-red-600 ann-error-name ">
@@ -133,8 +134,9 @@ const showAlert = () => {
                         <div class="w-1/2 text-lg font-bold justify-center flex flex-col space-y-2">
                             <p class="text-slate-600">Confirm Password</p>
                             <input type="password" v-model.trim="confirmPassword" placeholder="********" minlength="8"
-                                maxlength="14" 
-                                class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-confirm-password" required>
+                                maxlength="14"
+                                class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-confirm-password"
+                                required>
                         </div>
                     </div>
                     <p v-if="isPasswordPatternValid === false && newUser.password.trim().length >= 0 && showPasswordPattern === true"
@@ -149,22 +151,22 @@ const showAlert = () => {
                                 least one number.</li>
                             <li v-if="newUser.password.trim().match(/(?=.*[@#$%^&!*])/) === null"  class="ann-error-password">&bull; Password must
                                 contain at least one special character.</li> -->
-
-                                <li v-if="newUser.password.trim().length < 8 || 
-                                newUser.password.trim().length > 14 || 
+                            <li v-if="newUser.password.trim().length < 8 ||
+                                newUser.password.trim().length > 14 ||
                                 newUser.password.trim().match(/(?=.*[a-z])(?=.*[A-Z])/) === null ||
-                                 newUser.password.trim().match(/(?=.*\d)/) === null||
-                                 newUser.password.trim().match(/(?=.*[@#$%^&!*])/) === null
-                                 " class="ann-error-password">&bull;
-                                must be 8-14 characters long, at least 1 of uppercase, lowercase, number and special characters'</li>
+                                newUser.password.trim().match(/(?=.*\d)/) === null ||
+                                newUser.password.trim().match(/(?=.*[@#$%^&!*])/) === null
+                                " class="ann-error-password">&bull;
+                                must be 8-14 characters long, at least 1 of uppercase, lowercase, number and special
+                                characters'</li>
                         </ul>
                     </div>
                     </p>
                     <p v-if="isPasswordMatch === false && newUser.password.trim().length > 0 && confirmPassword.trim().length > 0 && isPasswordPatternValid === true"
-                        class="w-full flex items-center px-10 py-2 space-x-2 font-bold">
+                        class="w-full flex items-center px-10 py-2 space-x-2 font-bold ann-error-password">
                         <Error />
                         <span v-if="isPasswordMatch === false" class="text-center text-sm text-red-600">
-                            {{ isPasswordMatch === false ? 'Password is not match' : '' }}
+                            {{ isPasswordMatch === false ? 'The password DOES NOT match' : '' }}
                         </span>
                     </p>
                 </div>
@@ -199,7 +201,7 @@ const showAlert = () => {
                     <!-- <button
                         class="py-2 px-4 rounded-md bg-green-500 text-white disabled:bg-zinc-500 hover:bg-green-600 ann-button"
                         @click="addNewUser(newUser)" :disabled="isAllFill">Add</button> -->
-                        <button
+                    <button
                         class="py-2 px-4 rounded-md bg-green-500 text-white disabled:bg-zinc-500 hover:bg-green-600 ann-button"
                         @click="addNewUser(newUser)" :class="isAllFill">Add</button>
                     <button class="py-2 px-4 rounded-md bg-red-500 text-white hover:bg-red-700 ann-button"
