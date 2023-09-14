@@ -75,7 +75,7 @@ const toggleBurger = () => isBurgerToggle.value = !isBurgerToggle.value
 
 <template>
     <!-- Desktop -->
-    <div class="w-screen h-screen bg-slate-50 flex flex-row font-noto pb-16 pt-4 max-lg:hidden">
+    <div class="w-screen h-screen bg-slate-50 flex flex-row font-noto pb-16 pt-4 max-lg:visible">
         <div class="w-1/5 h-full pl-12 pr-8 space-y-2 sticky">
             <div class="flex flex-row items-center ann-app-title w-full h-1/6">
                 <div class="flex items-center space-x-4 w-full">
@@ -144,7 +144,7 @@ const toggleBurger = () => isBurgerToggle.value = !isBurgerToggle.value
     </div>
 
     <!-- Mobile -->
-    <div class="w-screen h-screen font-noto bg-slate-50 lg:hidden">
+    <div class="w-screen h-screen font-noto bg-slate-50 hidden">
         <div class="w-full flex flex-col justify-center py-6 px-8 space-y-2 bg-white sticky top-0">
             <div class="flex flex-row items-center ann-app-title w-full h-full">
                 <div class="flex items-center space-x-4 w-full">

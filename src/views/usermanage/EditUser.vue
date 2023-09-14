@@ -121,33 +121,33 @@ const showAlert = () => {
                 </div>
                 <div class="w-full text-xl py-2 px-10 font-bold justify-center flex flex-col space-y-2">
                     <p class="text-slate-600">Username</p>
-                    <input @keydown="isUsernameValid = null" type="text" v-model="updatedUser.username" placeholder="SpringJava17" maxlength="45"
+                    <input @keydown="isUsernameValid = null" type="text" v-model.trim="updatedUser.username" placeholder="SpringJava17" maxlength="45" minlength="1" required
                         class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-username">
                     <p v-if="isUsernameValid !== null" class="flex items-center space-x-2">
                         <Error v-if="isUsernameValid === false" />
-                        <span class="text-center text-sm text-red-600">
+                        <span class="text-center text-sm text-red-600 ann-error-username">
                             {{ isUsernameValid === false ? `${errRes.username}` : '' }}
                         </span>
                     </p>
                 </div>
                 <div class="w-full text-xl py-2 px-10 font-bold justify-center flex flex-col space-y-2">
-                    <p class="text-slate-600">Name</p>
-                    <input @keydown="isNameValid = null" type="text" v-model="updatedUser.name" placeholder="Path Param" maxlength="45"
+                    <p class="text-slate-600">Name</p> 
+                    <input @keydown="isNameValid = null" type="text" v-model.trim="updatedUser.name" placeholder="Path Param" maxlength="100" minlength="1" required
                         class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-name">
                     <p v-if="isNameValid !== null" class="flex items-center space-x-2">
                         <Error v-if="isNameValid === false" />
-                        <span class="text-center text-sm text-red-600">
+                        <span class="text-center text-sm text-red-600 ann-error-name">
                             {{ isNameValid === false ? `${errRes.name}` : '' }}
                         </span>
                     </p>
                 </div>
                 <div class="w-full text-xl py-2 px-10 font-bold justify-center flex flex-col space-y-2">
                     <p class="text-slate-600">Email</p>
-                    <input @keydown="isEmailValid = null" type="text" v-model="updatedUser.email" placeholder="example@email.com" maxlength="45"
+                    <input @keydown="isEmailValid = null" type="text" v-model.trim="updatedUser.email" placeholder="example@email.com" maxlength="150" minlength="1" required
                         class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-email">
                     <p v-if="isEmailValid !== null" class="flex items-center space-x-2">
                         <Error v-if="isEmailValid === false" />
-                        <span class="text-center text-sm text-red-600">
+                        <span class="text-center text-sm text-red-600 ann-error-email">
                             {{ isEmailValid === false ? `${errRes.email}` : '' }}
                         </span>
                     </p>
@@ -175,9 +175,12 @@ const showAlert = () => {
                         dateformat(updatedUser.updatedOn) }}</span></p>
                 </div>
                 <div class="w-full text-lg py-2 px-10 font-bold flex flex-row space-x-4">
-                    <button
+                    <!-- <button
                         class="py-2 px-4 rounded-md bg-green-500 text-white disabled:bg-zinc-500 hover:bg-green-600 ann-button"
-                        @click="updateUser(updatedUser, updatedUser.id)" :disabled="validateUserUpdate">Update</button>
+                        @click="updateUser(updatedUser, updatedUser.id)" :disabled="validateUserUpdate">Update</button> -->
+                        <button
+                        class="py-2 px-4 rounded-md bg-green-500 text-white disabled:bg-zinc-500 hover:bg-green-600 ann-button"
+                        @click="updateUser(updatedUser, updatedUser.id)" :class="validateUserUpdate">Update</button>
                     <button class="py-2 px-4 rounded-md bg-red-500 text-white hover:bg-red-700 ann-button"
                         @click="router.push(`/admin/user/`)">Cancel</button>
                 </div>

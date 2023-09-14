@@ -8,14 +8,15 @@ const User = ref({
   password: "".trim(),
 });
 
-
+let msg=ref('')
 
 const check = async () => {
   let result = await Authenfund(User.value);
   if (result == 200) {
+    msg.value="Password Matched"
     Swal.fire({
       icon: "success",
-      title: "PASSWORD IS MATCH",
+      title: "Password Matched",
       confirmButtonText: "Continue",
       customClass: {
         container: 'your-custom-class',
@@ -26,9 +27,10 @@ const check = async () => {
       },
     });
   } else if(result === 404) {
+    msg.value="The specified username DOES NOT exist"
     Swal.fire({
       icon: "error",
-      title: "PASSWORD IS NOT MATCH",
+      title: "The specified username DOES NOT exist",
       confirmButtonText: "Continue",
       customClass: {
         container: 'your-custom-class',
@@ -39,9 +41,10 @@ const check = async () => {
       },
     });
   } else {
+    msg.value="Password NOT Matched"
     Swal.fire({
       icon: "error",
-      title: "THE SPECIFIED USERNAME DOES NOT EXIST",
+      title: "Password NOT Matched",
       confirmButtonText: "Continue",
       customClass: {
         container: 'your-custom-class',
@@ -57,7 +60,7 @@ const check = async () => {
 
 <template>
   <!-- Desktop -->
-  <div class="w-screen h-screen bg-slate-50 flex flex-row font-noto pb-16 pt-4 max-lg:hidden">
+  <div class="w-screen h-screen bg-slate-50 flex flex-row font-noto pb-16 pt-4 max-lg:visble">
     <div class="w-1/5 h-full pl-12 pr-8 space-y-2 sticky">
       <div class="flex flex-row items-center ann-app-title w-full h-1/6">
         <div class="flex items-center space-x-4 w-full">
@@ -76,6 +79,7 @@ const check = async () => {
       <div class="w-full flex h-5/6 bg-white shadow-md rounded-2xl">
         <div class="w-full flex flex-col justify-center items-center space-y-10">
           <div class="w-1/3 flex flex-col space-y-10 shadow-equal-shadow p-10 rounded-xl">
+            <div class="ann-message hidden" v-text="msg"></div>
             <h1 class="text-4xl font-extrabold ann-title text-center text-custom-black">Match Password</h1>
             <div class="w-full flex flex-row space-x-6 items-center">
               <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 512 512">
@@ -83,7 +87,7 @@ const check = async () => {
                   d="m448 362.7l-117.3-21.3C320 320 320 310.7 320 298.7c10.7-10.7 32-21.3 32-32c10.7-32 10.7-53.3 10.7-53.3c5.5-8 21.3-21.3 21.3-42.7s-21.3-42.7-21.3-53.3C362.7 32 319.2 0 256 0c-60.5 0-106.7 32-106.7 117.3c0 10.7-21.3 32-21.3 53.3s15.2 35.4 21.3 42.7c0 0 0 21.3 10.7 53.3c0 10.7 21.3 21.3 32 32c0 10.7 0 21.3-10.7 42.7L64 362.7C21.3 373.3 0 448 0 512h512c0-64-21.3-138.7-64-149.3z" />
               </svg>
               <input v-model="User.username" type="text"
-                class="w-full border-x-0 border-t-0 border-b border-gray-400 text-custom-black focus:ring-0 text-base focus:border-b-2"
+                class="w-full border-x-0 border-t-0 border-b border-gray-400 text-custom-black focus:ring-0 text-base focus:border-b-2 ann-username"
                 placeholder="Username" />
             </div>
             <div class="w-full flex flex-row space-x-6 items-center">
@@ -92,7 +96,7 @@ const check = async () => {
                   d="M7 15q1.25 0 2.125-.875T10 12q0-1.25-.875-2.125T7 9q-1.25 0-2.125.875T4 12q0 1.25.875 2.125T7 15Zm0 3q-2.5 0-4.25-1.75T1 12q0-2.5 1.75-4.25T7 6q2.025 0 3.538 1.15T12.65 10h8.375L23 11.975l-3.5 4L17 14l-2 2l-2-2h-.35q-.625 1.8-2.175 2.9T7 18Z" />
               </svg>
               <input v-model="User.password" type="password"
-                class="w-full border-x-0 border-t-0 border-b border-gray-600 text-custom-black focus:ring-0 text-base focus:border-b-2"
+                class="w-full border-x-0 border-t-0 border-b border-gray-600 text-custom-black focus:ring-0 text-base focus:border-b-2 ann-password"
                 placeholder="Password" />
             </div>
             <div class="w-full flex items-center justify-center">
