@@ -24,14 +24,7 @@ const showAlert = () => {
         }
     }).then((result) => {
         if (result.isConfirmed) {
-            deleteUser(id)
-            Swal.fire(
-                'Deleted!',
-                'This user has been delete',
-                'success'
-            ).then(() => {
-                location.reload()
-            })
+            router.push('/login')
         }
     })
 }

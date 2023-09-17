@@ -1,12 +1,10 @@
 <script setup>
 import { ref, onBeforeMount, computed } from "vue";
-import { getuserAnnouncement, getCategory } from "../../composable/data.js";
-import { useMode } from "../../stores/mode.js";
-import { useView } from "../../stores/adminView";
-import { RouterLink } from "vue-router";
-import router from "../../router";
+import { getuserAnnouncement, getCategory } from "../../../composable/data.js";
+import { useMode } from "../../../stores/mode.js";
+import router from "../../../router";
 import Swal from 'sweetalert2'
-import earth from '../../components/icon/SystemUiconsGlobe.vue'
+import earth from '../../../components/icon/SystemUiconsGlobe.vue'
 
 const totalpage = ref(0);
 const pageSize = ref(0);

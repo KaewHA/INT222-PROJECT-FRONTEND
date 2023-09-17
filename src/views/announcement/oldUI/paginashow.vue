@@ -1,9 +1,9 @@
 <script setup>
 import { ref, onBeforeMount, computed } from "vue";
-import { getuserAnnouncement, getCategory } from "../../composable/data.js";
-import { useMode } from "../../stores/mode.js";
+import { getuserAnnouncement, getCategory } from "../../../composable/data.js";
+import { useMode } from "../../../stores/mode.js";
 import { RouterLink } from "vue-router";
-import Navbar from "../../components/Navbar.vue";
+import Navbar from "../../../components/Navbar.vue";
 
 const totalpage = ref(0);
 const pageSize = ref(0);
