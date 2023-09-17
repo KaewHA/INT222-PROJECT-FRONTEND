@@ -2,6 +2,7 @@
 import { ref, onBeforeMount, computed } from "vue";
 import { getuserAnnouncement, getCategory } from "../../composable/data.js";
 import { useMode } from "../../stores/mode.js";
+import { useView } from "../../stores/adminView";
 import { RouterLink } from "vue-router";
 import router from "../../router";
 import Swal from 'sweetalert2'
@@ -284,8 +285,7 @@ const showAlert = async () => {
          ">{{ value }}</a>
                 </li>
                 <li>
-                  <button
-                    class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border 
+                  <button class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border 
       border-gray-300 rounded-r-lg hover:bg-custom-blue hover:text-white disabled:bg-sky-700 disabled:text-zinc-300"
                     @click="nextPage" :disabled="lastpage">Next</button>
                 </li>

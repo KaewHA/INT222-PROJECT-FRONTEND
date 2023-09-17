@@ -6,12 +6,14 @@ import router from '../../../router/index.js'
 import Swal from 'sweetalert2'
 import AddIcon from '../../../components/icon/AddIcon.vue'
 import SideBar from '../../../components/SideBar.vue';
+import { useView } from '../../../stores/adminView';
 onBeforeMount(async () => {
     const receivedData = ref([]);
     receivedData.value = await getAnnouncement();
     receivedData.value.forEach((x) => allAnnouncement.value.push(x));
     const receivedCategory = await getCategory();
     receivedCategory.forEach((category) => allCategory.value.push(category));
+    myView.view = 'announcement'
 });
 const category = ref(0);
 const newdata = ref([]);
@@ -26,6 +28,7 @@ const options = {
     minute: "numeric",
     hour12: false
 };
+const myView = useView()
 
 const dateformat = (date) => {
     if (date === null) {
@@ -112,7 +115,7 @@ const status = ref(true)
                     </div>
                 </div>
             </div>
-            <SideBar />
+            <SideBar/>
         </div>
         <div class="w-4/5 h-full bg-slate-50 rounded-2xl flex flex-col pr-12 space-y-2">
             <div class="flex flex-row items-center ann-app-title w-full h-1/6">

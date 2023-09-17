@@ -3,6 +3,14 @@ import { ref } from "vue";
 import SideBar from "../../components/SideBar.vue";
 import Swal from "sweetalert2";
 import { Authenfund } from '../../composable/userdata.js';
+import { onBeforeMount } from "vue";
+import { useView } from "../../stores/adminView";
+
+onBeforeMount(async () => {
+  myView.view = 'password'
+})
+
+const myView = useView()
 const User = ref({
   username: "".trim(),
   password: "".trim(),
@@ -71,7 +79,7 @@ const check = async () => {
           </div>
         </div>
       </div>
-      <SideBar />
+      <SideBar/>
     </div>
     <div class="w-4/5 h-full rounded-2xl flex flex-col pr-12 space-y-2">
       <div class="flex flex-row items-center ann-app-title w-full h-1/6"></div>

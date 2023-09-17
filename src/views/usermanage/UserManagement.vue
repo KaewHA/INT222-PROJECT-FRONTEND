@@ -9,13 +9,15 @@ import Swal from 'sweetalert2'
 import AddIcon from '../../components/icon/AddIcon.vue';
 import BurgerIcon from '../../components/icon/BurgerIcon.vue'
 import CloseIcon from '../../components/icon/CloseIcon.vue'
+import { useView } from '../../stores/adminView';
 
 const { params } = useRoute()
-
+const myView = useView()
 onBeforeMount(async () => {
     const receivedData = ref([]);
     receivedData.value = await getAllUser();
     receivedData.value.forEach((x) => userList.value.push(x));
+    myView.view = 'user'
 });
 const userList = ref([])
 

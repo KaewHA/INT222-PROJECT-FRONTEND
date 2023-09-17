@@ -151,14 +151,18 @@ const showAlert = () => {
                                 least one number.</li>
                             <li v-if="newUser.password.trim().match(/(?=.*[@#$%^&!*])/) === null"  class="ann-error-password">&bull; Password must
                                 contain at least one special character.</li> -->
-                            <li v-if="newUser.password.trim().length < 8 ||
+                            <li v-if="newUser.password.trim().length < 8 || newUser.password.trim().length > 14" class="ann-error-password">&bull;
+                                Password size must be between 8 and 14
+                            </li>
+                            <li v-else="newUser.password.trim().length < 8 ||
                                 newUser.password.trim().length > 14 ||
                                 newUser.password.trim().match(/(?=.*[a-z])(?=.*[A-Z])/) === null ||
                                 newUser.password.trim().match(/(?=.*\d)/) === null ||
                                 newUser.password.trim().match(/(?=.*[@#$%^&!*])/) === null
                                 " class="ann-error-password">&bull;
                                 must be 8-14 characters long, at least 1 of uppercase, lowercase, number and special
-                                characters'</li>
+                                characters'
+                            </li>
                         </ul>
                     </div>
                     </p>
