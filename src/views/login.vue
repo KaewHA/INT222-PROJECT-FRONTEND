@@ -56,7 +56,7 @@ const check = async () => {
           class="w-full h-full flex justify-center items-center flex-col space-y-11"
         >
           <div class="w-2/6 rounded-2xl space-y-11 loginform">
-            <div class="w-full flex justify-center text-red-500 font-extrabold shadow-2xl bg-white bg-opacity-40" v-if="error">username or password is wrong !</div>
+            <div class="w-full flex justify-center text-white font-extrabold text-base" v-if="error">username or password is wrong !</div>
             <div class="w-full flex flex-row space-x-6 items-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
