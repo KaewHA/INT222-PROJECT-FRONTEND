@@ -2,9 +2,9 @@
 import router from '../router';
 import Swal from "sweetalert2";
 import { useView } from '../stores/adminView';
-
+import { acctoken } from "../stores/accresstoken.js";
 const myView = useView()
-
+const token=acctoken()
 const showAlert = () => {
     Swal.fire({
         title: 'Confirm Logout ?',
@@ -24,7 +24,9 @@ const showAlert = () => {
         }
     }).then((result) => {
         if (result.isConfirmed) {
-            router.push('/login')
+            localStorage.clear()
+            token.settoken(null)
+            router.push('/login')   
         }
     })
 }

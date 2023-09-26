@@ -105,4 +105,7 @@ async function Authenfund(user) {
     console.log(error);
   }
 }
+
+
+
 export { getAllUser, getUserDetail, addUser, updateUserById, deleteUserData, Authenfund }

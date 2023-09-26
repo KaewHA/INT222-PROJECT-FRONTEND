@@ -143,15 +143,15 @@ const showAlert = () => {
                         class="w-full flex items-center px-10 space-x-2 font-bold">
                     <div class="p-2">
                         <ul class="text-xs text-red-600 ">
-                            <!-- <li v-if="newUser.password.trim().length < 8 || newUser.password.trim().length > 14" class="ann-error-password">&bull;
+                            <li v-if="newUser.password.trim().length < 8 || newUser.password.trim().length > 14" class="ann-error-password">&bull;
                                 Password size must be between 8 and 14</li>
                             <li v-if="newUser.password.trim().match(/(?=.*[a-z])(?=.*[A-Z])/) === null" class="ann-error-password" >&bull; Password must
                                 contain at least one upper case and one lower case letter.</li>
                             <li v-if="newUser.password.trim().match(/(?=.*\d)/) === null"  class="ann-error-password">&bull; Password must contain at
                                 least one number.</li>
                             <li v-if="newUser.password.trim().match(/(?=.*[@#$%^&!*])/) === null"  class="ann-error-password">&bull; Password must
-                                contain at least one special character.</li> -->
-                            <li v-if="newUser.password.trim().length < 8 || newUser.password.trim().length > 14" class="ann-error-password">&bull;
+                                contain at least one special character.</li>
+                            <!-- <li v-if="newUser.password.trim().length < 8 || newUser.password.trim().length > 14" class="ann-error-password">&bull;
                                 Password size must be between 8 and 14
                             </li>
                             <li v-else="newUser.password.trim().length < 8 ||
@@ -162,7 +162,7 @@ const showAlert = () => {
                                 " class="ann-error-password">&bull;
                                 must be 8-14 characters long, at least 1 of uppercase, lowercase, number and special
                                 characters'
-                            </li>
+                            </li> -->
                         </ul>
                     </div>
                     </p>
@@ -202,12 +202,12 @@ const showAlert = () => {
                     </div>
                 </div>
                 <div class="w-full text-lg py-2 px-10 font-bold flex flex-row space-x-4">
-                    <!-- <button
-                        class="py-2 px-4 rounded-md bg-green-500 text-white disabled:bg-zinc-500 hover:bg-green-600 ann-button"
-                        @click="addNewUser(newUser)" :disabled="isAllFill">Add</button> -->
                     <button
                         class="py-2 px-4 rounded-md bg-green-500 text-white disabled:bg-zinc-500 hover:bg-green-600 ann-button"
-                        @click="addNewUser(newUser)" :class="isAllFill">Add</button>
+                        @click="addNewUser(newUser)" :disabled="isAllFill">Add</button>
+                    <!-- <button
+                        class="py-2 px-4 rounded-md bg-green-500 text-white disabled:bg-zinc-500 hover:bg-green-600 ann-button"
+                        @click="addNewUser(newUser)" :class="isAllFill">Add</button> -->
                     <button class="py-2 px-4 rounded-md bg-red-500 text-white hover:bg-red-700 ann-button"
                         @click="router.push('/admin/user')">Cancel</button>
                 </div>

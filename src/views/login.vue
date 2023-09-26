@@ -1,11 +1,32 @@
 <script setup>
 import router from "../router/index.js";
-import { ref } from "vue";
-import { Authenfund } from "../composable/userdata.js";
+import { ref,onBeforeMount } from "vue";
+import { Authenfund, getToken,checkToken} from "../composable/Auth.js";
+import { reftoken} from "../stores/refreshtoken.js";
+import { acctoken } from "../stores/accresstoken.js";
+
+
+onBeforeMount(async () => {
+    let result= await checkToken(token.token)
+    if(result==200){
+      router.push("/admin/announcement");
+    }else{
+      let newtoken= await getToken()
+      if(newtoken==401){
+       ///notpass
+      }else{
+        token.settoken(newtoken)
+        router.push("/admin/announcement");
+      }
+    }
+});
+
 const User = ref({
   username: "".trim(),
   password: "".trim(),
 });
+const token=acctoken()
+const refreshtoken=reftoken()
 const error=ref(false)
 const check = async () => {
   let from = document.querySelector(".loginform");
@@ -13,15 +34,16 @@ const check = async () => {
   from.classList.add("hidden");
   load.classList.remove("hidden");
   let result = await Authenfund(User.value);
-  if (result == 200) {
-    setTimeout(() => {
-      router.push("/admin/announcement");
-    }, 1200);
-  } else {
+  if (result == 401 || result== 404) {
     setTimeout(() => {
       from.classList.remove("hidden");
       load.classList.add("hidden");
       error.value=true
+    }, 1200);
+  } else {
+    setTimeout(() => {
+      token.settoken(result)
+      router.push("/admin/announcement");
     }, 1200);
   }
 };

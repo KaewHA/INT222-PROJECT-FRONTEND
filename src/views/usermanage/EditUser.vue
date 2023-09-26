@@ -175,12 +175,12 @@ const showAlert = () => {
                         dateformat(updatedUser.updatedOn) }}</span></p>
                 </div>
                 <div class="w-full text-lg py-2 px-10 font-bold flex flex-row space-x-4">
-                    <!-- <button
+                    <button
                         class="py-2 px-4 rounded-md bg-green-500 text-white disabled:bg-zinc-500 hover:bg-green-600 ann-button"
-                        @click="updateUser(updatedUser, updatedUser.id)" :disabled="validateUserUpdate">Update</button> -->
-                        <button
+                        @click="updateUser(updatedUser, updatedUser.id)" :disabled="validateUserUpdate">Update</button>
+                        <!-- <button
                         class="py-2 px-4 rounded-md bg-green-500 text-white disabled:bg-zinc-500 hover:bg-green-600 ann-button"
-                        @click="updateUser(updatedUser, updatedUser.id)" :class="validateUserUpdate">Update</button>
+                        @click="updateUser(updatedUser, updatedUser.id)" :class="validateUserUpdate">Update</button> -->
                     <button class="py-2 px-4 rounded-md bg-red-500 text-white hover:bg-red-700 ann-button"
                         @click="router.push(`/admin/user/`)">Cancel</button>
                 </div>
