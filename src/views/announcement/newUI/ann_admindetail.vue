@@ -1,15 +1,37 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { getAnnouncementById } from '../../../composable/data.js';
+import { getAnnouncementById } from '../../../composable/annAuth.js';
 import { onBeforeMount } from 'vue';
 import router from '../../../router/index.js'
 import Swal from 'sweetalert2'
 import SideBar from '../../../components/SideBar.vue';
+import { acctoken } from "../../../stores/accresstoken.js";
+import {  getToken,checkToken} from "../../../composable/Auth.js";
 const { params } = useRoute()
 const announcement = ref('')
 const status = ref(true)
+const token=acctoken()
 onBeforeMount(async () => {
+    let result= await checkToken(token.token)
+    if(result==200){
+      //
+    }else{
+      let newtoken= await getToken()
+      if(newtoken==401){
+        Swal.fire({
+      icon: 'error',
+      title: 'YOUR TOKEN HAS EXPIRE',
+      text: 'PLESE LOGIN AGAIN',
+      confirmButtonText: 'OK',
+    }).then(()=>{
+      router.push("/login");
+    })
+      }else{
+        token.settoken(newtoken)
+      }
+    }
+    /////////////////////
     announcement.value = await getAnnouncementById(params.id)
     status.value = announcement.value.ok
     if (status.value === false) { showAlert() }

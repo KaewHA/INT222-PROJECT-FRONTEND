@@ -1,5 +1,5 @@
 <script setup>
-import {getCategory, updateAnnouncement, getAnnouncementByIddata} from '../../../composable/data.js'
+import {getCategory, updateAnnouncement, getAnnouncementByIddata} from '../../../composable/annAuth.js'
 import { onBeforeMount, onMounted, ref, computed } from 'vue'
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
@@ -9,7 +9,9 @@ import Swal from 'sweetalert2'
 import SideBar from '../../../components/SideBar.vue'
 import Error from '../../../components/icon/Error.vue'
 import Correct from '../../../components/icon/Correct.vue'
-
+import { acctoken } from "../../../stores/accresstoken.js";
+import {  getToken,checkToken} from "../../../composable/Auth.js";
+const token=acctoken()
 const { params } = useRoute()
 const olddata = ref({})
 const publishDate = ref(null)
@@ -59,6 +61,24 @@ function createtime(H, M) {
     return hour + ':' + min
 }
 onBeforeMount(async () => {
+    let result= await checkToken(token.token)
+    if(result==200){
+      //
+    }else{
+      let newtoken= await getToken()
+      if(newtoken==401){
+        Swal.fire({
+      icon: 'error',
+      title: 'YOUR TOKEN HAS EXPIRE',
+      text: 'PLESE LOGIN AGAIN',
+      confirmButtonText: 'OK',
+    }).then(()=>{
+      router.push("/login");
+    })
+      }else{
+        token.settoken(newtoken)
+      }
+    }
     //get new announcement
     const receivedAnnouncement = ref()
     receivedAnnouncement.value = await getAnnouncementByIddata(params.id)
@@ -303,7 +323,23 @@ const newAnnouncement = ref({
 
 const createanno = async () => {
     await updateAnnouncement(newAnnouncement.value, params.id)
-    status.value = await updateAnnouncement(newAnnouncement.value, params.id)
+    status.value = await updateAnnouncement(newAnnouncement.value, params.id,token.gettoken().token)
+    if(status.value==false){
+    let newtoken= await getToken()
+      if(newtoken==401){
+        Swal.fire({
+      icon: 'error',
+      title: 'YOUR TOKEN HAS EXPIRE',
+      text: 'PLESE LOGIN AND TRY AGAIN',
+      confirmButtonText: 'OK',
+    }).then(()=>{
+      router.push("/login");
+    })
+      }else{
+        token.settoken(newtoken)
+        status.value = await updateAnnouncement(newAnnouncement.value, params.id,token.gettoken().token)
+      }
+  }
     showAlert()
 }
 
