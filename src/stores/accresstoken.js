@@ -6,7 +6,11 @@ export const acctoken = defineStore("acctoken", () => {
   const settoken = (mytoken) => {
     token.value=mytoken
 }
-  return { token,settoken };
+const gettoken = () => {
+  return token.value
+}
+
+  return { token,settoken,gettoken };
 });
 
 if (import.meta.hot) {

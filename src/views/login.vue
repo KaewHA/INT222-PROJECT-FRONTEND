@@ -2,10 +2,9 @@
 import router from "../router/index.js";
 import { ref,onBeforeMount } from "vue";
 import { Authenfund, getToken,checkToken} from "../composable/Auth.js";
-import { reftoken} from "../stores/refreshtoken.js";
 import { acctoken } from "../stores/accresstoken.js";
 
-
+const token=acctoken()
 onBeforeMount(async () => {
     let result= await checkToken(token.token)
     if(result==200){
@@ -25,8 +24,7 @@ const User = ref({
   username: "".trim(),
   password: "".trim(),
 });
-const token=acctoken()
-const refreshtoken=reftoken()
+
 const error=ref(false)
 const check = async () => {
   let from = document.querySelector(".loginform");

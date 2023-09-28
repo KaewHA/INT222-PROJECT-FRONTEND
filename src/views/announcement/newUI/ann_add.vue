@@ -1,6 +1,6 @@
 <script setup>
-import { getCategory, addAnnouncement } from '../../../composable/data.js'
-import { onMounted, ref, computed } from 'vue'
+import { getCategory, addAnnouncement } from '../../../composable/annAuth.js'
+import { onMounted, ref, computed,onBeforeMount } from 'vue'
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
 import router from '../../../router/index.js'
@@ -8,16 +8,36 @@ import Swal from 'sweetalert2'
 import SideBar from '../../../components/SideBar.vue'
 import Error from '../../../components/icon/Error.vue'
 import Correct from '../../../components/icon/Correct.vue'
-import Info from '../../../components/icon/Info.vue'
+import { acctoken } from "../../../stores/accresstoken.js";
+import {  getToken,checkToken} from "../../../composable/Auth.js";
 
-const categoryAll = ref([])
-
+const token=acctoken()
+onBeforeMount(async () => {
+    let result= await checkToken(token.token)
+    if(result==200){
+      //
+    }else{
+      let newtoken= await getToken()
+      if(newtoken==401){
+        Swal.fire({
+      icon: 'error',
+      title: 'YOUR TOKEN HAS EXPIRE',
+      text: 'PLESE LOGIN AGAIN',
+      confirmButtonText: 'OK',
+    }).then(()=>{
+      router.push("/login");
+    })
+      }else{
+        token.settoken(newtoken)
+      }
+    }
+});
 onMounted(async () => {
   const receivedData = ref([])
   receivedData.value = await getCategory()
   receivedData.value.forEach((data) => categoryAll.value.push(data))
 })
-
+const categoryAll = ref([])
 const publishDate = ref(null)
 const publishTime = ref(null)
 const closeDate = ref(null)
@@ -198,7 +218,23 @@ const addnewdata = async () => {
     closeTime.value
   )
   newAnnouncement.value.announcementDisplay = display.value == true ? 'Y' : 'N'
-  status.value = await addAnnouncement(newAnnouncement.value)
+  status.value = await addAnnouncement(newAnnouncement.value,token.gettoken().token)
+  if(status.value==false){
+    let newtoken= await getToken()
+      if(newtoken==401){
+        Swal.fire({
+      icon: 'error',
+      title: 'YOUR TOKEN HAS EXPIRE',
+      text: 'PLESE LOGIN AND TRY AGAIN',
+      confirmButtonText: 'OK',
+    }).then(()=>{
+      router.push("/login");
+    })
+      }else{
+        token.settoken(newtoken)
+        status.value = await addAnnouncement(newAnnouncement.value,token.gettoken().token)
+      }
+  }
   showAlert()
 }
 function clearcd() {
