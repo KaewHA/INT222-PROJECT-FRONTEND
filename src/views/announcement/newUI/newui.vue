@@ -294,13 +294,13 @@ const showAlert = async () => {
       </div>
       <div class="w-full h-5/6 bg-white shadow-md rounded-2xl ">
         <div v-if="allAnnouncement.length != 0">
-          <div v-for="(announcement, index) in allAnnouncement" :key="index" class="w-full h-full hover:cursor-pointer">
+          <div v-for="(announcement, index) in allAnnouncement" :key="index" class="w-full h-full hover:cursor-pointer ">
             <div class="" @click="router.push(`/announcement/${announcement.id}`)" @mouseover="moveup(index)"
               @mouseleave="movedown(index)">
               <div class="w-full  border hover:shadow-xl duration-500 "
                 :class="index == 0 ? 'rounded-t-2xl' : '', index == 4 ? 'rounded-b-2xl' : ''">
-                <div class="w-full flex h-[8.72rem] flex-col pl-10 pt-5 ">
-                  <h1 class="font-noto text-4xl">#{{ index + 1 + currentpage * pageSize }} <span> {{
+                <div class="w-full flex h-[9rem] flex-col pl-10 pt-5 ">
+                  <h1 class="font-noto text-2xl">#{{ index + 1 + currentpage * pageSize }} <span> {{
                     announcement.announcementTitle }}</span></h1>
                   <div class="flex mt-3">
                     <div class="rounded-xl bg-custom-blue text-white font-noto  p-1.5"><span

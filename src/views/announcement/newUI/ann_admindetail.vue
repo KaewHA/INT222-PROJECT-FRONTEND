@@ -101,7 +101,7 @@ const showAlert = () => {
                 </div>
                 <div class="w-full py-4 px-14 flex flex-row">
                     <div class="w-full space-y-9">
-                        <h1 class="text-2xl text-gray-600 font-bold w-full">{{ announcement.announcementTitle }}</h1>
+                        <h1 class="text-2xl text-gray-600  w-full">{{ announcement.announcementTitle }}</h1>
                         <div class="w-full flex flex-row space-x-8">
                             <p
                                 class="w-1/12 font-bold py-2 rounded-3xl bg-gradient-to-r from-cyan-500 to-blue-500 text-white text-center">
@@ -121,7 +121,7 @@ const showAlert = () => {
                             </p>
                         </div>
                         <div
-                            class="w-full h-80 overflow-y-scroll text-lg font-bold text-gray-700 border rounded-md py-6 px-8">
+                            class="w-full h-80 overflow-y-scroll  break-words text-gray-700 border rounded-md py-6 px-8 ql-editor">
                             <p class="indent-8" v-html="announcement.announcementDescription"></p>
                         </div>
                     </div>

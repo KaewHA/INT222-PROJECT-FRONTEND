@@ -1,174 +1,154 @@
 <script setup>
-import { ref, onBeforeMount, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-import { getAnnouncementByIduser } from '../../../composable/data.js'
-import router from '../../../router/index.js'
-import cdate from '../../../components/icon/TeenyiconsCalendarNoAccessOutline.vue'
-import categoryico from '../../../components/icon/MdiListBox.vue'
-import back from '../../../components/icon/back.vue'
-import views from '../../../components/icon/IcBaselineRemoveRedEye.vue'
-import Swal from 'sweetalert2'
+import { ref, onBeforeMount, onMounted } from "vue";
+import { useRoute } from "vue-router";
+import { getAnnouncementByIduser } from "../../../composable/data.js";
+import router from "../../../router/index.js";
+import cdate from "../../../components/icon/TeenyiconsCalendarNoAccessOutline.vue";
+import categoryico from "../../../components/icon/MdiListBox.vue";
+import back from "../../../components/icon/back.vue";
+import views from "../../../components/icon/IcBaselineRemoveRedEye.vue";
+import Swal from "sweetalert2";
+import earth from '../../../components/icon/SystemUiconsGlobe.vue'
 
-const { params } = useRoute()
-const announcement = ref('')
-const status = ref(true)
+const { params } = useRoute();
+const announcement = ref("");
+const status = ref(true);
 onBeforeMount(async () => {
-  announcement.value = await getAnnouncementByIduser(params.id)
-  status.value = announcement.value.ok
+  announcement.value = await getAnnouncementByIduser(params.id);
+  status.value = announcement.value.ok;
   if (status.value === false) {
-    showAlert()
+    showAlert();
   }
-})
+});
 
 const options = {
-  day: 'numeric',
-  month: 'short',
-  year: 'numeric',
-  hour: 'numeric',
-  minute: 'numeric',
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+  hour: "numeric",
+  minute: "numeric",
   hour12: false,
-}
+};
 const dateformat = (date) => {
   if (date === null) {
-    return '-'
+    return "-";
   } else {
-    let mydate = new Date(date)
-    return mydate.toLocaleDateString('en-GB', options)
+    let mydate = new Date(date);
+    return mydate.toLocaleDateString("en-GB", options);
   }
-}
+};
 
 const showAlert = () => {
   if (status.value === false) {
     Swal.fire({
-      icon: 'error',
+      icon: "error",
       title: announcement.value.message,
-      confirmButtonText: 'Back',
-    }).then(() => router.push('/announcement'))
+      confirmButtonText: "Back",
+    }).then(() => router.push("/announcement"));
   }
+};
+const timezoneName = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+const closedateshow=()=>{
+  const targetTime = new Date(announcement.value.closeDate);
+const currentTime = Date.now();
+if(targetTime<currentTime){
+  return true
+}else{
+  return false
+}
 }
 </script>
 
 <template>
-  <div class="w-screen h-screen bg-slate-50 flex flex-row font-noto">
-    <div class="w-full h-full bg-slate-50 rounded-2xl flex flex-col space-y-2">
+  <div class="w-screen h-screen bg-slate-50 flex flex-row font-noto pb-16 pt-4">
+    <div class="w-1/5 h-full pl-12 pr-8 space-y-2 sticky">
+      <div class="flex flex-row items-center ann-app-title w-full h-1/6">
+        <div class="flex items-center space-x-4 w-full">
+          <img src="/images/logo.png" alt="SIT Logo" class="h-14 w-14" />
+          <div class="flex flex-col">
+            <div class="text-4xl font-bold text-custom-black">SAS</div>
+            <div class="text-custom-blue font-bold">SIT Announcement System</div>
+            <div class="text-custom-black flex">
+              <span class="font-bold">Timezone :</span>
+              <earth class=""></earth>
+              {{ timezoneName }}
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div
-        class="w-full h-full bg-white shadow-md rounded-2xl overflow-y-scroll"
+        class="w-full bg-white rounded-2xl shadow-md text-gray-400 max-lg:hidden"
       >
-        <div
-          class="flex flex-row mt-8 w-full justify-center first:justify-start"
+        <a
+          href="#"
+          @click="router.push('/announcement')"
+          class="py-8 pr-4 text-xl flex items-center space-x-2 hover:bg-slate-100 rounded-t-2xl hover:text-custom-blue active:text-custom-blue group"
         >
           <span
-            @click="router.push('/announcement')"
-            class="material-symbols-outlined flex items-center justify-center ml-12 p-2 text-slate-500 fixed cursor-pointer hover:rounded-full hover:bg-blue-500 hover:text-white duration-150"
+            class="w-4 h-8 bg-custom-blue invisible group-hover:visible rounded-r-lg"
+          ></span>
+          <span
+            class="text-4xl duration-200 material-symbols-outlined group-hover:ml-4"
             >arrow_back</span
           >
-          <p
-            class="text-center flex justify-center items-center absolute right-16 font-extrabold text-base rounded-3xl text-white px-4 py-2 from-cyan-500 to-blue-500 bg-gradient-to-r"
+          <span
+            class="flex items-center text-lg duration-200 font-bold group-hover:ml-4"
+            >BACK</span
           >
-            <span class="material-symbols-outlined">visibility</span
-            >&nbsp;&nbsp;
-            {{ announcement.viewCount }}
-          </p>
-          <p
-            class="text-center flex justify-center items-center absolute right-44 font-extrabold text-base rounded-3xl text-white px-4 py-2 bg-gradient-to-r"
-            :class="
-              announcement.announcementDisplay !== 'Y'
-                ? 'from-rose-700 to-red-600'
-                : 'from-green-500 to-emerald-600'
-            "
-          >
-            <span
-              v-if="announcement.announcementDisplay === 'Y'"
-              class="material-symbols-outlined"
-              >check_circle</span
-            >
-            <span v-else class="material-symbols-outlined">cancel</span>
-            &nbsp;&nbsp;{{ announcement.announcementDisplay }}
-          </p>
+        </a>
+      </div>
+    </div>
+    <div
+      class="w-4/5 h-full bg-slate-50 rounded-2xl flex flex-col pr-12 space-y-2"
+    >
+      <div class="flex flex-row items-center ann-app-title w-full h-1/6">
+        <div class="flex flex-col items-center w-full h-full">
+          <div
+            class="flex flex-col justify-center items-center w-full h-full"
+          ></div>
+          <div class="w-full justify-end flex font-noto relative">
+            <p class="absolute left-0"><span class="">CATEGORIES : </span><span class="text-custom-blue font-bold">{{ announcement.announcementCategory}}</span></p>
+            <p> <span class="font-bold text-custom-blue">{{ announcement.viewCount }}</span><span class="">&nbsp; VIEWS</span></p>
+          </div>
         </div>
-        <div class="w-full py-4 px-14 flex flex-row">
-          <div class="w-full space-y-9">
-            <h2 class="text-2xl text-gray-600 font-bold w-full pt-6">
-              {{ announcement.announcementTitle }}
-            </h2>
-            <div class="w-full flex flex-row space-x-8">
-              <p
-                class="w-1/12 font-bold py-2 rounded-3xl bg-gradient-to-r from-cyan-500 to-blue-500 text-white text-center"
-              >
-                {{ announcement.announcementCategory }}
-              </p>
-            </div>
-            <div class="w-full flex flex-row ">
-              <p
-                class="w-1/3 flex justify-center items-center font-bold py-2 rounded-3xl bg-gradient-to-r from-rose-700 to-red-600 text-white text-center space-x-4"
-              >
-                <span class="material-symbols-outlined">event_busy</span>
-                <span>Close on : {{ dateformat(announcement.closeDate) }}</span>
-              </p>
-            </div>
+      </div>
+      <div class="w-full h-5/6 bg-white shadow-md rounded-2xl">
+        <div class="relative w-full h-full">
+          <div class="h-full rounded-2xl">
             <div
-              class="w-full h-80 overflow-y-scroll text-lg font-bold text-gray-700 border rounded-md py-6 px-8"
+              class="w-full h-1/6 rounded-t-2xl flex  items-center justify-center overflow-x-auto"
             >
-              <p
-                class="indent-8"
-                v-html="announcement.announcementDescription"
-              ></p>
+              <div class="text-3xl">{{ announcement.announcementTitle }}</div>
             </div>
+            <div class=" w-full flex justify-center items-center font-bold text-base mb-3">DESCRIPTION</div>
+            <div
+              class="w-full h-[35rem] rounded-t-2xl rounded-b-2xl overflow-y-auto  flex justify-center"
+            >
+          
+              <div
+                class="indent-8 break-words p-5 ql-editor "
+                v-html="announcement.announcementDescription"
+              ></div>
+            </div>
+          </div>
+          <div
+            class="w-full absolute bottom-0 bg-red-700 h-5 rounded-b-2xl"
+            v-if="dateformat(announcement.closeDate) != '-' && closedateshow() "
+          >
+            <h1 class="text-white text-center">
+              this Announcement Close On :
+              {{ dateformat(announcement.closeDate) }}
+            </h1>
           </div>
         </div>
       </div>
     </div>
   </div>
-
-  
 </template>
 
 <style scoped>
-tr {
-  padding: 10px;
-}
 
-td {
-  padding: 10px;
-}
 
-.ann-button:hover .x {
-  display: inline;
-}
-
-.ann-button:hover .y {
-  display: none;
-}
-
-.ann-button .x {
-  display: none;
-}
-
-.ann-button .y {
-  display: inline;
-}
-
-h1 {
-  font-size: 2em;
-}
-
-h2 {
-  font-size: 1.5em;
-}
-
-h3 {
-  font-size: 1.5em;
-}
-
-h4 {
-  font-size: 1.17em;
-}
-
-h5 {
-  font-size: 0.83em;
-}
-
-h6 {
-  font-size: 0.67em;
-}
 </style>

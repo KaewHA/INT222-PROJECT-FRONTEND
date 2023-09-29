@@ -219,7 +219,7 @@ const status = ref(true);
             <tr
               v-for="(ann, index) in searchvalue"
               :key="index"
-              class="text-gray-500 font-bold border-b last:border-0 ann-item"
+              class="text-custom-black font-semibold border-b last:border-0 ann-item"
             >
               <td class="py-2">{{ index + 1 }}</td>
               <td class="py-2">{{ ann.announcementTitle }}</td>

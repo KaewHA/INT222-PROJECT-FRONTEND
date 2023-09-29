@@ -10,12 +10,33 @@ import AddIcon from '../../components/icon/AddIcon.vue';
 import BurgerIcon from '../../components/icon/BurgerIcon.vue'
 import CloseIcon from '../../components/icon/CloseIcon.vue'
 import { useView } from '../../stores/adminView';
-
+import { acctoken } from "../../stores/accresstoken.js";
+import {  getToken,checkToken} from "../../composable/Auth.js";
 const { params } = useRoute()
 const myView = useView()
+const token=acctoken()
 onBeforeMount(async () => {
+    let result= await checkToken(token.token)
+    if(result==200){
+      //
+    }else{
+      let newtoken= await getToken()
+      if(newtoken==401){
+        Swal.fire({
+      icon: 'error',
+      title: 'YOUR TOKEN HAS EXPIRE',
+      text: 'PLESE LOGIN AGAIN',
+      confirmButtonText: 'OK',
+    }).then(()=>{
+      router.push("/login");
+    })
+      }else{
+        token.settoken(newtoken)
+      }
+    }
+    //////////////
     const receivedData = ref([]);
-    receivedData.value = await getAllUser();
+    receivedData.value = await getAllUser("admin",0,token.gettoken().token);
     receivedData.value.forEach((x) => userList.value.push(x));
     myView.view = 'user'
 });
@@ -68,7 +89,23 @@ const showAlert = (id) => {
 }
 
 const deleteUser = async (id) => {
-    status.value = await deleteUserData(id)
+    status.value = await deleteUserData(id,token.gettoken().token)
+    if(status.value==false){
+    let newtoken= await getToken()
+      if(newtoken==401){
+        Swal.fire({
+      icon: 'error',
+      title: 'YOUR TOKEN HAS EXPIRE',
+      text: 'PLESE LOGIN AND TRY AGAIN',
+      confirmButtonText: 'OK',
+    }).then(()=>{
+      router.push("/login");
+    })
+      }else{
+        token.settoken(newtoken)
+        status.value = await deleteUserData(id,token.gettoken().token)
+      }
+  }
 }
 
 const isBurgerToggle = ref(false)

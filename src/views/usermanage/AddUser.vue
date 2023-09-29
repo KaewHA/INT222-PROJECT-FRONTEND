@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref,onBeforeMount} from 'vue';
 import { addUser } from '../../composable/userdata.js';
 import router from '../../router/index.js'
 import SideBar from '../../components/SideBar.vue';
@@ -7,7 +7,31 @@ import Error from '../../components/icon/Error.vue';
 import Correct from '../../components/icon/Correct.vue';
 import Info from '../../components/icon/Info.vue';
 import Swal from "sweetalert2";
+import { acctoken } from "../../stores/accresstoken.js";
+import {  getToken,checkToken} from "../../composable/Auth.js";
+const token=acctoken()
 
+onBeforeMount(async () => {
+    let result= await checkToken(token.token)
+    if(result==200){
+      //
+    }else{
+      let newtoken= await getToken()
+      if(newtoken==401){
+        Swal.fire({
+      icon: 'error',
+      title: 'YOUR TOKEN HAS EXPIRE',
+      text: 'PLESE LOGIN AGAIN',
+      confirmButtonText: 'OK',
+    }).then(()=>{
+      router.push("/login");
+    })
+      }else{
+        token.settoken(newtoken)
+      }
+    }
+    
+})
 const newUser = ref({
     username: ''.trim(),
     name: ''.trim(),
@@ -20,7 +44,23 @@ const confirmPassword = ref('')
 const addStatus = ref(true)
 const errRes = ref({})
 const addNewUser = async (user) => {
-    addStatus.value = await addUser(user)
+    addStatus.value = await addUser(user,token.gettoken().token)
+    if(addStatus.value!=true){
+    let newtoken= await getToken()
+      if(newtoken==401){
+        Swal.fire({
+      icon: 'error',
+      title: 'YOUR TOKEN HAS EXPIRE',
+      text: 'PLESE LOGIN AND TRY AGAIN',
+      confirmButtonText: 'OK',
+    }).then(()=>{
+      router.push("/login");
+    })
+      }else{
+        token.settoken(newtoken)
+        addStatus.value = await  addUser(user,token.gettoken().token)
+      }
+  }
     if (addStatus.value === true) {
         showAlert()
     } else {

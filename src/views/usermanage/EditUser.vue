@@ -9,13 +9,33 @@ import Correct from '../../components/icon/Correct.vue'
 import Error from '../../components/icon/Error.vue'
 import Info from '../../components/icon/Info.vue'
 import Swal from 'sweetalert2'
-
+import { acctoken } from "../../stores/accresstoken.js";
+import {  getToken,checkToken} from "../../composable/Auth.js";
 const { params } = useRoute()
 const oldUser = ref({})
 const updatedUser = ref({})
-
+const token=acctoken()
 onBeforeMount(async () => {
-    const receivedData = await getUserDetail(params.id)
+    let result= await checkToken(token.token)
+    if(result==200){
+      //
+    }else{
+      let newtoken= await getToken()
+      if(newtoken==401){
+        Swal.fire({
+      icon: 'error',
+      title: 'YOUR TOKEN HAS EXPIRE',
+      text: 'PLESE LOGIN AGAIN',
+      confirmButtonText: 'OK',
+    }).then(()=>{
+      router.push("/login");
+    })
+      }else{
+        token.settoken(newtoken)
+      }
+    }
+    /////////
+    const receivedData = await getUserDetail(params.id,token.gettoken().token)
     Object.assign(updatedUser.value, receivedData)
     Object.assign(oldUser.value, receivedData)
     // updatedUser.value = receivedData
@@ -65,7 +85,23 @@ const fieldValidWarn = () => {
 const status = ref(true)
 const errRes = ref({})
 const updateUser = async (user, id) => {
-    status.value = await updateUserById(user, id)
+    status.value = await updateUserById(user, id,token.gettoken().token)
+    if(status.value!=true){
+    let newtoken= await getToken()
+      if(newtoken==401){
+        Swal.fire({
+      icon: 'error',
+      title: 'YOUR TOKEN HAS EXPIRE',
+      text: 'PLESE LOGIN AND TRY AGAIN',
+      confirmButtonText: 'OK',
+    }).then(()=>{
+      router.push("/login");
+    })
+      }else{
+        token.settoken(newtoken)
+        status.value = await updateUserById(user, id,token.gettoken().token)
+      }
+  }
     if (status.value === true) {
         showAlert()
     } else {

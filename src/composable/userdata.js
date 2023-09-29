@@ -1,7 +1,14 @@
-async function getAllUser(mode = "admin", category = 0) {
+async function getAllUser(mode = "admin", category = 0,token) {
   let api = `${import.meta.env.VITE_BASE_URL}/api/users`;
+  let auth = "Bearer "+token;
   try {
-    const res = await fetch(api);
+    const res = await fetch(api, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: auth,
+      },
+    });
     if (res.ok) {
       const user = await res.json();
       return user;
@@ -11,10 +18,17 @@ async function getAllUser(mode = "admin", category = 0) {
   }
 }
 
-async function getUserDetail(id) {
+async function getUserDetail(id,token) {
   let api = `${import.meta.env.VITE_BASE_URL}/api/users/${id}`
+  let auth = "Bearer "+token;
   try {
-    const res = await fetch(api);
+    const res = await fetch(api, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: auth,
+      },
+    });
     const user = await res.json();
     if (res.ok) {
       return user;
@@ -24,7 +38,8 @@ async function getUserDetail(id) {
   }
 }
 
-async function addUser(user) {
+async function addUser(user,token) {
+  let auth = "Bearer "+token;
   try {
     const res = await fetch(
       `${import.meta.env.VITE_BASE_URL}/api/users`,
@@ -32,6 +47,7 @@ async function addUser(user) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: auth,
         },
         body: JSON.stringify(user),
       }
@@ -47,7 +63,8 @@ async function addUser(user) {
   }
 }
 
-async function updateUserById(user, id) {
+async function updateUserById(user, id,token) {
+  let auth = "Bearer "+token;
   try {
     const res = await fetch(
       `${import.meta.env.VITE_BASE_URL}/api/users/${id}`,
@@ -55,6 +72,7 @@ async function updateUserById(user, id) {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          Authorization: auth,
         },
         body: JSON.stringify(user),
       }
@@ -70,11 +88,15 @@ async function updateUserById(user, id) {
   }
 }
 
-async function deleteUserData(id) {
+async function deleteUserData(id,token) {
+  let auth = "Bearer "+token;
   try {
     const res = await fetch(
       `${import.meta.env.VITE_BASE_URL}/api/users/${id}`,
-      { method: "DELETE" }
+      { method: "DELETE" ,headers: {
+        "Content-Type": "application/json",
+        Authorization: auth,
+      }}
     );
     if (res.ok) {
       return true
