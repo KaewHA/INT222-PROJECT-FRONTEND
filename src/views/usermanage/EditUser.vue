@@ -5,7 +5,6 @@ import { useRoute } from 'vue-router';
 import { onBeforeMount } from 'vue';
 import router from '../../router/index.js'
 import SideBar from '../../components/SideBar.vue'
-import Correct from '../../components/icon/Correct.vue'
 import Error from '../../components/icon/Error.vue'
 import Info from '../../components/icon/Info.vue'
 import Swal from 'sweetalert2'

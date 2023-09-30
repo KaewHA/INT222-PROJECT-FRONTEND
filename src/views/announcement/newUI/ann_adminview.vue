@@ -16,24 +16,7 @@ import { getToken, checkToken } from "../../../composable/Auth.js";
 
 const token = acctoken();
 onBeforeMount(async () => {
-  let result = await checkToken(token.token);
-  if (result == 200) {
-    //
-  } else {
-    let newtoken = await getToken();
-    if (newtoken == 401) {
-      Swal.fire({
-        icon: "error",
-        title: "YOUR TOKEN HAS EXPIRE",
-        text: "PLESE LOGIN AGAIN",
-        confirmButtonText: "OK",
-      }).then(() => {
-        router.push("/login");
-      });
-    } else {
-      token.settoken(newtoken);
-    }
-  }
+
   //////////////////////
   const receivedData = ref([]);
   receivedData.value = await getAnnouncement();

@@ -210,11 +210,13 @@ const showAlert = async () => {
   // if (fruit) {
   //   Swal.fire(`You selected: ${fruit}`)
   // }
+
+
 }
 </script>
 
 <template>
-  <div class="w-screen h-screen bg-slate-50 flex flex-row font-noto pb-16 pt-4">
+  <div class="w-screen h-screen bg-slate-50 flex flex-row font-noto pb-16 pt-4 max-[768px]:hidden">
     <div class="w-1/5 h-full pl-12 pr-8 space-y-2 sticky">
       <div class="flex flex-row items-center ann-app-title w-full h-1/6">
         <div class="flex items-center space-x-4 w-full">
@@ -233,7 +235,7 @@ const showAlert = async () => {
       </div>
 
 
-      <div class="w-full bg-white rounded-2xl shadow-md text-gray-400 max-lg:hidden">
+      <div class="w-full bg-white rounded-2xl shadow-md text-gray-400 ">
         <a href="#" @click="changeMode('active')"
           class="py-8 pr-4 text-xl flex items-center space-x-2 hover:bg-slate-100 rounded-t-2xl hover:text-custom-blue active:text-custom-blue group ann-menu"
           :class="myMode.mode == 'active' ? 'text-emerald-500' : ''">
@@ -250,7 +252,7 @@ const showAlert = async () => {
         </a>
       </div>
 
-      <div class="w-full bg-white rounded-2xl shadow-md text-gray-400 max-lg:hidden">
+      <div class="w-full bg-white rounded-2xl shadow-md text-gray-400 ">
         <a href="#" @click="showAlert"
           class="py-8 pr-4 text-xl flex items-center space-x-2 hover:bg-slate-100 rounded-t-2xl hover:text-custom-blue active:text-custom-blue group ann-menu">
           <span class="w-4 h-8 bg-custom-blue invisible group-hover:visible rounded-r-lg"></span>
@@ -292,9 +294,9 @@ const showAlert = async () => {
           </div>
         </div>
       </div>
-      <div class="w-full h-5/6 bg-white shadow-md rounded-2xl ">
-        <div v-if="allAnnouncement.length != 0">
-          <div v-for="(announcement, index) in allAnnouncement" :key="index" class="w-full h-full hover:cursor-pointer ">
+      <div class="w-full h-5/6 bg-white shadow-md rounded-2xl overflow-auto ">
+        <div v-if="allAnnouncement.length != 0" >
+          <div v-for="(announcement, index) in allAnnouncement" :key="index" class="w-full h-auto hover:cursor-pointer   ">
             <div class="" @click="router.push(`/announcement/${announcement.id}`)" @mouseover="moveup(index)"
               @mouseleave="movedown(index)">
               <div class="w-full  border hover:shadow-xl duration-500 "
@@ -315,7 +317,7 @@ const showAlert = async () => {
                 </div>
               </div>
             </div>
-          </div>
+        </div>
         </div>
 
         <div v-else class="flex w-full  h-full items-center justify-center  text-custom-black">
@@ -325,6 +327,11 @@ const showAlert = async () => {
       </div>
     </div>
   </div>
+ 
 </template>
 
-<style scoped></style>
+<style scoped>
+::-webkit-scrollbar {
+  display: none;
+}
+</style>

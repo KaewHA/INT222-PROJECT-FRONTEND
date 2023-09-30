@@ -6,18 +6,7 @@ import { acctoken } from "../stores/accresstoken.js";
 
 const token=acctoken()
 onBeforeMount(async () => {
-    let result= await checkToken(token.token)
-    if(result==200){
-      router.push("/admin/announcement");
-    }else{
-      let newtoken= await getToken()
-      if(newtoken==401){
-       ///notpass
-      }else{
-        token.settoken(newtoken)
-        router.push("/admin/announcement");
-      }
-    }
+
 });
 
 const User = ref({

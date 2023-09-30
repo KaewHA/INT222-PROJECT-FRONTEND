@@ -10,6 +10,7 @@ async function Authenfund(user) {
     if (res.ok) {
       const token = await res.json();
       localStorage.clear();
+      localStorage.setItem("token", token.token);
       localStorage.setItem("refreshtoken", token.refreshToken);
       return token.token;
     } else if (res.status === 404) {
@@ -37,8 +38,8 @@ async function getToken() {
       });
       if (res.ok) {
         const token = await res.json();
-        console.log(token);
-        return token;
+        localStorage.setItem("token", token.token);
+        return token.token;
       } else {
         return 401;
       }
@@ -49,7 +50,7 @@ async function getToken() {
 }
 
 async function checkToken(token) {
-  if (token == null) {
+  if (token == null ||token==undefined) {
     return 404;
   } else {
     try {
