@@ -13,8 +13,8 @@ import UserManagement from "../views/usermanage/UserManagement.vue";
 import AddUser from "../views/usermanage/AddUser.vue";
 import EditUser from "../views/usermanage/EditUser.vue";
 import login from "../views/login.vue";
-import Swal from 'sweetalert2'
-import {  getToken,checkToken} from "../composable/Auth.js";
+import { getToken, checkToken } from "../composable/Auth.js";
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -32,41 +32,58 @@ const router = createRouter({
       path: "/admin/announcement",
       name: "Announcement",
       component: adminnewui,
-      beforeEnter: async (to, from, next) => {
-        if(localStorage.getItem("token")!=null ||localStorage.getItem("token")!= undefined){
-            let result = await checkToken(localStorage.getItem("token"));
-            if (result == 200) {
-              next();
-            } else {
-              let newtoken = await getToken();
-              if (newtoken == 401) {
-                Swal.fire({
-                    icon: "error",
-                    title: "YOUR TOKEN HAS EXPIRE",
-                    text: "PLESE LOGIN AND TRY AGAIN",
-                    confirmButtonText: "OK",
-                  }).then(() => {
-                    next("/login");
-                  });
-              } else {
-                localStorage.setItem("token",newtoken)
-                next();
-              }
-            }
-        }else{
-            next('/login')
-        }
-      },
     },
     {
       path: "/admin/announcement/:id",
       name: "AnnouncementDetail",
       component: AnnouncementDetail,
+      beforeEnter: async (to, from, next) => {
+        if (
+          localStorage.getItem("token") != null ||
+          localStorage.getItem("token") != undefined
+        ) {
+          let result = await checkToken(localStorage.getItem("token"));
+          if (result == 200) {
+            next();
+          } else {
+            let newtoken = await getToken();
+            if (newtoken == 401) {
+              next("/login");
+            } else {
+              localStorage.setItem("token", newtoken);
+              next();
+            }
+          }
+        } else {
+          next("/login");
+        }
+      },
     },
     {
       path: "/admin/announcement/add",
       name: "AddAnnouncement",
       component: AddAnnouncement,
+      beforeEnter: async (to, from, next) => {
+        if (
+          localStorage.getItem("token") != null ||
+          localStorage.getItem("token") != undefined
+        ) {
+          let result = await checkToken(localStorage.getItem("token"));
+          if (result == 200) {
+            next();
+          } else {
+            let newtoken = await getToken();
+            if (newtoken == 401) {
+              next("/login");
+            } else {
+              localStorage.setItem("token", newtoken);
+              next();
+            }
+          }
+        } else {
+          next("/login");
+        }
+      },
     },
     {
       path: "/announcement",
@@ -87,6 +104,27 @@ const router = createRouter({
       path: "/admin/announcement/:id/edit",
       name: "EditAnnouncement",
       component: EditAnnouncement,
+      beforeEnter: async (to, from, next) => {
+        if (
+          localStorage.getItem("token") != null ||
+          localStorage.getItem("token") != undefined
+        ) {
+          let result = await checkToken(localStorage.getItem("token"));
+          if (result == 200) {
+            next();
+          } else {
+            let newtoken = await getToken();
+            if (newtoken == 401) {
+              next("/login");
+            } else {
+              localStorage.setItem("token", newtoken);
+              next();
+            }
+          }
+        } else {
+          next("/login");
+        }
+      },
     },
     {
       path: "/:notfoundpath(.*)",
@@ -102,32 +140,77 @@ const router = createRouter({
       path: "/admin/user/add",
       name: "AddUser",
       component: AddUser,
+      beforeEnter: async (to, from, next) => {
+        if (
+          localStorage.getItem("token") != null ||
+          localStorage.getItem("token") != undefined
+        ) {
+          let result = await checkToken(localStorage.getItem("token"));
+          if (result == 200) {
+            next();
+          } else {
+            let newtoken = await getToken();
+            if (newtoken == 401) {
+              next("/login");
+            } else {
+              localStorage.setItem("token", newtoken);
+              next();
+            }
+          }
+        } else {
+          next("/login");
+        }
+      },
     },
     {
       path: "/admin/user/:id/edit",
       name: "EditUser",
       component: EditUser,
+      beforeEnter: async (to, from, next) => {
+        if (
+          localStorage.getItem("token") != null ||
+          localStorage.getItem("token") != undefined
+        ) {
+          let result = await checkToken(localStorage.getItem("token"));
+          if (result == 200) {
+            next();
+          } else {
+            let newtoken = await getToken();
+            if (newtoken == 401) {
+              next("/login");
+            } else {
+              localStorage.setItem("token", newtoken);
+              next();
+            }
+          }
+        } else {
+          next("/login");
+        }
+      },
     },
     {
       path: "/login",
       name: "login",
       component: login,
       beforeEnter: async (to, from, next) => {
-        if(localStorage.getItem("token")!=null ||localStorage.getItem("token")!= undefined){
-            let result = await checkToken(localStorage.getItem("token"));
-            if (result == 200) {
-              next("/admin/announcement");
+        if (
+          localStorage.getItem("token") != null ||
+          localStorage.getItem("token") != undefined
+        ) {
+          let result = await checkToken(localStorage.getItem("token"));
+          if (result == 200) {
+            next("/admin/announcement");
+          } else {
+            let newtoken = await getToken();
+            if (newtoken == 401) {
+              next();
             } else {
-              let newtoken = await getToken();
-              if (newtoken == 401) {
-                next()
-              } else {
-                localStorage.setItem("token",newtoken)
-                next("/admin/announcement");
-              }
+              localStorage.setItem("token", newtoken);
+              next("/admin/announcement");
             }
-        }else{
-            next()
+          }
+        } else {
+          next();
         }
       },
     },

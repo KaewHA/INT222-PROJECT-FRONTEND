@@ -13,6 +13,7 @@ async function getAnnouncement(mode = "admin", category = 0) {
     console.error(error);
   }
 }
+
 async function getuserAnnouncement(mode = "active", page = 0, category = 0) {
   let api = `${import.meta.env.VITE_BASE_URL
     }/api/announcements/pages?mode=${mode}&page=${page}&size=5&category=${category}`;

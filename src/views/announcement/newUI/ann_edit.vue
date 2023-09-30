@@ -10,7 +10,7 @@ import SideBar from '../../../components/SideBar.vue'
 import Error from '../../../components/icon/Error.vue'
 import Correct from '../../../components/icon/Correct.vue'
 import { acctoken } from "../../../stores/accresstoken.js";
-import {  getToken,checkToken} from "../../../composable/Auth.js";
+import {  getToken} from "../../../composable/Auth.js";
 const token=acctoken()
 const { params } = useRoute()
 const olddata = ref({})
@@ -61,24 +61,8 @@ function createtime(H, M) {
     return hour + ':' + min
 }
 onBeforeMount(async () => {
-    let result= await checkToken(token.token)
-    if(result==200){
-      //
-    }else{
-      let newtoken= await getToken()
-      if(newtoken==401){
-        Swal.fire({
-      icon: 'error',
-      title: 'YOUR TOKEN HAS EXPIRE',
-      text: 'PLESE LOGIN AGAIN',
-      confirmButtonText: 'OK',
-    }).then(()=>{
-      router.push("/login");
-    })
-      }else{
-        token.settoken(newtoken)
-      }
-    }
+     let newtoken=localStorage.getItem("token")
+     token.settoken(newtoken)
     //get new announcement
     const receivedAnnouncement = ref()
     receivedAnnouncement.value = await getAnnouncementByIddata(params.id)
@@ -322,8 +306,7 @@ const newAnnouncement = ref({
 })
 
 const createanno = async () => {
-    await updateAnnouncement(newAnnouncement.value, params.id)
-    status.value = await updateAnnouncement(newAnnouncement.value, params.id,token.gettoken().token)
+    status.value = await updateAnnouncement(newAnnouncement.value, params.id,token.gettoken())
     if(status.value==false){
     let newtoken= await getToken()
       if(newtoken==401){
@@ -337,7 +320,7 @@ const createanno = async () => {
     })
       }else{
         token.settoken(newtoken)
-        status.value = await updateAnnouncement(newAnnouncement.value, params.id,token.gettoken().token)
+        status.value = await updateAnnouncement(newAnnouncement.value, params.id,token.gettoken())
       }
   }
     showAlert()

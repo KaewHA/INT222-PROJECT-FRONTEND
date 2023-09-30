@@ -15,26 +15,10 @@ const oldUser = ref({})
 const updatedUser = ref({})
 const token=acctoken()
 onBeforeMount(async () => {
-    let result= await checkToken(token.token)
-    if(result==200){
-      //
-    }else{
-      let newtoken= await getToken()
-      if(newtoken==401){
-        Swal.fire({
-      icon: 'error',
-      title: 'YOUR TOKEN HAS EXPIRE',
-      text: 'PLESE LOGIN AGAIN',
-      confirmButtonText: 'OK',
-    }).then(()=>{
-      router.push("/login");
-    })
-      }else{
-        token.settoken(newtoken)
-      }
-    }
+    let newtoken=localStorage.getItem("token")
+  token.settoken(newtoken)
     /////////
-    const receivedData = await getUserDetail(params.id,token.gettoken().token)
+    const receivedData = await getUserDetail(params.id,token.gettoken())
     Object.assign(updatedUser.value, receivedData)
     Object.assign(oldUser.value, receivedData)
     // updatedUser.value = receivedData
@@ -83,8 +67,10 @@ const fieldValidWarn = () => {
 
 const status = ref(true)
 const errRes = ref({})
+let curentusername=oldUser.value
+let newusername=updatedUser.value
 const updateUser = async (user, id) => {
-    status.value = await updateUserById(user, id,token.gettoken().token)
+    status.value = await updateUserById(user, id,token.gettoken())
     if(status.value!=true){
     let newtoken= await getToken()
       if(newtoken==401){
@@ -98,11 +84,23 @@ const updateUser = async (user, id) => {
     })
       }else{
         token.settoken(newtoken)
-        status.value = await updateUserById(user, id,token.gettoken().token)
+        status.value = await updateUserById(user, id,token.gettoken())
       }
   }
     if (status.value === true) {
         showAlert()
+        let newtoken= await getToken()
+        if(newtoken==401){
+        localStorage.clear()
+        Swal.fire({
+      icon: 'info',
+      title: 'YOUR ACCOUNT IS UPDATE',
+      text: 'PLESE LOGIN AGAIN',
+      confirmButtonText: 'OK',
+    }).then(()=>{
+      router.push("/login");
+    })
+      }
     } else {
         errRes.value = {}
         for (const err of status.value) {

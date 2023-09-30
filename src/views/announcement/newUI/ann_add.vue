@@ -9,7 +9,7 @@ import SideBar from '../../../components/SideBar.vue'
 import Error from '../../../components/icon/Error.vue'
 import Correct from '../../../components/icon/Correct.vue'
 import { acctoken } from "../../../stores/accresstoken.js";
-import {  getToken,checkToken} from "../../../composable/Auth.js";
+import {  getToken} from "../../../composable/Auth.js";
 
 const token=acctoken()
 onBeforeMount(async () => {
@@ -202,7 +202,7 @@ const addnewdata = async () => {
     closeTime.value
   )
   newAnnouncement.value.announcementDisplay = display.value == true ? 'Y' : 'N'
-  status.value = await addAnnouncement(newAnnouncement.value,token.gettoken().token)
+  status.value = await addAnnouncement(newAnnouncement.value,token.gettoken())
   if(status.value==false){
     let newtoken= await getToken()
       if(newtoken==401){
@@ -217,7 +217,7 @@ const addnewdata = async () => {
       }else{
         token.settoken(newtoken)
         localStorage.setItem("token",newtoken)
-        status.value = await addAnnouncement(newAnnouncement.value,token.gettoken().token)
+        status.value = await addAnnouncement(newAnnouncement.value,token.gettoken())
       }
   }
   showAlert()

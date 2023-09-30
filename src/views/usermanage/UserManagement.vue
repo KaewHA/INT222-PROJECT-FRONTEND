@@ -16,27 +16,26 @@ const { params } = useRoute()
 const myView = useView()
 const token=acctoken()
 onBeforeMount(async () => {
-    let result= await checkToken(token.token)
-    if(result==200){
-      //
-    }else{
-      let newtoken= await getToken()
-      if(newtoken==401){
-        Swal.fire({
-      icon: 'error',
-      title: 'YOUR TOKEN HAS EXPIRE',
-      text: 'PLESE LOGIN AGAIN',
-      confirmButtonText: 'OK',
-    }).then(()=>{
-      router.push("/login");
-    })
-      }else{
-        token.settoken(newtoken)
-      }
-    }
+    if (localStorage.getItem("token") != null || localStorage.getItem("token") != undefined) {
+          let result = await checkToken(localStorage.getItem("token"));
+          if (result == 200) {
+             ///
+          } else {
+            let newtoken = await getToken();
+            if (newtoken == 401) {
+                router.push('/login')
+            } else {
+              localStorage.setItem("token", newtoken);
+            }
+          }
+        } else {
+          router.push('/login')
+        }
+   let newtoken=localStorage.getItem("token")
+   token.settoken(newtoken)
     //////////////
     const receivedData = ref([]);
-    receivedData.value = await getAllUser("admin",0,token.gettoken().token);
+    receivedData.value = await getAllUser("admin",0,token.gettoken());
     receivedData.value.forEach((x) => userList.value.push(x));
     myView.view = 'user'
 });
@@ -89,7 +88,7 @@ const showAlert = (id) => {
 }
 
 const deleteUser = async (id) => {
-    status.value = await deleteUserData(id,token.gettoken().token)
+    status.value = await deleteUserData(id,token.gettoken())
     if(status.value==false){
     let newtoken= await getToken()
       if(newtoken==401){
@@ -103,7 +102,7 @@ const deleteUser = async (id) => {
     })
       }else{
         token.settoken(newtoken)
-        status.value = await deleteUserData(id,token.gettoken().token)
+        status.value = await deleteUserData(id,token.gettoken())
       }
   }
 }
@@ -163,12 +162,12 @@ const toggleBurger = () => isBurgerToggle.value = !isBurgerToggle.value
                         <tr v-for="(user, index) in userList" :key="user.id"
                             class="text-gray-500 font-bold border-b last:border-0 ann-item">
                             <td class="py-2">{{ index + 1 }}</td>
-                            <td class="py-2 ann-username">{{ user.username }}</td>
-                            <td class="py-2 ann-name">{{ user.name }}</td>
-                            <td class="py-2 ann-email">{{ user.email }}</td>
-                            <td class="py-2 ann-role">{{ user.role }}</td>
-                            <td class="py-2 ann-created-on">{{ dateformat(user.createdOn) }}</td>
-                            <td class="py-2 ann-updated-on">{{ dateformat(user.updatedOn) }}</td>
+                            <td class="py-2 ann-username break-words">{{ user.username }}</td>
+                            <td class="py-2 ann-name break-words">{{ user.name }}</td>
+                            <td class="py-2 ann-email break-words">{{ user.email }}</td>
+                            <td class="py-2 ann-role break-words">{{ user.role }}</td>
+                            <td class="py-2 ann-created-on break-words">{{ dateformat(user.createdOn) }}</td>
+                            <td class="py-2 ann-updated-on break-words">{{ dateformat(user.updatedOn) }}</td>
                             <td class="flex items-center justify-center space-x-2 py-2">
                                 <button class="rounded-lg px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white ann-button"
                                     @click="router.push(`/admin/user/${user.id}/edit`)">edit</button>

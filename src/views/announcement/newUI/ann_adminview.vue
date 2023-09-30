@@ -12,11 +12,27 @@ import AddIcon from "../../../components/icon/AddIcon.vue";
 import SideBar from "../../../components/SideBar.vue";
 import { useView } from "../../../stores/adminView";
 import { acctoken } from "../../../stores/accresstoken.js";
-import { getToken, checkToken } from "../../../composable/Auth.js";
+import { getToken,checkToken} from "../../../composable/Auth.js";
 
 const token = acctoken();
 onBeforeMount(async () => {
-
+  if (localStorage.getItem("token") != null || localStorage.getItem("token") != undefined) {
+          let result = await checkToken(localStorage.getItem("token"));
+          if (result == 200) {
+             ///
+          } else {
+            let newtoken = await getToken();
+            if (newtoken == 401) {
+                router.push('/login')
+            } else {
+              localStorage.setItem("token", newtoken);
+            }
+          }
+        } else {
+          router.push('/login')
+        }
+  let newtoken=localStorage.getItem("token")
+  token.settoken(newtoken)
   //////////////////////
   const receivedData = ref([]);
   receivedData.value = await getAnnouncement();
@@ -85,7 +101,7 @@ const showAlert = (id) => {
 };
 
 const deleteanno = async (id) => {
-  status.value = await deleteannocement(id, token.gettoken().token);
+  status.value = await deleteannocement(id, token.gettoken());
   if (status.value == false) {
     let newtoken = await getToken();
     if (newtoken == 401) {
@@ -99,7 +115,7 @@ const deleteanno = async (id) => {
       });
     } else {
       token.settoken(newtoken);
-      status.value = await deleteannocement(id, token.gettoken().token);
+      status.value = await deleteannocement(id, token.gettoken());
     }
   }
 };
