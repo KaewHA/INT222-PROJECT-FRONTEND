@@ -16,21 +16,21 @@ import { getToken,checkToken} from "../../../composable/Auth.js";
 
 const token = acctoken();
 onBeforeMount(async () => {
-  if (localStorage.getItem("token") != null || localStorage.getItem("token") != undefined) {
-          let result = await checkToken(localStorage.getItem("token"));
-          if (result == 200) {
-             ///
-          } else {
-            let newtoken = await getToken();
-            if (newtoken == 401) {
-                router.push('/login')
-            } else {
-              localStorage.setItem("token", newtoken);
-            }
-          }
-        } else {
-          router.push('/login')
-        }
+  // if (localStorage.getItem("token") != null || localStorage.getItem("token") != undefined) {
+  //         let result = await checkToken(localStorage.getItem("token"));
+  //         if (result == 200) {
+  //            ///
+  //         } else {
+  //           let newtoken = await getToken();
+  //           if (newtoken == 401) {
+  //               router.push('/login')
+  //           } else {
+  //             localStorage.setItem("token", newtoken);
+  //           }
+  //         }
+  //       } else {
+  //         router.push('/login')
+  //       }
   let newtoken=localStorage.getItem("token")
   token.settoken(newtoken)
   //////////////////////

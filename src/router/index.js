@@ -32,6 +32,13 @@ const router = createRouter({
       path: "/admin/announcement",
       name: "Announcement",
       component: adminnewui,
+      beforeEnter: async (to, from, next) => {
+        if ((localStorage.getItem("token") != null ||localStorage.getItem("token") != undefined)&&(localStorage.getItem("refreshtoken") != null ||localStorage.getItem("refreshtoken") != undefined)){
+            next()
+        }else{
+          next('/login')
+        }
+      }
     },
     {
       path: "/admin/announcement/:id",
@@ -99,13 +106,7 @@ const router = createRouter({
       path: "/ui/announcement/",
       name: "userview PAGE",
       component: show,
-      beforeEnter: async (to, from, next) => {
-        if ((localStorage.getItem("token") != null ||localStorage.getItem("token") != undefined)&&(localStorage.getItem("refreshtoken") != null ||localStorage.getItem("refreshtoken") != undefined)){
-            next()
-        }else{
-          next('/login')
-        }
-      }
+      
     },
     {
       path: "/admin/announcement/:id/edit",
