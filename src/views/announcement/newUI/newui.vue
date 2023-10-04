@@ -229,7 +229,7 @@ const handleCheckboxChange = () => {
             </h1>
             <h2 class="text-custom-blue font-bold min-[769px]:text-sm min-[1025px]:text-base">SIT Announcement System</h2>
             <h1 class="text-custom-black flex min-[769px]:text-sm min-[1025px]:text-base">
-              <span class="font-bold">Timezone :</span>&nbsp;{{ timezoneName }}
+              <span class="font-bold">Timezone:</span>&nbsp;{{ timezoneName }}
             </h1>
           </div>
         </div>

@@ -15,19 +15,29 @@ const User = ref({
 });
 
 const error=ref(false)
+const nouser=ref(false)
 const check = async () => {
   let from = document.querySelector(".loginform");
   let load = document.querySelector(".loading");
   from.classList.add("hidden");
   load.classList.remove("hidden");
   let result = await Authenfund(User.value);
-  if (result == 401 || result== 404) {
+  if (result == 401 ) {
     setTimeout(() => {
+      nouser.value=false
       from.classList.remove("hidden");
       load.classList.add("hidden");
       error.value=true
     }, 1200);
-  } else {
+  }else if(result==404){
+    setTimeout(() => {
+      error.value=false
+      from.classList.remove("hidden");
+      load.classList.add("hidden");
+      nouser.value=true
+    }, 1200);
+  }
+   else {
     setTimeout(() => {
       token.settoken(result)
       router.push("/admin/announcement");
@@ -65,7 +75,8 @@ const check = async () => {
           class="w-full h-full flex justify-center items-center flex-col space-y-11"
         >
           <div class="w-2/6 rounded-2xl space-y-11 loginform">
-            <div class="w-full flex justify-center text-white font-extrabold text-base" v-if="error">username or password is wrong !</div>
+            <div class="w-full flex justify-center text-white font-extrabold text-base" v-if="error">Password Incorrect</div>
+            <div class="w-full flex justify-center text-white font-extrabold text-base" v-if="nouser">A user with the specified username DOES NOT exist</div>
             <div class="w-full flex flex-row space-x-6 items-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
