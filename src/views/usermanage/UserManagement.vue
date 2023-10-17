@@ -10,35 +10,39 @@ import AddIcon from '../../components/icon/AddIcon.vue';
 import BurgerIcon from '../../components/icon/BurgerIcon.vue'
 import CloseIcon from '../../components/icon/CloseIcon.vue'
 import { useView } from '../../stores/adminView';
-import { acctoken } from "../../stores/accresstoken.js";
-import {  getToken,checkToken} from "../../composable/Auth.js";
+import { useToken } from "../../stores/accresstoken.js";
+import { getToken, checkToken } from "../../composable/Auth.js";
 const { params } = useRoute()
 const myView = useView()
-const token=acctoken()
+const myToken = useToken()
 onBeforeMount(async () => {
+    myView.view = 'user'
     if (localStorage.getItem("token") != null || localStorage.getItem("token") != undefined) {
-          let result = await checkToken(localStorage.getItem("token"));
-          if (result == 200) {
-             ///
-          } else {
+        let result = await checkToken(localStorage.getItem("token"));
+        if (result == 200) {
+            ///
+        } else {
             let newtoken = await getToken();
             if (newtoken == 401) {
                 router.push('/login')
             } else {
-              localStorage.setItem("token", newtoken);
+                localStorage.setItem("token", newtoken);
             }
-          }
-        } else {
-          router.push('/login')
         }
-   let newtoken=localStorage.getItem("token")
-   token.settoken(newtoken)
+    } else {
+        router.push('/login')
+    }
+    let newtoken = localStorage.getItem("token")
+    myToken.settoken(newtoken)
     //////////////
     const receivedData = ref([]);
-    receivedData.value = await getAllUser("admin",0,token.gettoken());
+    receivedData.value = await getAllUser(myToken.gettoken());
     receivedData.value.forEach((x) => userList.value.push(x));
-    myView.view = 'user'
 });
+myToken.settoken(localStorage.getItem("token"))
+myToken.decodeJwt()
+const userRole = ref(myToken.jwtPayload.roles)
+const username = ref(myToken.jwtPayload.sub)
 const userList = ref([])
 
 //date///
@@ -88,23 +92,23 @@ const showAlert = (id) => {
 }
 
 const deleteUser = async (id) => {
-    status.value = await deleteUserData(id,token.gettoken())
-    if(status.value==false){
-    let newtoken= await getToken()
-      if(newtoken==401){
-        Swal.fire({
-      icon: 'error',
-      title: 'YOUR TOKEN HAS EXPIRE',
-      text: 'PLESE LOGIN AND TRY AGAIN',
-      confirmButtonText: 'OK',
-    }).then(()=>{
-      router.push("/login");
-    })
-      }else{
-        token.settoken(newtoken)
-        status.value = await deleteUserData(id,token.gettoken())
-      }
-  }
+    status.value = await deleteUserData(id, myToken.gettoken())
+    if (status.value == false) {
+        let newtoken = await getToken()
+        if (newtoken == 401) {
+            Swal.fire({
+                icon: 'error',
+                title: 'YOUR TOKEN HAS EXPIRE',
+                text: 'PLESE LOGIN AND TRY AGAIN',
+                confirmButtonText: 'OK',
+            }).then(() => {
+                router.push("/login");
+            })
+        } else {
+            myToken.settoken(newtoken)
+            status.value = await deleteUserData(id, myToken.gettoken())
+        }
+    }
 }
 
 const isBurgerToggle = ref(false)
@@ -114,30 +118,30 @@ const toggleBurger = () => isBurgerToggle.value = !isBurgerToggle.value
 <template>
     <!-- Desktop -->
     <div class="w-screen h-screen bg-slate-50 flex flex-row font-noto pb-16 pt-4 max-lg:visible">
-        <div class="w-1/5 h-full pl-12 pr-8 space-y-2 sticky">
+        <div class="w-1/5 h-full pl-12 pb-2 pr-8 space-y-2 sticky">
             <div class="flex flex-row items-center ann-app-title w-full h-1/6">
                 <div class="flex items-center space-x-4 w-full">
                     <img src="/images/logo.png" alt="SIT Logo" class="h-14 w-14">
                     <div class="flex flex-col">
-                        <h1 class="text-4xl font-bold text-custom-black">SAS</h1>
-                        <h2 class="text-custom-blue font-bold">SIT Announcement System</h2>
+                        <h1 class="text-4xl font-semibold text-custom-black">SAS</h1>
+                        <h2 class="text-custom-blue font-medium">SIT Announcement System</h2>
                     </div>
                 </div>
             </div>
-            <SideBar />
+            <SideBar :username="username" :role="userRole" />
         </div>
         <div class="w-4/5 h-full bg-slate-50 rounded-2xl flex flex-col pr-12 space-y-2">
             <div class="flex flex-row items-center ann-app-title w-full h-1/6">
                 <div class="flex flex-col items-center w-full h-full">
                     <div class="flex flex-col justify-center items-center w-full h-2/3">
-                        <p class="text-4xl font-extrabold ann-title">User Management</p>
+                        <p class="text-4xl font-medium ann-title">User Management</p>
                     </div>
                     <div class="w-full h-1/3 text-start flex flex-row items-center justify-between pb-4">
-                        <p class="font-bold ann-timezone">
+                        <p class="font-normal ann-timezone">
                             Date/Time shown in Timezone: <span class="underline">{{ timezoneName }}</span>
                         </p>
                         <button
-                            class="bg-emerald-500 rounded-full py-2 px-4 flex justify-center items-center hover:scale-110 transition duration-100 hover:cursor-pointer text-base text-white font-bold ann-button"
+                            class="bg-emerald-500 rounded-full py-2 px-4 flex justify-center items-center hover:scale-110 transition duration-100 hover:cursor-pointer text-base text-white font-medium ann-button"
                             @click="router.push('/admin/user/add')">
                             <AddIcon />&nbsp;Add User
                         </button>
@@ -147,7 +151,7 @@ const toggleBurger = () => isBurgerToggle.value = !isBurgerToggle.value
             <div class="w-full h-5/6 bg-white shadow-md rounded-2xl overflow-y-scroll">
                 <table class="w-full table-fixed">
                     <thead class="">
-                        <tr class="bg-custom-blue text-gray-50 text-lg font-bold sticky top-0">
+                        <tr class="bg-custom-blue text-gray-50 text-lg font-medium sticky top-0">
                             <th class="w-1/12 py-4">No.</th>
                             <th class="w-1/6 py-4">Username</th>
                             <th class="w-1/4 py-4">Name</th>
@@ -160,7 +164,7 @@ const toggleBurger = () => isBurgerToggle.value = !isBurgerToggle.value
                     </thead>
                     <tbody class="">
                         <tr v-for="(user, index) in userList" :key="user.id"
-                            class="text-gray-500 font-bold border-b last:border-0 ann-item">
+                            class="text-gray-500 font-normal border-b last:border-0 ann-item">
                             <td class="py-2">{{ index + 1 }}</td>
                             <td class="py-2 ann-username break-words">{{ user.username }}</td>
                             <td class="py-2 ann-name break-words">{{ user.name }}</td>
@@ -197,7 +201,7 @@ const toggleBurger = () => isBurgerToggle.value = !isBurgerToggle.value
                     <CloseIcon v-if="isBurgerToggle === true" />
                 </div>
             </div>
-            <SideBar v-if="isBurgerToggle === true"/>
+            <SideBar v-if="isBurgerToggle === true" />
         </div>
         <div class="w-full flex-col py-4 px-8 space-y-6 overflow-y-scroll">
             <div class="flex flex-col justify-center items-center w-full">
@@ -213,7 +217,8 @@ const toggleBurger = () => isBurgerToggle.value = !isBurgerToggle.value
                     <AddIcon />&nbsp;Add User
                 </button>
             </div>
-            <div v-for="(user, index) in userList" :key="user.id" class="w-full flex flex-col rounded-2xl shadow-md space-y-1 py-3 px-4 bg-gradient-to-tr from-custom-blue to-sky-500 text-white">
+            <div v-for="(user, index) in userList" :key="user.id"
+                class="w-full flex flex-col rounded-2xl shadow-md space-y-1 py-3 px-4 bg-gradient-to-tr from-custom-blue to-sky-500 text-white">
                 <div class="w-full flex flex-row space-x-6">
                     <span class="font-bold">#{{ index + 1 }}</span>
                     <span class="font-extrabold">{{ user.username }}</span>
@@ -226,9 +231,11 @@ const toggleBurger = () => isBurgerToggle.value = !isBurgerToggle.value
                     <p class="w-full text-sm">Updated On : {{ dateformat(user.updatedOn) }}</p>
                 </div>
                 <div class="flex justify-end space-x-2">
-                    <button class="rounded-full px-4 py-1 bg-gradient-to-r from-sky-600 to-cyan-600 text-white text-sm font-bold ann-button"
+                    <button
+                        class="rounded-full px-4 py-1 bg-gradient-to-r from-sky-600 to-cyan-600 text-white text-sm font-bold ann-button"
                         @click="router.push(`/admin/user/${user.id}/edit`)">Edit</button>
-                    <button class="rounded-full px-4 bg-gradient-to-r from-red-500 to-rose-600 text-white text-sm font-bold ann-button"
+                    <button
+                        class="rounded-full px-4 bg-gradient-to-r from-red-500 to-rose-600 text-white text-sm font-bold ann-button"
                         @click="showAlert(user.id)">Delete</button>
                 </div>
             </div>
@@ -262,5 +269,4 @@ td {
 
 ::-webkit-scrollbar {
     display: none;
-}
-</style>
+}</style>

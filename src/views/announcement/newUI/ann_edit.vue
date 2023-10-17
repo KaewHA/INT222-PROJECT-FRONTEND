@@ -9,9 +9,9 @@ import Swal from 'sweetalert2'
 import SideBar from '../../../components/SideBar.vue'
 import Error from '../../../components/icon/Error.vue'
 import Correct from '../../../components/icon/Correct.vue'
-import { acctoken } from "../../../stores/accresstoken.js";
-import {  getToken} from "../../../composable/Auth.js";
-const token=acctoken()
+import { useToken } from "../../../stores/accresstoken.js";
+import { getToken } from "../../../composable/Auth.js";
+const myToken=useToken()
 const { params } = useRoute()
 const olddata = ref({})
 const publishDate = ref(null)
@@ -61,8 +61,8 @@ function createtime(H, M) {
     return hour + ':' + min
 }
 onBeforeMount(async () => {
-     let newtoken=localStorage.getItem("token")
-     token.settoken(newtoken)
+    //  let newtoken=localStorage.getItem("token")
+    //  myToken.settoken(newtoken)
     //get new announcement
     const receivedAnnouncement = ref()
     receivedAnnouncement.value = await getAnnouncementByIddata(params.id)
@@ -108,6 +108,11 @@ onBeforeMount(async () => {
         olddata.value[key] = value
     }
 })
+myToken.settoken(localStorage.getItem("token"))
+myToken.decodeJwt()
+const userRole = ref(myToken.jwtPayload.roles)
+const username = ref(myToken.jwtPayload.sub)
+
 let opt = { year: 'numeric', month: 'numeric', day: 'numeric' }
 const startdate = computed(() => {
     const currentDate = new Date()
@@ -306,7 +311,7 @@ const newAnnouncement = ref({
 })
 
 const createanno = async () => {
-    status.value = await updateAnnouncement(newAnnouncement.value, params.id,token.gettoken())
+    status.value = await updateAnnouncement(newAnnouncement.value, params.id,myToken.gettoken())
     if(status.value==false){
     let newtoken= await getToken()
       if(newtoken==401){
@@ -319,8 +324,8 @@ const createanno = async () => {
       router.push("/login");
     })
       }else{
-        token.settoken(newtoken)
-        status.value = await updateAnnouncement(newAnnouncement.value, params.id,token.gettoken())
+        myToken.settoken(newtoken)
+        status.value = await updateAnnouncement(newAnnouncement.value, params.id,myToken.gettoken())
       }
   }
     showAlert()
@@ -364,17 +369,17 @@ const showAlert = () => {
 
 <template>
     <div class="w-screen h-screen bg-slate-50 flex flex-row font-noto pb-16 pt-4">
-        <div class="w-1/5 h-full pl-12 pr-8 space-y-2 sticky">
+        <div class="w-1/5 h-full pl-12 pb-2 pr-8 space-y-2 sticky">
             <div class="flex flex-row items-center ann-app-title w-full h-1/6">
                 <div class="flex items-center space-x-4 w-full">
                     <img src="/images/logo.png" alt="SIT Logo" class="h-14 w-14" />
                     <div class="flex flex-col">
-                        <h1 class="text-4xl font-bold text-custom-black">SAS</h1>
-                        <h2 class="text-custom-blue font-bold">SIT Announcement System</h2>
+                        <h1 class="text-4xl font-semibold text-custom-black">SAS</h1>
+                        <h2 class="text-custom-blue font-medium">SIT Announcement System</h2>
                     </div>
                 </div>
             </div>
-            <SideBar />
+            <SideBar :username="username" :role="userRole"/>
         </div>
         <div class="w-4/5 h-full bg-slate-50 rounded-2xl flex flex-col pr-12 space-y-2">
             <div class="flex flex-row items-center ann-app-title w-full h-1/6">

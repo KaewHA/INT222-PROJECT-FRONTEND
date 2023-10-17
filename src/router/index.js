@@ -13,6 +13,8 @@ import UserManagement from "../views/usermanage/UserManagement.vue";
 import AddUser from "../views/usermanage/AddUser.vue";
 import EditUser from "../views/usermanage/EditUser.vue";
 import login from "../views/login.vue";
+import jwtDecode from "jwt-decode";
+import MatchPassword from "../views/usermanage/MatchPassword.vue"
 import { getToken, checkToken } from "../composable/Auth.js";
 
 const router = createRouter({
@@ -32,65 +34,16 @@ const router = createRouter({
       path: "/admin/announcement",
       name: "Announcement",
       component: adminnewui,
-      beforeEnter: async (to, from, next) => {
-        if ((localStorage.getItem("token") != null ||localStorage.getItem("token") != undefined)&&(localStorage.getItem("refreshtoken") != null ||localStorage.getItem("refreshtoken") != undefined)){
-            next()
-        }else{
-          next('/login')
-        }
-      }
     },
     {
       path: "/admin/announcement/:id",
       name: "AnnouncementDetail",
       component: AnnouncementDetail,
-      beforeEnter: async (to, from, next) => {
-        if (
-          localStorage.getItem("token") != null ||
-          localStorage.getItem("token") != undefined
-        ) {
-          let result = await checkToken(localStorage.getItem("token"));
-          if (result == 200) {
-            next();
-          } else {
-            let newtoken = await getToken();
-            if (newtoken == 401) {
-              next("/login");
-            } else {
-              localStorage.setItem("token", newtoken);
-              next();
-            }
-          }
-        } else {
-          next("/login");
-        }
-      },
     },
     {
       path: "/admin/announcement/add",
       name: "AddAnnouncement",
       component: AddAnnouncement,
-      beforeEnter: async (to, from, next) => {
-        if (
-          localStorage.getItem("token") != null ||
-          localStorage.getItem("token") != undefined
-        ) {
-          let result = await checkToken(localStorage.getItem("token"));
-          if (result == 200) {
-            next();
-          } else {
-            let newtoken = await getToken();
-            if (newtoken == 401) {
-              next("/login");
-            } else {
-              localStorage.setItem("token", newtoken);
-              next();
-            }
-          }
-        } else {
-          next("/login");
-        }
-      },
     },
     {
       path: "/announcement",
@@ -106,33 +59,11 @@ const router = createRouter({
       path: "/ui/announcement/",
       name: "userview PAGE",
       component: show,
-      
     },
     {
       path: "/admin/announcement/:id/edit",
       name: "EditAnnouncement",
       component: EditAnnouncement,
-      beforeEnter: async (to, from, next) => {
-        if (
-          localStorage.getItem("token") != null ||
-          localStorage.getItem("token") != undefined
-        ) {
-          let result = await checkToken(localStorage.getItem("token"));
-          if (result == 200) {
-            next();
-          } else {
-            let newtoken = await getToken();
-            if (newtoken == 401) {
-              next("/login");
-            } else {
-              localStorage.setItem("token", newtoken);
-              next();
-            }
-          }
-        } else {
-          next("/login");
-        }
-      },
     },
     {
       path: "/:notfoundpath(.*)",
@@ -143,92 +74,46 @@ const router = createRouter({
       path: "/admin/user",
       name: "UserManagement",
       component: UserManagement,
-      beforeEnter: async (to, from, next) => {
-        if ((localStorage.getItem("token") != null ||localStorage.getItem("token") != undefined)&&(localStorage.getItem("refreshtoken") != null ||localStorage.getItem("refreshtoken") != undefined)){
-            next()
-        }else{
-          next('/login')
-        }
-      }
     },
     {
       path: "/admin/user/add",
       name: "AddUser",
       component: AddUser,
-      beforeEnter: async (to, from, next) => {
-        if (
-          localStorage.getItem("token") != null ||
-          localStorage.getItem("token") != undefined
-        ) {
-          let result = await checkToken(localStorage.getItem("token"));
-          if (result == 200) {
-            next();
-          } else {
-            let newtoken = await getToken();
-            if (newtoken == 401) {
-              next("/login");
-            } else {
-              localStorage.setItem("token", newtoken);
-              next();
-            }
-          }
-        } else {
-          next("/login");
-        }
-      },
     },
     {
       path: "/admin/user/:id/edit",
       name: "EditUser",
       component: EditUser,
-      beforeEnter: async (to, from, next) => {
-        if (
-          localStorage.getItem("token") != null ||
-          localStorage.getItem("token") != undefined
-        ) {
-          let result = await checkToken(localStorage.getItem("token"));
-          if (result == 200) {
-            next();
-          } else {
-            let newtoken = await getToken();
-            if (newtoken == 401) {
-              next("/login");
-            } else {
-              localStorage.setItem("token", newtoken);
-              next();
-            }
-          }
-        } else {
-          next("/login");
-        }
-      },
     },
     {
       path: "/login",
       name: "login",
       component: login,
-      beforeEnter: async (to, from, next) => {
-        if (
-          localStorage.getItem("token") != null ||
-          localStorage.getItem("token") != undefined
-        ) {
-          let result = await checkToken(localStorage.getItem("token"));
-          if (result == 200) {
-            next("/admin/announcement");
-          } else {
-            let newtoken = await getToken();
-            if (newtoken == 401) {
-              next();
-            } else {
-              localStorage.setItem("token", newtoken);
-              next("/admin/announcement");
-            }
-          }
-        } else {
-          next();
-        }
-      },
     },
+    {
+      path: "/admin/user/match",
+      name: "MatchPassword",
+      component: MatchPassword
+    }
   ],
 });
+
+router.beforeEach(async (to, from, next) => {
+  const token = localStorage.getItem("token");
+  const refreshToken = localStorage.getItem("refreshtoken");
+  const role = token ? jwtDecode(token).roles : "user";
+  const isAuthenticated = () => {
+    return token || refreshToken;
+  };
+  if (!isAuthenticated() && to.name !== "login" && to.name !== "userview" && to.name !== "UserViewDetail") {
+    next("/login");
+  } else if (isAuthenticated()) {
+    if (role !== 'admin' && to.path.startsWith('/admin/user')) {
+      next('/admin/announcement')
+    } else {
+      next()
+    }
+  } else next()
+});
+
 export default router;

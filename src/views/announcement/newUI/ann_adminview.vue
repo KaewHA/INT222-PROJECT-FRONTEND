@@ -11,36 +11,44 @@ import Swal from "sweetalert2";
 import AddIcon from "../../../components/icon/AddIcon.vue";
 import SideBar from "../../../components/SideBar.vue";
 import { useView } from "../../../stores/adminView";
-import { acctoken } from "../../../stores/accresstoken.js";
-import { getToken,checkToken} from "../../../composable/Auth.js";
+import { useToken } from "../../../stores/accresstoken.js";
+import { getToken, checkToken } from "../../../composable/Auth.js";
 
-const token = acctoken();
+const myToken = useToken();
 onBeforeMount(async () => {
+  myView.view = "announcement";
   if (localStorage.getItem("token") != null || localStorage.getItem("token") != undefined) {
-          let result = await checkToken(localStorage.getItem("token"));
-          if (result == 200) {
-             ///
-          } else {
-            let newtoken = await getToken();
-            if (newtoken == 401) {
-                router.push('/login')
-            } else {
-              localStorage.setItem("token", newtoken);
-            }
-          }
-        } else {
-          router.push('/login')
-        }
-  let newtoken=localStorage.getItem("token")
-  token.settoken(newtoken)
+    let result = await checkToken(localStorage.getItem("token"));
+    if (result == 200) {
+      ///
+    } else {
+      let newtoken = await getToken();
+      if (newtoken == 401) {
+        router.push('/login')
+      } else {
+        localStorage.setItem("token", newtoken);
+      }
+    }
+  } else {
+    router.push('/login')
+  }
+  // let newtoken = localStorage.getItem("token")
+  // myToken.settoken(newtoken)
+  // myToken.decodeJwt()
   //////////////////////
   const receivedData = ref([]);
   receivedData.value = await getAnnouncement();
   receivedData.value.forEach((x) => allAnnouncement.value.push(x));
   const receivedCategory = await getCategory();
   receivedCategory.forEach((category) => allCategory.value.push(category));
-  myView.view = "announcement";
+  console.log(receivedData.value)
+  console.log(myToken.jwtPayload);
 });
+myToken.settoken(localStorage.getItem("token"))
+myToken.decodeJwt()
+const userRole = ref(myToken.jwtPayload.roles)
+const username = ref(myToken.jwtPayload.sub)
+
 const category = ref(0);
 const newdata = ref([]);
 const allCategory = ref([]);
@@ -101,7 +109,7 @@ const showAlert = (id) => {
 };
 
 const deleteanno = async (id) => {
-  status.value = await deleteannocement(id, token.gettoken());
+  status.value = await deleteannocement(id, myToken.gettoken());
   if (status.value == false) {
     let newtoken = await getToken();
     if (newtoken == 401) {
@@ -114,8 +122,8 @@ const deleteanno = async (id) => {
         router.push("/login");
       });
     } else {
-      token.settoken(newtoken);
-      status.value = await deleteannocement(id, token.gettoken());
+      myToken.settoken(newtoken);
+      status.value = await deleteannocement(id, myToken.gettoken());
     }
   }
 };
@@ -158,88 +166,72 @@ const status = ref(true);
 </script>
 <template>
   <div class="w-screen h-screen bg-slate-50 flex flex-row font-noto pb-16 pt-4">
-    <div class="w-1/5 h-full pl-12 pr-8 space-y-2 sticky">
+    <div class="w-1/5 h-full pl-12 pb-2 pr-8 space-y-2 sticky">
       <div class="flex flex-row items-center ann-app-title w-full h-1/6">
         <div class="flex items-center space-x-4 w-full">
           <img src="/images/logo.png" alt="SIT Logo" class="h-14 w-14" />
           <div class="flex flex-col">
-            <h1 class="text-4xl font-bold text-custom-black">SAS</h1>
-            <h2 class="text-custom-blue font-bold">SIT Announcement System</h2>
+            <h1 class="text-4xl font-semibold text-custom-black">SAS</h1>
+            <h2 class="text-custom-blue font-medium">SIT Announcement System</h2>
           </div>
         </div>
       </div>
-      <SideBar />
+      <SideBar :username="username" :role="userRole" />
     </div>
-    <div
-      class="w-4/5 h-full bg-slate-50 rounded-2xl flex flex-col pr-12 space-y-2"
-    >
+    <div class="w-4/5 h-full bg-slate-50 rounded-2xl flex flex-col pr-12 space-y-2">
       <div class="flex flex-row items-center ann-app-title w-full h-1/6">
         <div class="flex flex-col items-center w-full h-full">
           <div class="flex flex-col justify-center items-center w-full h-2/3">
-            <p class="text-4xl font-extrabold ann-title">
+            <p class="text-4xl font-medium ann-title">
               Announcement Management
             </p>
           </div>
-          <div
-            class="w-full h-1/3 text-start flex flex-row items-center justify-between pb-4"
-          >
-            <p class="font-bold ann-timezone">
+          <div class="w-full h-1/3 text-start flex flex-row items-center justify-between pb-4">
+            <p class="font-normal ann-timezone">
               Date/Time shown in Timezone:
               <span class="underline">{{ timezoneName }}</span>
             </p>
             <button
-              class="bg-emerald-500 rounded-full py-2 px-4 flex justify-center items-center hover:scale-110 transition duration-100 hover:cursor-pointer text-base text-white font-bold ann-button"
-              @click="router.push('/admin/announcement/add')"
-            >
+              class="bg-emerald-500 rounded-full py-2 px-4 flex justify-center items-center hover:scale-110 transition duration-100 hover:cursor-pointer text-base text-white font-medium ann-button"
+              @click="router.push('/admin/announcement/add')">
               <AddIcon />&nbsp;Add Announcement
             </button>
           </div>
         </div>
       </div>
-      <div
-        class="w-full h-5/6 bg-white shadow-md rounded-2xl overflow-y-scroll"
-      >
+      <div class="w-full h-5/6 bg-white shadow-md rounded-2xl overflow-y-scroll">
         <table class="w-full table-fixed">
-          <thead class="">
-            <tr
-              class="bg-custom-blue text-gray-50 text-lg font-bold sticky top-0"
-            >
+          <thead class="w-full">
+            <tr class="bg-custom-blue text-gray-50 text-lg font-medium sticky top-0">
               <th class="w-1/12 py-4">No.</th>
               <th class="w-1/4 py-4">Title</th>
               <th class="w-1/6 py-4">Category</th>
               <th class="w-1/6 py-4">Publish Date</th>
               <th class="w-1/6 py-4">Close Date</th>
               <th class="w-1/6 py-4 text-center">Display</th>
-              <th class="w-1/6 py-4">View</th>
+              <th v-if="userRole === 'admin'" class="w-1/6 py-4">Owner</th>
               <th class="w-1/6 py-4">Action</th>
             </tr>
           </thead>
-          <tbody class="">
-            <tr
-              v-for="(ann, index) in searchvalue"
-              :key="index"
-              class="text-custom-black font-semibold border-b last:border-0 ann-item"
-            >
-              <td class="py-2">{{ index + 1 }}</td>
-              <td class="py-2">{{ ann.announcementTitle }}</td>
-              <td class="py-2">{{ ann.announcementCategory }}</td>
-              <td class="py-2 text-center">
+          <tbody class="w-full">
+            <tr v-for="(ann, index) in searchvalue" :key="index"
+              class="text-custom-black font-normal border-b last:border-0 ann-item">
+              <td class="w-1/12 py-2">{{ index + 1 }}</td>
+              <td class="w-1/4 py-2 truncate">{{ ann.announcementTitle }}</td>
+              <td class="w-1/6 py-2">{{ ann.announcementCategory }}</td>
+              <td class="w-1/6 py-2 text-center">
                 {{ dateformat(ann.publishDate) }}
               </td>
-              <td class="py-2 text-center">{{ dateformat(ann.closeDate) }}</td>
-              <td class="py-2">{{ ann.announcementDisplay }}</td>
-              <td class="py-2">{{ ann.viewCount }}</td>
-              <td class="flex items-center justify-center space-x-2 py-2">
-                <button
-                  class="rounded-lg px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white ann-button"
-                  @click="router.push(`/admin/announcement/${ann.id}`)"
-                >
+              <td class="w-1/6 py-2 text-center">{{ dateformat(ann.closeDate) }}</td>
+              <td class="w-1/6 py-2">{{ ann.announcementDisplay }}</td>
+              <td v-if="userRole === 'admin'" class="w-1/6 py-2">{{ ann.announcementOwner }}</td>
+              <td class="w-auto flex py-2 space-x-2 justify-center">
+                <button class="rounded-lg px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white ann-button"
+                  @click="router.push(`/admin/announcement/${ann.id}`)">
                   View
                 </button>
-                <button
-                  class="rounded-lg hover:bg-red-700 px-4 py-2 bg-red-500 text-white ann-button"
-                  @click="showAlert(ann.id)"
-                >
+                <button class="rounded-lg hover:bg-red-700 px-4 py-2 bg-red-500 text-white ann-button"
+                  @click="showAlert(ann.id)">
                   Delete
                 </button>
               </td>

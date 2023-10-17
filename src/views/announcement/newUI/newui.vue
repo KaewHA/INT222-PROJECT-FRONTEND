@@ -216,6 +216,8 @@ const handleCheckboxChange = () => {
     changeMode('close')
   }
 }
+
+const isAuthenticated = localStorage.getItem('refreshtoken')
 </script>
 
 <template>
@@ -225,9 +227,11 @@ const handleCheckboxChange = () => {
         <div class="flex items-center space-x-4 w-full">
           <img src="/images/logo.png" alt="SIT Logo" class="h-14 w-14" />
           <div class="flex flex-col">
-            <h1 class="font-bold text-custom-black min-[769px]:text-2xl min-[1025px]:text-3xl min-[1441px]:text-4xl">SAS
+            <h1 class="font-semibold text-custom-black min-[769px]:text-2xl min-[1025px]:text-3xl min-[1441px]:text-4xl">
+              SAS
             </h1>
-            <h2 class="text-custom-blue font-bold min-[769px]:text-sm min-[1025px]:text-base">SIT Announcement System</h2>
+            <h2 class="text-custom-blue font-medium min-[769px]:text-sm min-[1025px]:text-base">SIT Announcement System
+            </h2>
             <h1 class="text-custom-black flex min-[769px]:text-sm min-[1025px]:text-base">
               <span class="font-bold">Timezone:</span>&nbsp;{{ timezoneName }}
             </h1>
@@ -242,7 +246,7 @@ const handleCheckboxChange = () => {
           <span
             class="duration-200 material-symbols-outlined group-hover:ml-4 min-[769px]:text-2xl min-[1025px]:text-3xl min-[1441px]:text-4xl">task_alt</span>
           <span
-            class="flex items-center duration-200 font-bold group-hover:ml-4 min-[769px]:text-base min-[1025px]:text-base min-[1441px]:text-lg">Active</span>
+            class="flex items-center duration-200 font-medium group-hover:ml-4 min-[769px]:text-base min-[1025px]:text-base min-[1441px]:text-lg">Active</span>
         </a>
         <a href="#" @click="changeMode('close')"
           class="py-8 pr-4 text-xl flex items-center space-x-2 hover:bg-slate-100 hover:text-custom-blue active:text-custom-blue group ann-menu"
@@ -251,7 +255,7 @@ const handleCheckboxChange = () => {
           <span
             class="duration-200 material-symbols-outlined group-hover:ml-4 min-[769px]:text-2xl min-[1025px]:text-3xl min-[1441px]:text-4xl">cancel</span>
           <span
-            class="flex items-center duration-200 font-bold group-hover:ml-4 min-[769px]:text-base min-[1025px]:text-base min-[1441px]:text-lg">Close</span>
+            class="flex items-center duration-200 font-medium group-hover:ml-4 min-[769px]:text-base min-[1025px]:text-base min-[1441px]:text-lg">Close</span>
         </a>
       </div>
       <div class="w-full bg-white rounded-2xl shadow-md text-gray-400 ">
@@ -261,10 +265,12 @@ const handleCheckboxChange = () => {
           <span
             class="duration-200 material-symbols-outlined group-hover:ml-4 min-[769px]:text-2xl min-[1025px]:text-3xl min-[1441px]:text-4xl">list</span>
           <span
-            class="flex items-center duration-200 font-bold group-hover:ml-4 min-[769px]:text-base min-[1025px]:text-base min-[1441px]:text-lg">Choose
+            class="flex items-center duration-200 font-medium group-hover:ml-4 min-[769px]:text-base min-[1025px]:text-base min-[1441px]:text-lg">Choose
             Category</span>
         </a>
       </div>
+      <button v-if="isAuthenticated" @click="router.push('/admin/announcement')" class="absolute bottom-0 text-center text-lg text-gray-600 rounded-xl border-2 py-3 px-7 hover:bg-custom-blue hover:text-white">Back</button>
+      <button v-else @click="router.push('/login')" class="absolute bottom-0 text-center text-lg text-gray-600 rounded-xl border-2 py-3 px-7 hover:bg-custom-blue hover:text-white">Login</button>
     </div>
     <div
       class="h-full bg-slate-50 rounded-2xl flex flex-col pr-12 space-y-2 min-[769px]:w-4/6 min-[1025px]:w-[75%] min-[1440px]:w-4/5">
@@ -346,7 +352,7 @@ const handleCheckboxChange = () => {
         <h1 class="text-center font-semibold text-3xl text-sky-800">SAS</h1>
       </div>
     </header>
-    <section v-if="allAnnouncement.length != 0" class="w-full px-5 relative">
+    <section class="w-full px-5 relative">
       <div class="w-full pt-6 space-y-3 mb-3">
         <h1 class="text-center text-3xl text-gray-500 font-semibold">Announcement</h1>
       </div>
@@ -355,7 +361,7 @@ const handleCheckboxChange = () => {
           <label class="flex text-slate-500 text-base items-center font-bold">Category : </label>
           <select name="categories" class="border-gray-400 rounded-sm text-sm py-1">
             <option selected>ทั้งหมด</option>
-            <option v-for="category in allCategory" :value="category.categoryName">{{ category.categoryName }}</option>
+            <option @click="changeCategory" v-for="category in allCategory" :value="category.categoryName">{{ category.categoryName }}</option>
           </select>
         </div>
         <div class="flex flex-col justify-center">
@@ -371,7 +377,7 @@ const handleCheckboxChange = () => {
           </label>
         </div>
       </div>
-      <div v-for="(announcement, index) in allAnnouncement" :key="index"
+      <div v-if="allAnnouncement.length != 0" v-for="(announcement, index) in allAnnouncement" :key="index"
         @click="router.push(`/announcement/${announcement.id}`)" class="w-full h-1/5 flex flex-row mb-3 relative">
         <p class="w-[12%] flex p-3 bg-sky-600 text-white text-center justify-center items-center rounded-l-md">
           {{ index + 1 + currentpage * pageSize }}
@@ -385,6 +391,7 @@ const handleCheckboxChange = () => {
         <span class="material-symbols-outlined duration-200 absolute right-2 top-3 rounded-full p-2.5 text-custom-blue"
           :id="index">navigate_next</span>
       </div>
+      <h1 v-else class="w-full text-center text-2xl">No Announcements</h1>
       <div v-if="totalpage > 1" class="w-full flex flex-row justify-center items-center absolute left-0 -bottom-11">
         <ul class="inline-flex space-x-2">
           <li>
@@ -418,6 +425,8 @@ const handleCheckboxChange = () => {
   </div>
 </template>
 
-<style scoped>::-webkit-scrollbar {
+<style scoped>
+::-webkit-scrollbar {
   display: none;
-}</style>
+}
+</style>

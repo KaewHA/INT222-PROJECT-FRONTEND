@@ -13,8 +13,10 @@
     "@vueup/vue-quill": "^1.2.0",
     "daisyui": "^2.51.6",
     "flowbite": "^1.6.5",
+    "jwt-decode": "^3.1.2",
     "pinia": "^2.0.36",
     "sweetalert2": "^11.7.23",
+    "tailwindcss-transitions": "^2.2.0",
     "vue": "^3.2.47",
     "vue-router": "^4.0.0-beta.13",
     "vue-sweetalert2": "^5.0.5"

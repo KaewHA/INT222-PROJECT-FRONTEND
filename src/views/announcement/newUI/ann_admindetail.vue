@@ -6,19 +6,23 @@ import { onBeforeMount } from 'vue';
 import router from '../../../router/index.js'
 import Swal from 'sweetalert2'
 import SideBar from '../../../components/SideBar.vue';
-import { acctoken } from "../../../stores/accresstoken.js";
+import { useToken } from "../../../stores/accresstoken.js";
 const { params } = useRoute()
 const announcement = ref('')
 const status = ref(true)
-const token=acctoken()
+const myToken=useToken()
 onBeforeMount(async () => {
-    let newtoken=localStorage.getItem("token")
-    token.settoken(newtoken)
+    // let newtoken=localStorage.getItem("token")
+    // myToken.settoken(newtoken)
     /////////////////////
     announcement.value = await getAnnouncementById(params.id)
-    status.value = announcement.value.ok
-    if (status.value === false) { showAlert() }
+    status.value = announcement.value.status
+    if (status.value !== 200) { showAlert() }
 })
+myToken.settoken(localStorage.getItem("token"))
+myToken.decodeJwt()
+const userRole = ref(myToken.jwtPayload.roles)
+const username = ref(myToken.jwtPayload.sub)
 
 const options = { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: false };
 const dateformat = (date) => {
@@ -31,10 +35,16 @@ const dateformat = (date) => {
 }
 
 const showAlert = () => {
-    if (status.value === false) {
+    if (status.value === 404) {
         Swal.fire({
             icon: 'error',
-            title: announcement.value.message,
+            title: `Id ${params.id} is not exist!`,
+            confirmButtonText: 'Back',
+        }).then(() => router.push('/admin/announcement'))
+    } else if (status.value === 403) {
+        Swal.fire({
+            icon: 'error',
+            title: `Permission Denied!`,
             confirmButtonText: 'Back',
         }).then(() => router.push('/admin/announcement'))
     }
@@ -42,17 +52,17 @@ const showAlert = () => {
 </script>
 <template>
     <div class="w-screen h-screen bg-slate-50 flex flex-row font-noto pb-16 pt-4">
-        <div class="w-1/5 h-full pl-12 pr-8 space-y-2 sticky">
+        <div class="w-1/5 h-full pl-12 pb-2 pr-8 space-y-2 sticky">
             <div class="flex flex-row items-center ann-app-title w-full h-1/6">
                 <div class="flex items-center space-x-4 w-full">
                     <img src="/images/logo.png" alt="SIT Logo" class="h-14 w-14">
                     <div class="flex flex-col">
-                        <h1 class="text-4xl font-bold text-custom-black">SAS</h1>
-                        <h2 class="text-custom-blue font-bold">SIT Announcement System</h2>
+                        <h1 class="text-4xl font-semibold text-custom-black">SAS</h1>
+                        <h2 class="text-custom-blue font-medium">SIT Announcement System</h2>
                     </div>
                 </div>
             </div>
-            <SideBar />
+            <SideBar :username="username" :role="userRole"/>
         </div>
         <div class="w-4/5 h-full bg-slate-50 rounded-2xl flex flex-col pr-12 space-y-2">
             <div class="flex flex-row items-center ann-app-title w-full h-1/6">

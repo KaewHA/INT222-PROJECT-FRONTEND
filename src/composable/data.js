@@ -26,10 +26,11 @@ async function getuserAnnouncement(mode = "active", page = 0, category = 0) {
     console.error(error);
   }
 }
+
 async function getAnnouncementById(id) {
   try {
     const res = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/api/announcements/${id}?count=false`
+      `${import.meta.env.VITE_BASE_URL}/api/announcements/${id}?count=false`,
     );
     const announce = await res.json()
     if (res.ok) {
@@ -63,11 +64,11 @@ async function getAnnouncementByIduser(id) {
     const res = await fetch(
       `${import.meta.env.VITE_BASE_URL}/api/announcements/${id}?count=true`
     );
-    const announce = await res.json()
     if (res.ok) {
+      const announce = await res.json()
       return announce
     } else {
-      return {ok: res.ok, status: res.status, message: announce.message}
+      return {ok: res.ok, status: res.status}
     }
   } catch (error) {
     console.error(error);

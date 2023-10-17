@@ -3,8 +3,15 @@ import router from "../router/index.js";
 
 async function getAnnouncement(mode = "admin", category = 0) {
   let api = `${import.meta.env.VITE_BASE_URL}/api/announcements?mode=${mode}&category=${category}`;
+  let auth = `Bearer ${localStorage.getItem("token")}`
   try {
-    const res = await fetch(api);
+    const res = await fetch(api, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: auth,
+      }
+    });
     if (res.ok) {
       const announc = await res.json();
       return announc;
@@ -28,15 +35,23 @@ async function getuserAnnouncement(mode = "active", page = 0, category = 0) {
   }
 }
 async function getAnnouncementById(id) {
+  let auth = `Bearer ${localStorage.getItem("token")}`
   try {
     const res = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/api/announcements/${id}?count=false`
+      `${import.meta.env.VITE_BASE_URL}/api/announcements/${id}?count=false&auth=true`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: auth,
+        }
+      }
     );
-    const announce = await res.json()
     if (res.ok) {
+      const announce = await res.json()
       return announce
     } else {
-      return {ok: res.ok, status: res.status, message: announce.message}
+      console.log(res);
+      return {status: res.status}
     }
   } catch (error) {
     console.error(error);

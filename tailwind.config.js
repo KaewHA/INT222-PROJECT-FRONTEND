@@ -18,7 +18,8 @@ module.exports = {
     },
     fontFamily: {
       'noto': ['Noto Sans Thai', 'sans-serif'],
-      'poppins': ['Poppins', 'sans-serif']
+      'poppins': ['Poppins', 'sans-serif'],
+      'roboto': ['Roboto', 'sans-serif']
     }
   },
   plugins: [

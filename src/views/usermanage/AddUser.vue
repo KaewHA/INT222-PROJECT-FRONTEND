@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref,onBeforeMount} from 'vue';
+import { computed, ref, onBeforeMount } from 'vue';
 import { addUser } from '../../composable/userdata.js';
 import router from '../../router/index.js'
 import SideBar from '../../components/SideBar.vue';
@@ -7,14 +7,19 @@ import Error from '../../components/icon/Error.vue';
 import Correct from '../../components/icon/Correct.vue';
 import Info from '../../components/icon/Info.vue';
 import Swal from "sweetalert2";
-import { acctoken } from "../../stores/accresstoken.js";
-import {  getToken,checkToken} from "../../composable/Auth.js";
-const token=acctoken()
+import { useToken } from "../../stores/accresstoken.js";
+import { getToken, checkToken } from "../../composable/Auth.js";
+const myToken = useToken()
 
 onBeforeMount(async () => {
-    let newtoken=localStorage.getItem("token")
-  token.settoken(newtoken)
+    // let newtoken = localStorage.getItem("token")
+    // myToken.settoken(newtoken)
 })
+myToken.settoken(localStorage.getItem("token"))
+myToken.decodeJwt()
+const userRole = ref(myToken.jwtPayload.roles)
+const username = ref(myToken.jwtPayload.sub)
+
 const newUser = ref({
     username: ''.trim(),
     name: ''.trim(),
@@ -27,23 +32,7 @@ const confirmPassword = ref('')
 const addStatus = ref(true)
 const errRes = ref({})
 const addNewUser = async (user) => {
-    addStatus.value = await addUser(user,token.gettoken())
-    if(addStatus.value!=true){
-    let newtoken= await getToken()
-      if(newtoken==401){
-        Swal.fire({
-      icon: 'error',
-      title: 'YOUR TOKEN HAS EXPIRE',
-      text: 'PLESE LOGIN AND TRY AGAIN',
-      confirmButtonText: 'OK',
-    }).then(()=>{
-      router.push("/login");
-    })
-      }else{
-        token.settoken(newtoken)
-        addStatus.value = await  addUser(user,token.gettoken())
-      }
-  }
+    addStatus.value = await addUser(user, myToken.gettoken())
     if (addStatus.value === true) {
         showAlert()
     } else {
@@ -101,17 +90,17 @@ const showAlert = () => {
 
 <template>
     <div class="w-screen h-screen bg-slate-50 flex flex-row font-noto pb-16 pt-4">
-        <div class="w-1/5 h-full pl-12 pr-8 space-y-2 sticky">
+        <div class="w-1/5 h-full pl-12 pb-2 pr-8 space-y-2 sticky">
             <div class="flex flex-row items-center ann-app-title w-full h-1/6">
                 <div class="flex items-center space-x-4 w-full">
                     <img src="/images/logo.png" alt="SIT Logo" class="h-14 w-14">
                     <div class="flex flex-col">
-                        <h1 class="text-4xl font-bold text-custom-black">SAS</h1>
-                        <h2 class="text-custom-blue font-bold">SIT Announcement System</h2>
+                        <h1 class="text-4xl font-semibold text-custom-black">SAS</h1>
+                        <h2 class="text-custom-blue font-medium">SIT Announcement System</h2>
                     </div>
                 </div>
             </div>
-            <SideBar />
+            <SideBar :username="username" :role="userRole"/>
         </div>
         <div class="w-4/5 h-full bg-slate-50 rounded-2xl flex flex-col pr-12 space-y-2">
             <div class="flex flex-row items-center ann-app-title w-full h-1/6">
@@ -166,13 +155,17 @@ const showAlert = () => {
                         class="w-full flex items-center px-10 space-x-2 font-bold">
                     <div class="p-2">
                         <ul class="text-xs text-red-600 ">
-                            <li v-if="newUser.password.trim().length < 8 || newUser.password.trim().length > 14" class="ann-error-password">&bull;
+                            <li v-if="newUser.password.trim().length < 8 || newUser.password.trim().length > 14"
+                                class="ann-error-password">&bull;
                                 Password size must be between 8 and 14</li>
-                            <li v-if="newUser.password.trim().match(/(?=.*[a-z])(?=.*[A-Z])/) === null" class="ann-error-password" >&bull; Password must
+                            <li v-if="newUser.password.trim().match(/(?=.*[a-z])(?=.*[A-Z])/) === null"
+                                class="ann-error-password">&bull; Password must
                                 contain at least one upper case and one lower case letter.</li>
-                            <li v-if="newUser.password.trim().match(/(?=.*\d)/) === null"  class="ann-error-password">&bull; Password must contain at
+                            <li v-if="newUser.password.trim().match(/(?=.*\d)/) === null" class="ann-error-password">&bull;
+                                Password must contain at
                                 least one number.</li>
-                            <li v-if="newUser.password.trim().match(/(?=.*[@#$%^&!*])/) === null"  class="ann-error-password">&bull; Password must
+                            <li v-if="newUser.password.trim().match(/(?=.*[@#$%^&!*])/) === null"
+                                class="ann-error-password">&bull; Password must
                                 contain at least one special character.</li>
                             <!-- <li v-if="newUser.password.trim().length < 8 || newUser.password.trim().length > 14" class="ann-error-password">&bull;
                                 Password size must be between 8 and 14

@@ -1,6 +1,6 @@
 <script setup>
 import { getCategory, addAnnouncement } from '../../../composable/annAuth.js'
-import { onMounted, ref, computed,onBeforeMount } from 'vue'
+import { onMounted, ref, computed, onBeforeMount } from 'vue'
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
 import router from '../../../router/index.js'
@@ -8,19 +8,24 @@ import Swal from 'sweetalert2'
 import SideBar from '../../../components/SideBar.vue'
 import Error from '../../../components/icon/Error.vue'
 import Correct from '../../../components/icon/Correct.vue'
-import { acctoken } from "../../../stores/accresstoken.js";
-import {  getToken} from "../../../composable/Auth.js";
+import { useToken } from "../../../stores/accresstoken.js";
+import { getToken } from "../../../composable/Auth.js";
 
-const token=acctoken()
+const myToken = useToken()
 onBeforeMount(async () => {
-  let newtoken=localStorage.getItem("token")
-  token.settoken(newtoken)
+  // let newtoken = localStorage.getItem("token")
+  // myToken.settoken(newtoken)
 });
 onMounted(async () => {
   const receivedData = ref([])
   receivedData.value = await getCategory()
   receivedData.value.forEach((data) => categoryAll.value.push(data))
 })
+myToken.settoken(localStorage.getItem("token"))
+myToken.decodeJwt()
+const userRole = ref(myToken.jwtPayload.roles)
+const username = ref(myToken.jwtPayload.sub)
+
 const categoryAll = ref([])
 const publishDate = ref(null)
 const publishTime = ref(null)
@@ -202,23 +207,23 @@ const addnewdata = async () => {
     closeTime.value
   )
   newAnnouncement.value.announcementDisplay = display.value == true ? 'Y' : 'N'
-  status.value = await addAnnouncement(newAnnouncement.value,token.gettoken())
-  if(status.value==false){
-    let newtoken= await getToken()
-      if(newtoken==401){
-        Swal.fire({
-      icon: 'error',
-      title: 'YOUR TOKEN HAS EXPIRE',
-      text: 'PLESE LOGIN AND TRY AGAIN',
-      confirmButtonText: 'OK',
-    }).then(()=>{
-      router.push("/login");
-    })
-      }else{
-        token.settoken(newtoken)
-        localStorage.setItem("token",newtoken)
-        status.value = await addAnnouncement(newAnnouncement.value,token.gettoken())
-      }
+  status.value = await addAnnouncement(newAnnouncement.value, myToken.gettoken())
+  if (status.value == false) {
+    let newtoken = await getToken()
+    if (newtoken == 401) {
+      Swal.fire({
+        icon: 'error',
+        title: 'YOUR TOKEN HAS EXPIRE',
+        text: 'PLESE LOGIN AND TRY AGAIN',
+        confirmButtonText: 'OK',
+      }).then(() => {
+        router.push("/login");
+      })
+    } else {
+      myToken.settoken(newtoken)
+      localStorage.setItem("token", newtoken)
+      status.value = await addAnnouncement(newAnnouncement.value, myToken.gettoken())
+    }
   }
   showAlert()
 }
@@ -260,17 +265,17 @@ const showAlert = () => {
 
 <template>
   <div class="w-screen h-screen bg-slate-50 flex flex-row font-noto pb-16 pt-4">
-    <div class="w-1/5 h-full pl-12 pr-8 space-y-2 sticky">
+    <div class="w-1/5 h-full pl-12 pb-2 pr-8 space-y-2 sticky">
       <div class="flex flex-row items-center ann-app-title w-full h-1/6">
         <div class="flex items-center space-x-4 w-full">
           <img src="/images/logo.png" alt="SIT Logo" class="h-14 w-14" />
           <div class="flex flex-col">
-            <h1 class="text-4xl font-bold text-custom-black">SAS</h1>
-            <h2 class="text-custom-blue font-bold">SIT Announcement System</h2>
+            <h1 class="text-4xl font-semibold text-custom-black">SAS</h1>
+            <h2 class="text-custom-blue font-medium">SIT Announcement System</h2>
           </div>
         </div>
       </div>
-      <SideBar />
+      <SideBar :username="username" :role="userRole"/>
     </div>
     <div class="w-4/5 h-full bg-slate-50 rounded-2xl flex flex-col pr-12 space-y-2">
       <div class="flex flex-row items-center ann-app-title w-full h-1/6">

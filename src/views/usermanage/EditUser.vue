@@ -8,22 +8,26 @@ import SideBar from '../../components/SideBar.vue'
 import Error from '../../components/icon/Error.vue'
 import Info from '../../components/icon/Info.vue'
 import Swal from 'sweetalert2'
-import { acctoken } from "../../stores/accresstoken.js";
-import {  getToken,checkToken} from "../../composable/Auth.js";
+import { useToken } from "../../stores/accresstoken.js";
+import { getToken, checkToken } from "../../composable/Auth.js";
 const { params } = useRoute()
 const oldUser = ref({})
 const updatedUser = ref({})
-const token=acctoken()
+const myToken = useToken()
 onBeforeMount(async () => {
-    let newtoken=localStorage.getItem("token")
-  token.settoken(newtoken)
+    // let newtoken = localStorage.getItem("token")
+    // myToken.settoken(newtoken)
     /////////
-    const receivedData = await getUserDetail(params.id,token.gettoken())
+    const receivedData = await getUserDetail(params.id, myToken.gettoken())
     Object.assign(updatedUser.value, receivedData)
     Object.assign(oldUser.value, receivedData)
     // updatedUser.value = receivedData
     // oldUser.value = receivedData
 })
+myToken.settoken(localStorage.getItem("token"))
+myToken.decodeJwt()
+const userRole = ref(myToken.jwtPayload.roles)
+const username = ref(myToken.jwtPayload.sub)
 
 const options = {
     day: "numeric",
@@ -46,9 +50,9 @@ const timezoneName = Intl.DateTimeFormat().resolvedOptions().timeZone;
 const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/g
 
 const validateUserUpdate = computed(() => {
-    return (oldUser.value.username === updatedUser.value.username) && (oldUser.value.name === updatedUser.value.name) && 
-            (oldUser.value.email === updatedUser.value.email || updatedUser.value.email.match(emailPattern) === null) && 
-            (oldUser.value.role === updatedUser.value.role) || validateUsername.value || validateName.value || validateEmail.value
+    return (oldUser.value.username === updatedUser.value.username) && (oldUser.value.name === updatedUser.value.name) &&
+        (oldUser.value.email === updatedUser.value.email || updatedUser.value.email.match(emailPattern) === null) &&
+        (oldUser.value.role === updatedUser.value.role) || validateUsername.value || validateName.value || validateEmail.value
 })
 const validateUsername = computed(() => updatedUser.value.username?.trim().length > 45 || updatedUser.value.username?.trim().length <= 0)
 const validateName = computed(() => updatedUser.value.name?.trim().length > 100 || updatedUser.value.name?.trim().length <= 0)
@@ -67,40 +71,40 @@ const fieldValidWarn = () => {
 
 const status = ref(true)
 const errRes = ref({})
-let curentusername=oldUser.value
-let newusername=updatedUser.value
+let curentusername = oldUser.value
+let newusername = updatedUser.value
 const updateUser = async (user, id) => {
-    status.value = await updateUserById(user, id,token.gettoken())
-    if(status.value!=true){
-    let newtoken= await getToken()
-      if(newtoken==401){
-        Swal.fire({
-      icon: 'error',
-      title: 'YOUR TOKEN HAS EXPIRE',
-      text: 'PLESE LOGIN AND TRY AGAIN',
-      confirmButtonText: 'OK',
-    }).then(()=>{
-      router.push("/login");
-    })
-      }else{
-        token.settoken(newtoken)
-        status.value = await updateUserById(user, id,token.gettoken())
-      }
-  }
+    status.value = await updateUserById(user, id, myToken.gettoken())
+    if (status.value != true) {
+        let newtoken = await getToken()
+        if (newtoken == 401) {
+            Swal.fire({
+                icon: 'error',
+                title: 'YOUR TOKEN HAS EXPIRE',
+                text: 'PLESE LOGIN AND TRY AGAIN',
+                confirmButtonText: 'OK',
+            }).then(() => {
+                router.push("/login");
+            })
+        } else {
+            myToken.settoken(newtoken)
+            status.value = await updateUserById(user, id, myToken.gettoken())
+        }
+    }
     if (status.value === true) {
         showAlert()
-        let newtoken= await getToken()
-        if(newtoken==401){
-        localStorage.clear()
-        Swal.fire({
-      icon: 'info',
-      title: 'YOUR ACCOUNT IS UPDATE',
-      text: 'PLESE LOGIN AGAIN',
-      confirmButtonText: 'OK',
-    }).then(()=>{
-      router.push("/login");
-    })
-      }
+        let newtoken = await getToken()
+        if (newtoken == 401) {
+            localStorage.clear()
+            Swal.fire({
+                icon: 'info',
+                title: 'YOUR ACCOUNT IS UPDATE',
+                text: 'PLESE LOGIN AGAIN',
+                confirmButtonText: 'OK',
+            }).then(() => {
+                router.push("/login");
+            })
+        }
     } else {
         errRes.value = {}
         for (const err of status.value) {
@@ -131,17 +135,17 @@ const showAlert = () => {
 
 <template>
     <div class="w-screen h-screen bg-slate-50 flex flex-row font-noto pb-16 pt-4">
-        <div class="w-1/5 h-full pl-12 pr-8 space-y-2 sticky">
+        <div class="w-1/5 h-full pl-12 pb-2 pr-8 space-y-2 sticky">
             <div class="flex flex-row items-center ann-app-title w-full h-1/6">
                 <div class="flex items-center space-x-4 w-full">
                     <img src="/images/logo.png" alt="SIT Logo" class="h-14 w-14">
                     <div class="flex flex-col">
-                        <h1 class="text-4xl font-bold text-custom-black">SAS</h1>
-                        <h2 class="text-custom-blue font-bold">SIT Announcement System</h2>
+                        <h1 class="text-4xl font-semibold text-custom-black">SAS</h1>
+                        <h2 class="text-custom-blue font-medium">SIT Announcement System</h2>
                     </div>
                 </div>
             </div>
-            <SideBar />
+            <SideBar :username="username" :role="userRole"/>
         </div>
         <div class="w-4/5 h-full bg-slate-50 rounded-2xl flex flex-col pr-12 space-y-2">
             <div class="flex flex-row items-center ann-app-title w-full h-1/6">
@@ -154,7 +158,8 @@ const showAlert = () => {
                 </div>
                 <div class="w-full text-xl py-2 px-10 font-bold justify-center flex flex-col space-y-2">
                     <p class="text-slate-600">Username</p>
-                    <input @keydown="isUsernameValid = null" type="text" v-model.trim="updatedUser.username" placeholder="SpringJava17" maxlength="45" minlength="1" required
+                    <input @keydown="isUsernameValid = null" type="text" v-model.trim="updatedUser.username"
+                        placeholder="SpringJava17" maxlength="45" minlength="1" required
                         class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-username">
                     <p v-if="isUsernameValid !== null" class="flex items-center space-x-2">
                         <Error v-if="isUsernameValid === false" />
@@ -164,8 +169,9 @@ const showAlert = () => {
                     </p>
                 </div>
                 <div class="w-full text-xl py-2 px-10 font-bold justify-center flex flex-col space-y-2">
-                    <p class="text-slate-600">Name</p> 
-                    <input @keydown="isNameValid = null" type="text" v-model.trim="updatedUser.name" placeholder="Path Param" maxlength="100" minlength="1" required
+                    <p class="text-slate-600">Name</p>
+                    <input @keydown="isNameValid = null" type="text" v-model.trim="updatedUser.name"
+                        placeholder="Path Param" maxlength="100" minlength="1" required
                         class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-name">
                     <p v-if="isNameValid !== null" class="flex items-center space-x-2">
                         <Error v-if="isNameValid === false" />
@@ -176,7 +182,8 @@ const showAlert = () => {
                 </div>
                 <div class="w-full text-xl py-2 px-10 font-bold justify-center flex flex-col space-y-2">
                     <p class="text-slate-600">Email</p>
-                    <input @keydown="isEmailValid = null" type="text" v-model.trim="updatedUser.email" placeholder="example@email.com" maxlength="150" minlength="1" required
+                    <input @keydown="isEmailValid = null" type="text" v-model.trim="updatedUser.email"
+                        placeholder="example@email.com" maxlength="150" minlength="1" required
                         class="rounded-md shadow-equal-shadow placeholder:text-gray-400 ann-email">
                     <p v-if="isEmailValid !== null" class="flex items-center space-x-2">
                         <Error v-if="isEmailValid === false" />
@@ -211,7 +218,7 @@ const showAlert = () => {
                     <button
                         class="py-2 px-4 rounded-md bg-green-500 text-white disabled:bg-zinc-500 hover:bg-green-600 ann-button"
                         @click="updateUser(updatedUser, updatedUser.id)" :disabled="validateUserUpdate">Update</button>
-                        <!-- <button
+                    <!-- <button
                         class="py-2 px-4 rounded-md bg-green-500 text-white disabled:bg-zinc-500 hover:bg-green-600 ann-button"
                         @click="updateUser(updatedUser, updatedUser.id)" :class="validateUserUpdate">Update</button> -->
                     <button class="py-2 px-4 rounded-md bg-red-500 text-white hover:bg-red-700 ann-button"
