@@ -105,7 +105,7 @@ router.beforeEach(async (to, from, next) => {
   const isAuthenticated = () => {
     return token || refreshToken;
   };
-  if (!isAuthenticated() && to.name !== "login" && to.name !== "userview" && to.name !== "UserViewDetail") {
+  if (!isAuthenticated() && to.name !== "login" && to.name !== "userview" && to.name !== "UserViewDetail" && to.name!== "Start") {
     next("/login");
   } else if (isAuthenticated()) {
     if (role !== 'admin' && to.path.startsWith('/admin/user')) {
