@@ -5,6 +5,7 @@ import { useMode } from "../../../stores/mode.js";
 import router from "../../../router";
 import Swal from 'sweetalert2'
 import earth from '../../../components/icon/SystemUiconsGlobe.vue'
+import { getToken, checkToken } from "../../../composable/Auth";
 
 const totalpage = ref(0);
 const pageSize = ref(0);
@@ -218,6 +219,22 @@ const handleCheckboxChange = () => {
 }
 
 const isAuthenticated = localStorage.getItem('refreshtoken')
+const isExpired = async () => {
+  const token = localStorage.getItem('token')
+
+  let result = await checkToken(token);  
+  if (result !== 200) {
+    let newToken = await getToken()
+    if (newToken === 401) {
+      router.push('/login')
+    } else {
+      localStorage.setItem('token', newToken)
+      router.push('/admin/announcement')
+    }
+  } else {
+    router.push('/admin/announcement')
+  }
+}
 </script>
 
 <template>
@@ -269,8 +286,7 @@ const isAuthenticated = localStorage.getItem('refreshtoken')
             Category</span>
         </a>
       </div>
-      <button v-if="isAuthenticated" @click="router.push('/admin/announcement')" class="absolute bottom-0 text-center text-lg text-gray-600 rounded-xl border-2 py-3 px-7 hover:bg-custom-blue hover:text-white">Back</button>
-      <button v-else @click="router.push('/login')" class="absolute bottom-0 text-center text-lg text-gray-600 rounded-xl border-2 py-3 px-7 hover:bg-custom-blue hover:text-white">Login</button>
+      <button @click="isExpired" class="absolute bottom-0 text-center text-lg text-gray-600 rounded-xl border-2 py-3 px-7 hover:bg-custom-blue hover:text-white">{{ isAuthenticated ? 'Back' : 'Login' }}</button>
     </div>
     <div
       class="h-full bg-slate-50 rounded-2xl flex flex-col pr-12 space-y-2 min-[769px]:w-4/6 min-[1025px]:w-[75%] min-[1440px]:w-4/5">
