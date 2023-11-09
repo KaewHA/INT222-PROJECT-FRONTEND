@@ -6,6 +6,7 @@ import router from "../../../router";
 import Swal from 'sweetalert2'
 import earth from '../../../components/icon/SystemUiconsGlobe.vue'
 import { getToken, checkToken } from "../../../composable/Auth";
+import { sendOTP } from "../../../composable/subscribe";
 
 const totalpage = ref(0);
 const pageSize = ref(0);
@@ -222,7 +223,7 @@ const isAuthenticated = localStorage.getItem('refreshtoken')
 const isExpired = async () => {
   const token = localStorage.getItem('token')
 
-  let result = await checkToken(token);  
+  let result = await checkToken(token);
   if (result !== 200) {
     let newToken = await getToken()
     if (newToken === 401) {
@@ -235,71 +236,123 @@ const isExpired = async () => {
     router.push('/admin/announcement')
   }
 }
-const categoryselect=(id)=>{
-  if(id===1){
-          category.value = 0
-          changeCategory()
-  }else if(id===2){
+const categoryselect = (id) => {
+  if (id === 1) {
+    category.value = 0
+    changeCategory()
+  } else if (id === 2) {
     let x = allCategory.value.find((x) => x.categoryName == "ทั่วไป")
-          category.value = x.categoryID
-          changeCategory()
-}
-else if(id===3){
-  let x = allCategory.value.find((x) => x.categoryName == "ทุนการศึกษา")
-          category.value = x.categoryID
-          changeCategory()
-}
-else if(id===4){
-  let x = allCategory.value.find((x) => x.categoryName == "ฝึกงาน")
-          category.value = x.categoryID
-          changeCategory()
-}
-else if(id===5){
-  let x = allCategory.value.find((x) => x.categoryName == "หางาน")
-          category.value = x.categoryID
-          changeCategory()
-}
-const content= document.querySelector('#Choose')
-content.classList.add('hidemodal-content')
-setTimeout(() => {
-  Choosecategory.value=false
-}, "230");
-// content.classList.remove('hidemodal-content')
+    category.value = x.categoryID
+    changeCategory()
+  }
+  else if (id === 3) {
+    let x = allCategory.value.find((x) => x.categoryName == "ทุนการศึกษา")
+    category.value = x.categoryID
+    changeCategory()
+  }
+  else if (id === 4) {
+    let x = allCategory.value.find((x) => x.categoryName == "ฝึกงาน")
+    category.value = x.categoryID
+    changeCategory()
+  }
+  else if (id === 5) {
+    let x = allCategory.value.find((x) => x.categoryName == "หางาน")
+    category.value = x.categoryID
+    changeCategory()
+  }
+  const content = document.querySelector('#Choose')
+  content.classList.add('hidemodal-content')
+  setTimeout(() => {
+    Choosecategory.value = false
+  }, "230");
+  // content.classList.remove('hidemodal-content')
 
 }
 const Subscribe = ref(false)
 const Choosecategory = ref(false)
+
+const inputEmail = ref('')
+const emailToken = ref(null)
+const getEmailToken = async () => {
+  const emailObj = {email: inputEmail.value}
+  if (emailObj) {
+    emailToken.value = await sendOTP(emailObj)
+  }
+  console.log(emailToken.value.token);
+}
 </script>
 
 <template>
-  <div class="fixed inset-0   bg-black  bg-opacity-25 z-30 flex justify-center items-center" v-if="Subscribe" > 
-    <div class="modal-overlay bg-transparent w-full h-full z-40 modalscope" @click="Subscribe=!Subscribe"></div>
-    <div class="w-3/5 h-4/6 bg-white rounded-xl z-50 absolute modal-content">
+  <div class="fixed inset-0 bg-black bg-opacity-25 z-30 flex justify-center items-center" v-if="Subscribe">
+    <div class="modal-overlay bg-transparent w-full h-full z-40 modalscope" @click="Subscribe = !Subscribe"></div>
+    <div class="w-[30%] bg-white rounded-xl z-50 absolute py-8 px-4 modal-content">
+      <div class="w-full flex flex-col justify-center items-center font-noto">
+        <div>
+          <img src="/images/mailbox.png" alt="" width="128">
+        </div>
+        <h1 class="text-center text-xl font-semibold text-custom-blue mt-3">SUBSCRIBE</h1>
+        <h2 class="text-gray-500 text-sm text-center mt-3">Subscribe to new announcement.</h2>
+        <div class="w-full flex flex-row justify-center mt-7">
+          <input v-model="inputEmail" class="w-3/6 rounded-l-full text-sm bg-gray-200 border-0 placeholder:text-xs placeholder:text-slate-400 focus:ring-0" type="email" placeholder="ENTER YOUR EMAIL" required>
+          <button @click="getEmailToken" class="rounded-r-full bg-custom-blue text-white text-xs px-4 py-2">SUBSCRIBE</button>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="fixed inset-0   bg-black  bg-opacity-25 z-30 flex justify-center items-center" v-if="Choosecategory " > 
-    <div class="modal-overlay bg-transparent w-full h-full z-40 modalscope" @click="Choosecategory =!Choosecategory "></div>
-    <div class="w-2/5 h-2/6 bg-white rounded-xl z-50 absolute modal-content " id="Choose">
-      <div class="w-full  flex justify-center space-x-3 text-custom-blue ">
-        <span class=" material-symbols-outlined text-4xl pt-4">list</span>
-           <p1 class="pt-4 text-3xl font-bold ">Choose Category</p1>
+  <div class="fixed inset-0 bg-black  bg-opacity-25 z-30 flex justify-center items-center" v-if="Choosecategory">
+    <div class="modal-overlay bg-transparent w-full h-full z-40 modalscope" @click="Choosecategory = !Choosecategory">
+    </div>
+    <div class="w-2/5 h-2/6 bg-white rounded-xl z-50 absolute modal-content" id="Choose">
+      <div class="w-full flex justify-center items-center space-x-3 text-custom-blue pt-6">
+        <span class="material-symbols-outlined text-4xl">list</span>
+        <p class="text-3xl font-bold font-noto">Choose Category</p>
       </div>
-      <div class="w-full h-5/6 flex flex-wrap p-2 space-x-3 justify-center items-center">
-        <div class="w-2/12 h-3/6 hover:bg-custom-blue  rounded-xl bg-slate-300 transition duration-300 flex justify-center items-center flex-col  cursor-pointer " @click="categoryselect(1)">
-          <div class="hover:-translate-y-1 w-full h-full flex justify-center items-center flex-col transition duration-500 text-black hover:text-white"><span class="material-symbols-outlined ">apps</span><p>ทั้งหมด</p></div>
+      <div class="w-full h-5/6 flex flex-wrap space-x-3 justify-center items-center text-gray-400">
+        <div
+          class="w-2/12 h-3/6 hover:bg-custom-blue rounded-xl bg-white transition duration-300 flex justify-center items-center flex-col shadow-md cursor-pointer"
+          @click="categoryselect(1)">
+          <div
+            class="hover:-translate-y-1 w-full h-full flex justify-center items-center flex-col transition hover:text-white duration-500">
+            <span class="material-symbols-outlined">apps</span>
+            <p>ทั้งหมด</p>
           </div>
-          <div class="w-2/12 h-3/6 hover:bg-custom-blue  rounded-xl bg-slate-300 transition duration-300 flex justify-center items-center flex-col text-black hover:text-white cursor-pointer" @click="categoryselect(2)">
-            <div class="hover:-translate-y-1 w-full h-full flex justify-center items-center flex-col transition duration-500 text-black hover:text-white">
-            <span class="material-symbols-outlined ">info</span><p>ทั่วไป</p></div></div>
-          <div class="w-2/12 h-3/6 hover:bg-custom-blue  rounded-xl bg-slate-300 transition duration-300 flex justify-center items-center flex-col text-black hover:text-white cursor-pointer" @click="categoryselect(3)">
-            <div class="hover:-translate-y-1 w-full h-full flex justify-center items-center flex-col transition duration-500 text-black hover:text-white">
-            <span class="material-symbols-outlined ">attach_money</span><p>ทุนการศึกษา</p></div></div>
-          <div class="w-2/12 h-3/6 hover:bg-custom-blue  rounded-xl bg-slate-300 transition duration-300 flex justify-center items-center flex-col text-black hover:text-white cursor-pointer" @click="categoryselect(4)">
-            <div class="hover:-translate-y-1 w-full h-full flex justify-center items-center flex-col transition duration-500 text-black hover:text-white">
-            <span class="material-symbols-outlined ">work_history</span><p>ฝึกงาน</p></div></div>
-        <div class="w-2/12 h-3/6 hover:bg-custom-blue  rounded-xl bg-slate-300 transition duration-300 flex justify-center items-center flex-col text-black hover:text-white cursor-pointer" @click="categoryselect(5)">
-          <div class="hover:-translate-y-1 w-full h-full flex justify-center items-center flex-col transition duration-500 text-black hover:text-white">
-          <span class="material-symbols-outlined ">work</span><p>หางาน</p></div></div>
+        </div>
+        <div
+          class="w-2/12 h-3/6 hover:bg-custom-blue rounded-xl bg-white transition duration-300 flex justify-center items-center flex-col shadow-md cursor-pointer"
+          @click="categoryselect(2)">
+          <div
+            class="hover:-translate-y-1 w-full h-full flex justify-center items-center flex-col transition hover:text-white duration-500">
+            <span class="material-symbols-outlined ">info</span>
+            <p>ทั่วไป</p>
+          </div>
+        </div>
+        <div
+          class="w-2/12 h-3/6 hover:bg-custom-blue rounded-xl bg-white transition duration-300 flex justify-center items-center flex-col shadow-md cursor-pointer"
+          @click="categoryselect(3)">
+          <div
+            class="hover:-translate-y-1 w-full h-full flex justify-center items-center flex-col transition hover:text-white duration-500">
+            <span class="material-symbols-outlined ">attach_money</span>
+            <p>ทุนการศึกษา</p>
+          </div>
+        </div>
+        <div
+          class="w-2/12 h-3/6 hover:bg-custom-blue rounded-xl bg-white transition duration-300 flex justify-center items-center flex-col shadow-md cursor-pointer"
+          @click="categoryselect(4)">
+          <div
+            class="hover:-translate-y-1 w-full h-full flex justify-center items-center flex-col transition hover:text-white duration-500">
+            <span class="material-symbols-outlined ">work_history</span>
+            <p>ฝึกงาน</p>
+          </div>
+        </div>
+        <div
+          class="w-2/12 h-3/6 hover:bg-custom-blue rounded-xl bg-white transition duration-300 flex justify-center items-center flex-col shadow-md  cursor-pointer"
+          @click="categoryselect(5)">
+          <div
+            class="hover:-translate-y-1 w-full h-full flex justify-center items-center flex-col transition hover:text-white duration-500">
+            <span class="material-symbols-outlined ">work</span>
+            <p>หางาน</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -341,7 +394,7 @@ const Choosecategory = ref(false)
         </a>
       </div>
       <div class="w-full bg-white rounded-2xl shadow-md text-gray-400 ">
-        <a href="#" @click="Subscribe=!Subscribe" 
+        <a href="#" @click="Subscribe = !Subscribe"
           class="py-8 pr-4 text-xl flex items-center space-x-2 hover:bg-slate-100 rounded-t-2xl hover:text-custom-blue active:text-custom-blue group ann-menu">
           <span class="w-4 h-8 bg-custom-blue invisible group-hover:visible rounded-r-lg"></span>
           <span
@@ -351,7 +404,7 @@ const Choosecategory = ref(false)
         </a>
       </div>
       <div class="w-full bg-white rounded-2xl shadow-md text-gray-400 ">
-        <a href="#" @click="Choosecategory =!Choosecategory "
+        <a href="#" @click="Choosecategory = !Choosecategory"
           class="py-8 pr-4 text-xl flex items-center space-x-2 hover:bg-slate-100 rounded-t-2xl hover:text-custom-blue active:text-custom-blue group ann-menu">
           <span class="w-4 h-8 bg-custom-blue invisible group-hover:visible rounded-r-lg"></span>
           <span
@@ -361,7 +414,9 @@ const Choosecategory = ref(false)
             Category</span>
         </a>
       </div>
-      <button @click="isExpired" class="absolute bottom-0 text-center text-lg text-gray-600 rounded-xl border-2 py-3 px-7 hover:bg-custom-blue hover:text-white">{{ isAuthenticated ? 'Back' : 'Login' }}</button>
+      <button @click="isExpired"
+        class="absolute bottom-0 text-center text-lg text-gray-600 rounded-xl border-2 py-3 px-7 hover:bg-custom-blue hover:text-white">{{
+          isAuthenticated ? 'Back' : 'Login' }}</button>
     </div>
     <div
       class="h-full bg-slate-50 rounded-2xl flex flex-col pr-12 space-y-2 min-[769px]:w-4/6 min-[1025px]:w-[75%] min-[1440px]:w-4/5">
@@ -452,7 +507,8 @@ const Choosecategory = ref(false)
           <label class="flex text-slate-500 text-base items-center font-bold">Category : </label>
           <select name="categories" class="border-gray-400 rounded-sm text-sm py-1">
             <option selected>ทั้งหมด</option>
-            <option @click="changeCategory" v-for="category in allCategory" :value="category.categoryName">{{ category.categoryName }}</option>
+            <option @click="changeCategory" v-for="category in allCategory" :value="category.categoryName">{{
+              category.categoryName }}</option>
           </select>
         </div>
         <div class="flex flex-col justify-center">
@@ -522,32 +578,26 @@ const Choosecategory = ref(false)
 }
 
 .modalscope {
-    animation: fadeIn 0.3s ease-out;
-}
-
-.modalscopeout {
-    animation: fadeOUT 0.3s ease-out;
+  animation: fadeIn 0.3s ease-out;
 }
 
 .modal-content {
- 
-    animation: pulse 0.3s ease-out;
+  animation: pulse 0.3s ease-out;
 }
+
 .hidemodal-content {
- 
- animation: pulsereverse 0.3s ease-out;
+  animation: pulsereverse 0.3s ease-out;
 }
 
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
-
-
 
 
 @keyframes pulse {
@@ -555,25 +605,38 @@ const Choosecategory = ref(false)
     opacity: 0;
     transform: scale(.3);
   }
+
   50% {
     opacity: 1;
     transform: scale(1.05);
   }
-  70% { transform: scale(.9); }
-  100% { transform: scale(1); }
+
+  70% {
+    transform: scale(.9);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 @keyframes pulsereverse {
-  0% { transform: scale(1); }
-  25% { transform: scale(.95); }
+  0% {
+    transform: scale(1);
+  }
+
+  25% {
+    transform: scale(.95);
+  }
+
   50% {
     opacity: 1;
     transform: scale(1.1);
   }
+
   100% {
     opacity: 0;
     transform: scale(.3);
-  } 
+  }
 }
-
 </style>
