@@ -235,9 +235,74 @@ const isExpired = async () => {
     router.push('/admin/announcement')
   }
 }
+const categoryselect=(id)=>{
+  if(id===1){
+          category.value = 0
+          changeCategory()
+  }else if(id===2){
+    let x = allCategory.value.find((x) => x.categoryName == "ทั่วไป")
+          category.value = x.categoryID
+          changeCategory()
+}
+else if(id===3){
+  let x = allCategory.value.find((x) => x.categoryName == "ทุนการศึกษา")
+          category.value = x.categoryID
+          changeCategory()
+}
+else if(id===4){
+  let x = allCategory.value.find((x) => x.categoryName == "ฝึกงาน")
+          category.value = x.categoryID
+          changeCategory()
+}
+else if(id===5){
+  let x = allCategory.value.find((x) => x.categoryName == "หางาน")
+          category.value = x.categoryID
+          changeCategory()
+}
+const content= document.querySelector('#Choose')
+content.classList.add('hidemodal-content')
+setTimeout(() => {
+  Choosecategory.value=false
+}, "230");
+// content.classList.remove('hidemodal-content')
+
+}
+const Subscribe = ref(false)
+const Choosecategory = ref(false)
 </script>
 
 <template>
+  <div class="fixed inset-0   bg-black  bg-opacity-25 z-30 flex justify-center items-center" v-if="Subscribe" > 
+    <div class="modal-overlay bg-transparent w-full h-full z-40 modalscope" @click="Subscribe=!Subscribe"></div>
+    <div class="w-3/5 h-4/6 bg-white rounded-xl z-50 absolute modal-content">
+    </div>
+  </div>
+  <div class="fixed inset-0   bg-black  bg-opacity-25 z-30 flex justify-center items-center" v-if="Choosecategory " > 
+    <div class="modal-overlay bg-transparent w-full h-full z-40 modalscope" @click="Choosecategory =!Choosecategory "></div>
+    <div class="w-2/5 h-2/6 bg-white rounded-xl z-50 absolute modal-content " id="Choose">
+      <div class="w-full  flex justify-center space-x-3 text-custom-blue ">
+        <span class=" material-symbols-outlined text-4xl pt-4">list</span>
+           <p1 class="pt-4 text-3xl font-bold ">Choose Category</p1>
+      </div>
+      <div class="w-full h-5/6 flex flex-wrap p-2 space-x-3 justify-center items-center">
+        <div class="w-2/12 h-3/6 hover:bg-custom-blue  rounded-xl bg-slate-300 transition duration-300 flex justify-center items-center flex-col  cursor-pointer " @click="categoryselect(1)">
+          <div class="hover:-translate-y-1 w-full h-full flex justify-center items-center flex-col transition duration-500 text-black hover:text-white"><span class="material-symbols-outlined ">apps</span><p>ทั้งหมด</p></div>
+          </div>
+          <div class="w-2/12 h-3/6 hover:bg-custom-blue  rounded-xl bg-slate-300 transition duration-300 flex justify-center items-center flex-col text-black hover:text-white cursor-pointer" @click="categoryselect(2)">
+            <div class="hover:-translate-y-1 w-full h-full flex justify-center items-center flex-col transition duration-500 text-black hover:text-white">
+            <span class="material-symbols-outlined ">info</span><p>ทั่วไป</p></div></div>
+          <div class="w-2/12 h-3/6 hover:bg-custom-blue  rounded-xl bg-slate-300 transition duration-300 flex justify-center items-center flex-col text-black hover:text-white cursor-pointer" @click="categoryselect(3)">
+            <div class="hover:-translate-y-1 w-full h-full flex justify-center items-center flex-col transition duration-500 text-black hover:text-white">
+            <span class="material-symbols-outlined ">attach_money</span><p>ทุนการศึกษา</p></div></div>
+          <div class="w-2/12 h-3/6 hover:bg-custom-blue  rounded-xl bg-slate-300 transition duration-300 flex justify-center items-center flex-col text-black hover:text-white cursor-pointer" @click="categoryselect(4)">
+            <div class="hover:-translate-y-1 w-full h-full flex justify-center items-center flex-col transition duration-500 text-black hover:text-white">
+            <span class="material-symbols-outlined ">work_history</span><p>ฝึกงาน</p></div></div>
+        <div class="w-2/12 h-3/6 hover:bg-custom-blue  rounded-xl bg-slate-300 transition duration-300 flex justify-center items-center flex-col text-black hover:text-white cursor-pointer" @click="categoryselect(5)">
+          <div class="hover:-translate-y-1 w-full h-full flex justify-center items-center flex-col transition duration-500 text-black hover:text-white">
+          <span class="material-symbols-outlined ">work</span><p>หางาน</p></div></div>
+      </div>
+    </div>
+  </div>
   <div class="w-screen h-screen bg-slate-50 flex flex-row font-noto pb-16 pt-4 max-[768px]:hidden">
     <div class="h-full pl-12 pr-8 space-y-2 sticky min-[769px]:w-2/6 min-[1025px]:w-[25%] min-[1441px]:w-1/5">
       <div class="flex flex-row items-center ann-app-title w-full h-1/6">
@@ -276,7 +341,17 @@ const isExpired = async () => {
         </a>
       </div>
       <div class="w-full bg-white rounded-2xl shadow-md text-gray-400 ">
-        <a href="#" @click="showAlert"
+        <a href="#" @click="Subscribe=!Subscribe" 
+          class="py-8 pr-4 text-xl flex items-center space-x-2 hover:bg-slate-100 rounded-t-2xl hover:text-custom-blue active:text-custom-blue group ann-menu">
+          <span class="w-4 h-8 bg-custom-blue invisible group-hover:visible rounded-r-lg"></span>
+          <span
+            class="duration-200 material-symbols-outlined group-hover:ml-4 min-[769px]:text-2xl min-[1025px]:text-3xl min-[1441px]:text-4xl">stars</span>
+          <span
+            class="flex items-center duration-200 font-medium group-hover:ml-4 min-[769px]:text-base min-[1025px]:text-base min-[1441px]:text-lg">Subscribe</span>
+        </a>
+      </div>
+      <div class="w-full bg-white rounded-2xl shadow-md text-gray-400 ">
+        <a href="#" @click="Choosecategory =!Choosecategory "
           class="py-8 pr-4 text-xl flex items-center space-x-2 hover:bg-slate-100 rounded-t-2xl hover:text-custom-blue active:text-custom-blue group ann-menu">
           <span class="w-4 h-8 bg-custom-blue invisible group-hover:visible rounded-r-lg"></span>
           <span
@@ -445,4 +520,60 @@ const isExpired = async () => {
 ::-webkit-scrollbar {
   display: none;
 }
+
+.modalscope {
+    animation: fadeIn 0.3s ease-out;
+}
+
+.modalscopeout {
+    animation: fadeOUT 0.3s ease-out;
+}
+
+.modal-content {
+ 
+    animation: pulse 0.3s ease-out;
+}
+.hidemodal-content {
+ 
+ animation: pulsereverse 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+
+
+
+@keyframes pulse {
+  0% {
+    opacity: 0;
+    transform: scale(.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% { transform: scale(.9); }
+  100% { transform: scale(1); }
+}
+
+@keyframes pulsereverse {
+  0% { transform: scale(1); }
+  25% { transform: scale(.95); }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(.3);
+  } 
+}
+
 </style>
