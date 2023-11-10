@@ -6,7 +6,7 @@ import router from "../../../router";
 import Swal from 'sweetalert2'
 import earth from '../../../components/icon/SystemUiconsGlobe.vue'
 import { getToken, checkToken } from "../../../composable/Auth";
-import { sendOTP } from "../../../composable/subscribe";
+import { sendOTP,CHECKOTP } from "../../../composable/subscribe";
 import jwtDecode from "jwt-decode";
 
 const totalpage = ref(0);
@@ -302,7 +302,7 @@ const getEmailToken = async () => {
       setTimeout(() => {
     input.classList.add('hidden')
     loading.value=true
-  }, "980");
+  }, "950");
     emailToken.value = await sendOTP(emailObj)
     input.classList.remove('hidden')
     input.classList.remove('hidemodal-contentslide')
@@ -311,7 +311,7 @@ const getEmailToken = async () => {
   let datatoken=decodeJwt(emailToken.value.token)
   step1.value=false
   step2.value=true
-  OTPREF.placeholder="REF: "+datatoken.REF
+  OTPREF.placeholder="REF : "+datatoken.REF
 }else{
   ////เมลผิด
 }
@@ -347,11 +347,23 @@ const resentEmailToken = async () => {
     loading.value=false
   }
   let datatoken=decodeJwt(emailToken.value.token)
-  OTPREF.placeholder="REF: "+datatoken.REF
+  OTPREF.placeholder="REF : "+datatoken.REF
 }
 //////////////////////SENT OTP///////////////////////////
 const inputOTP=ref("")
-
+const status=ref(0)
+const CheckOTPFUND = async () => {
+  if(inputOTP.value.length===5){
+  const CHECK = {otp: inputOTP.value,token:emailToken.value.token}
+  let input =document.querySelector('#inputotp')
+  if (inputOTP) {
+    status.value = await  CHECKOTP(CHECK)
+  }
+  console.log(status.value);
+}else{
+  ////เมลผิด
+}
+}
 </script>
 
 <template>
@@ -377,13 +389,12 @@ const inputOTP=ref("")
         <div class="absolute top-0 left-6  rounded-full   cursor-pointer w-[5%] border bg-slate-200 hover:bg-custom-blue hover:-translate-x-3 transition duration-400 flex justify-center hover:text-white px-4" @click="backtoemail" ><span class=" material-symbols-outlined  justify-center text-xl " >arrow_back</span></div>
         <h1 class="text-center text-xl font-semibold text-custom-blue mt-3">Verify email</h1>
         <h2 class="text-gray-500 text-sm text-center mt-3">We have sent OTP on your email.</h2>
-        <div class="w-full flex flex-row justify-center mt-7 input ">
+        <div class="w-full flex flex-row justify-center mt-7 " >
           <input v-model="inputOTP" class="w-3/6 rounded-l-full text-sm bg-gray-200 border-0 placeholder:text-xs placeholder:text-slate-400 focus:ring-0" type="email" id="OTPINPUT" required>
-          <button @click="getEmailToken" class="rounded-r-full bg-custom-blue text-white text-xs px-4 py-2">ENTER</button>
+          <button @click="CheckOTPFUND" class="rounded-r-full bg-custom-blue text-white text-xs px-4 py-2">ENTER</button>
         </div>
         <div class="mt-3 text-gray-500 text-sm mr-3" id="resent">Didn't you receive a OTP? <span class="font-bold underline cursor-pointer" @click="resentEmailToken"> Resent OTP</span></div>
         <div class="mt-3 text-gray-500 text-sm mr-3 hidden" id="resented">We already have sent you email again.</div>
-        <div class="lds-dual-ring w-7 h-7 " id="loading" v-if="loading"></div>
       </div>
     </div>
   </div>

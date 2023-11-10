@@ -17,4 +17,24 @@ async function sendOTP(email) {
   }
 }
 
-export { sendOTP };
+
+async function CHECKOTP(obj) {
+  try {
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/api/sub/otp`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(obj),
+    });
+    if (res.ok) {
+      return res.status
+    } else {
+      console.log(JSON.stringify(obj));
+      return res.status
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+export { sendOTP,CHECKOTP };
