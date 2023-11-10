@@ -6,7 +6,7 @@ import router from "../../../router";
 import Swal from 'sweetalert2'
 import earth from '../../../components/icon/SystemUiconsGlobe.vue'
 import { getToken, checkToken } from "../../../composable/Auth";
-import { sendOTP,CHECKOTP } from "../../../composable/subscribe";
+import { sendOTP, CHECKOTP } from "../../../composable/subscribe";
 import jwtDecode from "jwt-decode";
 
 const totalpage = ref(0);
@@ -261,23 +261,31 @@ const categoryselect = (id) => {
     category.value = x.categoryID
     changeCategory()
   }
- closemodal("#Choose")
+  closemodal("#Choose")
 }
-const closemodal=(id)=>{
+const closemodal = (id) => {
   const content = document.querySelector(id)
   content.classList.add('hidemodal-content')
+  inputEmail.value = ''
+  inputOTP.value = ''
   setTimeout(() => {
     Choosecategory.value = false
-    Subscribe.value=false
+    Subscribe.value = false
   }, "230");
 }
-  const backtoemail=()=>{
-  step1.value=true
-  step2.value=false
-  step3.value=false
-  console.log("sss");
+
+const backtoemail = () => {
+  let resent = document.querySelector('#resent')
+  let resentmsg = document.querySelector('#resented')
+  resent.classList.remove('hidden')
+  resentmsg.classList.add('hidden')
+  inputOTP.value = ''
+  loading.value = false
+  step1.value = true
+  step2.value = false
+  step3.value = false
 }
- //////////////////////SENT OTP///////////////////////////
+//////////////////////SENT OTP///////////////////////////
 function validateEmail(email) {
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailPattern.test(email);
@@ -287,82 +295,108 @@ const Subscribe = ref(false)
 const Choosecategory = ref(false)
 const loading = ref(false)
 const inputEmail = ref('')
+const emailValue = ref('')
 const emailToken = ref(null)
-const step1=ref(true)
-const step2=ref(false)
-const step3=ref(false)
-const step4=ref(false)
+const step1 = ref(true)
+const step2 = ref(false)
+const step3 = ref(false)
+const step4 = ref(false)
+const OTPref = ref('')
+
 const getEmailToken = async () => {
-  if(validateEmail(inputEmail.value)){
-  const emailObj = {email: inputEmail.value}
-  let input =document.querySelector('.input')
-  let OTPREF =document.querySelector('#OTPINPUT')
-  if (emailObj) {
+  emailValue.value = inputEmail.value
+  if (validateEmail(inputEmail.value)) {
+    const emailObj = { email: inputEmail.value }
+    let input = document.querySelector('.input')
+    if (emailObj) {
       input.classList.add('hidemodal-contentslide')
       setTimeout(() => {
-    input.classList.add('hidden')
-    loading.value=true
-  }, "950");
-    emailToken.value = await sendOTP(emailObj)
-    input.classList.remove('hidden')
-    input.classList.remove('hidemodal-contentslide')
-    loading.value=false
+        input.classList.add('hidden')
+        loading.value = true
+      }, "950");
+      emailToken.value = await sendOTP(emailObj)
+      input.classList.remove('hidden')
+      input.classList.remove('hidemodal-contentslide')
+      loading.value = false
+    }
+    let datatoken = decodeJwt(emailToken.value.token)
+    step1.value = false
+    step2.value = true
+    OTPref.value = `REF : ${datatoken.REF}`
+  } else {
+    ////เมลผิด
   }
-  let datatoken=decodeJwt(emailToken.value.token)
-  step1.value=false
-  step2.value=true
-  OTPREF.placeholder="REF : "+datatoken.REF
-}else{
-  ////เมลผิด
-}
 }
 const decodeJwt = (token) => {
-      const base64Url = token.split(".")[1];
-      const base64 = base64Url?.replace(/-/g, "+")?.replace(/_/g, "/");
-      const jsonPayload = decodeURIComponent(
-        atob(base64)
-          .split("")
-          .map((c) => {
-            return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-          })
-          .join("")
-      );
-      return JSON.parse(jsonPayload);
-  }
+  const base64Url = token.split(".")[1];
+  const base64 = base64Url?.replace(/-/g, "+")?.replace(/_/g, "/");
+  const jsonPayload = decodeURIComponent(
+    atob(base64)
+      .split("")
+      .map((c) => {
+        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+      })
+      .join("")
+  );
+  return JSON.parse(jsonPayload);
+}
 const resentEmailToken = async () => {
-  const emailObj = {email: "nutanon.46@gmail.com"}
-  let resent =document.querySelector('#resent')
-  let resentmsg =document.querySelector('#resented')
-  let OTPREF =document.querySelector('#OTPINPUT')
+  const emailObj = { email: emailValue.value }
+  let resent = document.querySelector('#resent')
+  let resentmsg = document.querySelector('#resented')
   if (emailObj) {
-      resent.classList.add('hidden')
-      resentmsg.classList.remove('hidden')
-      setTimeout(() => {
-    // input.classList.add('hidden')
-    loading.value=true
-  }, "980");
+    resent.classList.add('hidden')
+    resentmsg.classList.remove('hidden')
+    setTimeout(() => {
+      // input.classList.add('hidden')
+      loading.value = true
+    }, "980");
     emailToken.value = await sendOTP(emailObj)
     // input.classList.remove('hidden')
     // input.classList.remove('hidemodal-contentslide')
-    loading.value=false
+    loading.value = false
   }
-  let datatoken=decodeJwt(emailToken.value.token)
-  OTPREF.placeholder="REF : "+datatoken.REF
+  let datatoken = decodeJwt(emailToken.value.token)
+  OTPref.value = `REF : ${datatoken.REF}`
+  console.log(datatoken);
 }
 //////////////////////SENT OTP///////////////////////////
-const inputOTP=ref("")
-const status=ref(0)
+const inputOTP = ref("")
+const status = ref(0)
 const CheckOTPFUND = async () => {
-  if(inputOTP.value.length===5){
-  const CHECK = {otp: inputOTP.value,token:emailToken.value.token}
-  let input =document.querySelector('#inputotp')
-  if (inputOTP) {
-    status.value = await  CHECKOTP(CHECK)
+  let errorOTPBox = document.querySelector('.otp-alert-box')
+  let errorOTPMsg = document.querySelector('.otp-alert-message')
+  if (inputOTP.value.length === 5) {
+    const CHECK = { otp: inputOTP.value, token: emailToken.value.token }
+    if (inputOTP.value) {
+      status.value = await CHECKOTP(CHECK)
+      if (status.value === 200) {
+        step2.value = false
+        step3.value = true
+      } else if (status.value === 400) {
+        console.log('kuy jom');
+        errorOTPBox.classList.remove('hidden')
+        errorOTPBox.classList.add('animate-jump')
+        errorOTPBox.classList.add('animate-once')
+        errorOTPBox.classList.add('animate-ease-in-out')
+        errorOTPMsg.innerHTML = "Your OTP is not correct!"
+      } else if (status.value === 401) {
+        errorOTPBox.classList.remove('hidden')
+        errorOTPBox.classList.add('animate-jump')
+        errorOTPBox.classList.add('animate-once')
+        errorOTPBox.classList.add('animate-ease-in-out')
+        errorOTPMsg.innerHTML = "Verify Timeout!"
+      }
+    }
+    console.log(status.value);
+  } else {
+    ////เมลผิด
   }
-  console.log(status.value);
-}else{
-  ////เมลผิด
 }
+
+const closeAlert = (ele) => {
+  let element = document.querySelector(ele)
+  element.classList.add('hidden')
 }
 </script>
 
@@ -370,30 +404,43 @@ const CheckOTPFUND = async () => {
   <div class="fixed inset-0 bg-black bg-opacity-25 z-30 flex justify-center items-center" v-if="Subscribe">
     <div class="modal-overlay bg-transparent w-full h-full z-40 modalscope" @click="closemodal('#Subcribe')"></div>
     <div class="w-[30%] bg-white rounded-xl z-50 absolute py-8 px-4 modal-content" id="Subcribe">
-      <div class="w-full flex flex-col justify-center items-center font-noto " v-show="step1" >
+      <div class="w-full flex flex-col justify-center items-center font-noto " v-show="step1">
         <div>
           <img src="/images/mailbox.png" alt="" width="128">
         </div>
         <h1 class="text-center text-xl font-semibold text-custom-blue mt-3">SUBSCRIBE</h1>
         <h2 class="text-gray-500 text-sm text-center mt-3">Subscribe to new announcement.</h2>
-        <div class="w-full flex flex-row justify-center mt-7 input ">
-          <input v-model="inputEmail" class="w-3/6 rounded-l-full text-sm bg-gray-200 border-0 placeholder:text-xs placeholder:text-slate-400 focus:ring-0" type="email" placeholder="ENTER YOUR EMAIL" required>
-          <button @click="getEmailToken" class="rounded-r-full bg-custom-blue text-white text-xs px-4 py-2">SUBSCRIBE</button>
+        <div class="w-full flex flex-row justify-center mt-7 input" :class="loading ? 'hidden' : ''">
+          <input v-model="inputEmail"
+            class="w-3/6 rounded-l-full text-sm bg-gray-200 border-0 placeholder:text-xs placeholder:text-slate-400 focus:ring-0"
+            type="email" placeholder="ENTER YOUR EMAIL" required>
+          <button @click="getEmailToken"
+            class="rounded-r-full bg-custom-blue text-white text-xs px-4 py-2">SUBSCRIBE</button>
         </div>
-        <div class="lds-dual-ring w-7 h-7 " id="loading" v-if="loading"></div>
+        <div class="lds-dual-ring w-7 h-7" id="loading" v-if="loading"></div>
       </div>
-      <div class="w-full flex flex-col justify-center items-center font-noto relative" v-show="step2" >
+      <div class="w-full flex flex-col justify-center items-center font-noto relative" v-show="step2">
         <div>
           <img src="/images/email.png" alt="" width="128">
         </div>
-        <div class="absolute top-0 left-6  rounded-full   cursor-pointer w-[5%] border bg-slate-200 hover:bg-custom-blue hover:-translate-x-3 transition duration-400 flex justify-center hover:text-white px-4" @click="backtoemail" ><span class=" material-symbols-outlined  justify-center text-xl " >arrow_back</span></div>
+        <div
+          class="absolute top-0 left-6 rounded-full cursor-pointer w-[5%] border bg-slate-200 hover:bg-custom-blue hover:-translate-x-3 transition duration-400 flex justify-center hover:text-white px-4"
+          @click="backtoemail"><span class=" material-symbols-outlined  justify-center text-xl">arrow_back</span></div>
         <h1 class="text-center text-xl font-semibold text-custom-blue mt-3">Verify email</h1>
         <h2 class="text-gray-500 text-sm text-center mt-3">We have sent OTP on your email.</h2>
-        <div class="w-full flex flex-row justify-center mt-7 " >
-          <input v-model="inputOTP" class="w-3/6 rounded-l-full text-sm bg-gray-200 border-0 placeholder:text-xs placeholder:text-slate-400 focus:ring-0" type="email" id="OTPINPUT" required>
+        <div class="w-full flex flex-row justify-center mt-10 relative">
+          <input v-model="inputOTP" @keydown="closeAlert('.otp-alert-box')"
+            class="w-3/6 rounded-l-full text-sm bg-gray-200 border-0 placeholder:text-xs placeholder:text-slate-400 focus:ring-0"
+            type="text" id="OTPINPUT" :placeholder="OTPref" required>
           <button @click="CheckOTPFUND" class="rounded-r-full bg-custom-blue text-white text-xs px-4 py-2">ENTER</button>
+          <div class="bg-red-500 text-white text-xs rounded-md py-1 px-2 -top-7 absolute hidden otp-alert-box">
+            <p class="otp-alert-message"></p>
+            <!-- <p class="otp-alert-message-401">Verify timeout!</p> -->
+            <div class="absolute bg-red-500 bottom-0 left-1/3 rotate-45 w-4 h-4 -z-10"></div>
+          </div>
         </div>
-        <div class="mt-3 text-gray-500 text-sm mr-3" id="resent">Didn't you receive a OTP? <span class="font-bold underline cursor-pointer" @click="resentEmailToken"> Resent OTP</span></div>
+        <div class="mt-3 text-gray-500 text-sm mr-3" id="resent">Didn't you receive a OTP? <span
+            class="font-bold underline cursor-pointer" @click="resentEmailToken"> Resent OTP</span></div>
         <div class="mt-3 text-gray-500 text-sm mr-3 hidden" id="resented">We already have sent you email again.</div>
       </div>
     </div>
@@ -703,7 +750,6 @@ const CheckOTPFUND = async () => {
   }
 }
 
-
 @keyframes pulse {
   0% {
     opacity: 0;
@@ -751,7 +797,7 @@ const CheckOTPFUND = async () => {
   }
 
   50% {
-   width: 0%;
+    width: 0%;
   }
 
   65% {
@@ -766,6 +812,7 @@ const CheckOTPFUND = async () => {
     transform: scale(0);
   }
 }
+
 .lds-dual-ring {
   display: inline-block;
 }
@@ -781,13 +828,14 @@ const CheckOTPFUND = async () => {
   border-color: #4D9DE0 transparent #4D9DE0 transparent;
   animation: lds-dual-ring 1.2s linear infinite;
 }
+
 @keyframes lds-dual-ring {
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
 }
-
 </style>
