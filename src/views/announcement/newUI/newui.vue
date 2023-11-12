@@ -6,7 +6,7 @@ import router from "../../../router";
 import Swal from 'sweetalert2'
 import earth from '../../../components/icon/SystemUiconsGlobe.vue'
 import { getToken, checkToken } from "../../../composable/Auth";
-import { sendOTP, CHECKOTP,ADDNEWSUB } from "../../../composable/subscribe";
+import { sendOTP, CHECKOTP, ADDNEWSUB } from "../../../composable/subscribe";
 import jwtDecode from "jwt-decode";
 
 const totalpage = ref(0);
@@ -350,11 +350,14 @@ const resentEmailToken = async () => {
     setTimeout(() => {
       // input.classList.add('hidden')
       loading.value = true
+      resentmsg.classList.add('hidden')
     }, "980");
     emailToken.value = await sendOTP(emailObj)
     // input.classList.remove('hidden')
     // input.classList.remove('hidemodal-contentslide')
     loading.value = false
+    resentmsg.classList.remove('hidden')
+    resentmsg.innerHTML = 'Your new OTP is sent.'
   }
   let datatoken = decodeJwt(emailToken.value.token)
   OTPref.value = `REF : ${datatoken.REF}`
@@ -402,45 +405,67 @@ const closeAlert = (ele) => {
 /////////////////////////////////////////
 
 //////////////SUBCRIBE/////////////////
-const general=ref(false)
-const scholarship=ref(false)
-const intern=ref(false)
-const job=ref(false)
+const general = ref(false)
+const scholarship = ref(false)
+const intern = ref(false)
+const job = ref(false)
 
-const toggleJOBselect=(option)=>{
-  if(option===1){
-    general.value=!general.value
+const toggleJOBselect = (option) => {
+  if (option === 1) {
+    general.value = !general.value
   }
-  if(option===2){
-    scholarship.value=!scholarship.value
+  if (option === 2) {
+    scholarship.value = !scholarship.value
   }
-  if(option===3){
-    intern.value=!intern.value
+  if (option === 3) {
+    intern.value = !intern.value
   }
-  if(option===4){
-    job.value=!job.value
+  if (option === 4) {
+    job.value = !job.value
   }
 }
 
+const ConfirmSub = async () => {
+  let SUBINFO = { email: emailValue.value, general: general.value, internship: intern.value, scholarship: scholarship.value }
+  if (general.value == 1 || scholarship.value == 1 || intern.value == 1 || job == 1) {
+    let subcribestatus = ref()
+    subcribestatus.value = await ADDNEWSUB(SUBINFO)
+    step3.value = false
+    step4.value = true
+  } else {
+    let subConAlert = document.querySelector('.sub-con-alert')
+    subConAlert.classList.remove('hidden')
+    subConAlert.classList.add('animate-jump')
+    subConAlert.classList.add('animate-once')
+    subConAlert.classList.add('animate-ease-in-out')
+    setTimeout(() => {
+      subConAlert.classList.add('hidden')
+    }, 3500)
+  }
+}
 
-const ConfirmSub= async()=>{
- let SUBINFO={email:emailValue.value,general:general.value,internship:intern.value,scholarship:scholarship.value}
- if(general.value==1||scholarship.value==1||intern.value==1||job==1){
-  let subcribestatus=ref()
-  subcribestatus.value= await ADDNEWSUB(SUBINFO)
-  console.log(subcribestatus.value);
- }else{
- console.log("Choose at least 1");
- }
-
+const resetSubProcess = () => {
+  step4.value = false
+  step1.value = true
+  general.value = false
+  scholarship.value = false
+  intern.value = false
+  job.value = false
+  inputEmail.value = ''
+  emailToken.value = ''
+  emailValue.value = ''
+  status.value = 0
+  closemodal('#Subcribe')
 }
 </script>
 
 <template>
   <div class="fixed inset-0 bg-black bg-opacity-25 z-30 flex justify-center items-center" v-if="Subscribe">
     <div class="modal-overlay bg-transparent w-full h-full z-40 modalscope" @click="closemodal('#Subcribe')"></div>
-    <div class="w-[30%] bg-white rounded-xl z-50 absolute py-8 px-4 modal-content h-[38%]" id="Subcribe">
-      <div class="w-full flex flex-col justify-center items-center font-noto " v-show="step1">
+    <div
+      class="w-[30%] flex flex-col justify-center items-center bg-white rounded-xl z-50 absolute py-8 px-4 modal-content h-[38%]"
+      id="Subcribe">
+      <div class="w-full flex flex-col justify-center items-center font-noto" v-show="step1">
         <div>
           <img src="/images/mailbox.png" alt="" width="128">
         </div>
@@ -471,65 +496,80 @@ const ConfirmSub= async()=>{
           <button @click="CheckOTPFUND" class="rounded-r-full bg-custom-blue text-white text-xs px-4 py-2">ENTER</button>
           <div class="bg-red-500 text-white text-xs rounded-md py-1 px-2 -top-7 absolute hidden otp-alert-box">
             <p class="otp-alert-message"></p>
-            <!-- <p class="otp-alert-message-401">Verify timeout!</p> -->
             <div class="absolute bg-red-500 bottom-0 left-1/3 rotate-45 w-4 h-4 -z-10"></div>
           </div>
         </div>
         <div class="mt-3 text-gray-500 text-sm mr-3" id="resent">Didn't you receive a OTP? <span
             class="font-bold underline cursor-pointer" @click="resentEmailToken"> Resent OTP</span></div>
         <div class="mt-3 text-gray-500 text-sm mr-3 hidden" id="resented">We already have sent you email again.</div>
+        <div class="lds-dual-ring w-7 h-7" id="loading" v-if="loading"></div>
       </div>
       <div class="w-full flex flex-col justify-center items-center font-noto relative h-full" v-show="step3">
+        <div
+          class="absolute top-0 left-6 rounded-full cursor-pointer w-[5%] border bg-slate-200 hover:bg-custom-blue hover:-translate-x-3 transition duration-400 flex justify-center hover:text-white px-4"
+          @click="backtoemail"><span class=" material-symbols-outlined  justify-center text-xl">arrow_back</span></div>
         <div class="w-full flex justify-center items-center space-x-3 text-custom-blue pt-3">
-        <span class="material-symbols-outlined text-4xl">tune</span>
-        <p class="text-3xl font-bold font-noto">Subcribe Options</p>
-        
+          <span class="material-symbols-outlined text-4xl">tune</span>
+          <p class="text-3xl font-bold font-noto">Subcribe Options</p>
+        </div>
+        <p class="text-gray-500 text-xs">Select categories and Confirm for subcribe</p>
+        <div class=" w-full h-full flex flex-row flex-wrap justify-center gap-x-5 pt-10">
+          <div
+            class="w-[40%] h-[30%] rounded-xl transition duration-300 flex justify-center items-center flex-col border cursor-pointer"
+            :class="general ? 'bg-emerald-400 text-white border-0' : 'bg-white text-gray-500 hover:border-green-400 hover:text-green-400'"
+            @click="toggleJOBselect(1)">
+            <div class="w-full h-full flex items-center flex-row space-x-2 px-3">
+              <span class="material-symbols-outlined">info</span>
+              <p>ทั่วไป</p>
+            </div>
+          </div>
+          <div
+            class="w-[40%] h-[30%] rounded-xl transition duration-300 flex justify-center items-center flex-col border cursor-pointer"
+            :class="scholarship ? 'bg-emerald-400 text-white border-0' : 'bg-white text-gray-500 hover:border-green-400 hover:text-green-400'"
+            @click="toggleJOBselect(2)">
+            <div class="w-full h-full flex items-center flex-row space-x-2 px-3">
+              <span class="material-symbols-outlined">attach_money</span>
+              <p>ทุนการศึกษา</p>
+            </div>
+          </div>
+          <div
+            class="w-[40%] h-[30%]  rounded-xl  transition duration-300 flex justify-center items-center flex-col border cursor-pointer"
+            :class="intern ? 'bg-emerald-400 text-white border-0' : 'bg-white text-gray-500 hover:border-green-400 hover:text-green-400'"
+            @click="toggleJOBselect(3)">
+            <div class="w-full h-full flex items-center flex-row space-x-2 px-3">
+              <span class="material-symbols-outlined">work_history</span>
+              <p>ฝึกงาน</p>
+            </div>
+          </div>
+          <div
+            class="w-[40%] h-[30%] rounded-xl transition duration-300 flex justify-center items-center flex-col border cursor-pointer"
+            :class="job ? 'bg-emerald-400 text-white border-0' : 'bg-white text-gray-500 hover:border-green-400 hover:text-green-400'"
+            @click="toggleJOBselect(4)">
+            <div class="w-full h-full flex items-center flex-row space-x-2 px-3">
+              <span class="material-symbols-outlined">work</span>
+              <p>หางาน</p>
+            </div>
+          </div>
+        </div>
+        <button
+          class="py-2 px-4 rounded-full bg-custom-blue/90 text-white hover:bg-custom-blue/100 active:scale-90 transition duration-200 shadow-2xl"
+          @click="ConfirmSub">Confirm</button>
+        <div class="bg-red-500 text-white text-xs rounded-md py-1 px-2 top-[4.6rem] absolute hidden sub-con-alert">
+          <p class="">Select at least 1 category.</p>
+        </div>
       </div>
-      <p class="text-gray-500 text-sm">Select categories and Confirm for subcribe</p>
-      <div class=" w-full h-full flex space-x-6 justify-center pt-4"> 
-        <div
-          class="w-[20%] h-3/6  rounded-xl  transition duration-100 flex justify-center items-center flex-col shadow-md cursor-pointer"
-          :class="general? 'bg-emerald-400 text-white':'bg-white text-black'" @click="toggleJOBselect(1)">
-          <div
-            class=" hover:-translate-y-1 w-full h-full flex justify-center items-center flex-col transition ">
-            <span class="material-symbols-outlined">info</span>
-            <p>ทั่วไป</p>
-            
-          </div>
+      <div @click="resetSubProcess" class="w-full flex flex-col justify-center items-center font-noto space-y-12"
+        v-show="step4">
+        <img src="/images/mailSuccess.png" alt="" width="128">
+        <div class="flex flex-col items-center space-y-4">
+          <p class="text-2xl font-semi-bold text-gray-600">Thank you for your subscribe.</p>
+          <button
+            class="w-1/3 py-2 px-4 rounded-full bg-custom-blue/90 text-white hover:bg-custom-blue/100 active:scale-90 transition duration-200 shadow-2xl">Continue</button>
         </div>
-        <div
-          class="w-[20%] h-3/6  rounded-xl  transition duration-100 flex justify-center items-center flex-col shadow-md cursor-pointer"
-          :class="scholarship? 'bg-emerald-400 text-white':'bg-white text-black'" @click="toggleJOBselect(2)">
-          <div
-            class="hover:-translate-y-1 w-full h-full flex justify-center items-center flex-col transition ">
-            <span class="material-symbols-outlined">attach_money</span>
-            <p>ทุนการศึกษา</p>
-          </div>
-        </div>
-        <div
-          class="w-[20%] h-3/6  rounded-xl  transition duration-100 flex justify-center items-center flex-col shadow-md cursor-pointer"
-          :class="intern? 'bg-emerald-400 text-white':'bg-white text-black'" @click="toggleJOBselect(3)">
-          <div
-            class="  hover:-translate-y-1 w-full h-full flex justify-center items-center flex-col transition ">
-            <span class="material-symbols-outlined">work_history</span>
-            <p>ฝึกงาน</p>
-          </div>
-        </div>
-        <div
-          class="w-[20%] h-3/6  rounded-xl  transition duration-100 flex justify-center items-center flex-col shadow-md cursor-pointer"
-          :class="job? 'bg-emerald-400 text-white':'bg-white text-black'" @click="toggleJOBselect(4)">
-          <div
-            class=" hover:-translate-y-1 w-full h-full flex justify-center items-center flex-col transition ">
-            <span class="material-symbols-outlined">work</span>
-            <p>หางาน</p>
-          </div>
-        </div>
-      </div>
-      <button class="p-2 rounded-full bg-gray-400 text-custom-black hover:bg-custom-blue hover:text-white active:scale-90 transition duration-200 shadow-2xl" @click="ConfirmSub">Confirm</button>
       </div>
     </div>
   </div>
-  <div class="fixed inset-0 bg-black  bg-opacity-25 z-30 flex justify-center items-center" v-if="Choosecategory">
+  <div class="fixed inset-0 bg-black bg-opacity-25 z-30 flex justify-center items-center" v-if="Choosecategory">
     <div class="modal-overlay bg-transparent w-full h-full z-40 modalscope" @click="closemodal('#Choose')">
     </div>
     <div class="w-2/5 h-2/6 bg-white rounded-xl z-50 absolute modal-content" id="Choose">
