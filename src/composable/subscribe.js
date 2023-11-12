@@ -37,4 +37,24 @@ async function CHECKOTP(obj) {
     console.log(error);
   }
 }
-export { sendOTP,CHECKOTP };
+
+async function ADDNEWSUB(INFO) {
+  try {
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/api/sub`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(INFO),
+    });
+    if (res.ok) {
+      return res.json();
+    } else {
+      return res.status
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+export { sendOTP,CHECKOTP,ADDNEWSUB };
+
