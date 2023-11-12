@@ -82,11 +82,13 @@ const closedateshow = () => {
         </div>
       </div>
 
-      <div class="w-full bg-slate-50 rounded-2xl shadow-md text-gray-400">
+      <div
+        class="w-full h-[10%] bg-slate-50 rounded-2xl shadow-md text-gray-400"
+      >
         <a
           href="#"
           @click="router.push('/announcement')"
-          class="pt-4 pr-4 pb-4 text-xl flex items-center space-x-2 hover:bg-slate-100 rounded-t-2xl hover:text-custom-blue active:text-custom-blue group"
+          class="text-xl flex items-center space-x-2 hover:bg-slate-100 rounded-t-2xl hover:text-custom-blue active:text-custom-blue group"
         >
           <span
             class="w-2 h-8 bg-custom-blue invisible group-hover:visible rounded-r-lg min-[1025px]:h-16"
@@ -168,7 +170,7 @@ const closedateshow = () => {
   >
     <div class="w-full h-full flex flex-col">
       <div
-        class="w-2/6 h-14 bg-slate-100 rounded-2xl shadow-md text-gray-400 border ml-4 min-[426px]:w-1/6"
+        class="w-2/6 h-14 bg-slate-100 rounded-2xl shadow-md text-gray-400 border ml-4 min-[426px]:w-1/5"
       >
         <a
           href="#"
@@ -177,11 +179,11 @@ const closedateshow = () => {
         >
           <div class="flex flex-row mt-2 ml-3">
             <span
-              class="text-2xl duration-200 material-symbols-outlined flex items-center justify-center"
+              class="text-2xl duration-200 material-symbols-outlined flex items-center justify-center max-[426px]:text-xl"
               >arrow_back</span
             >
             <span
-              class="flex items-center justify-center text-base duration-200 font-bold ml-2"
+              class="flex items-center justify-center text-base duration-200 font-bold ml-2 pr-2 min-[426px]:text-base min-[426px]:ml-1"
               >BACK</span
             >
           </div>
