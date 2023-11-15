@@ -426,7 +426,7 @@ const toggleJOBselect = (option) => {
 }
 
 const ConfirmSub = async () => {
-  let SUBINFO = { email: emailValue.value, general: general.value, internship: intern.value, scholarship: scholarship.value }
+  let SUBINFO = { subcriberEmail: emailValue.value, categoryid: general.value}
   if (general.value == 1 || scholarship.value == 1 || intern.value == 1 || job == 1) {
     let subcribestatus = ref()
     subcribestatus.value = await ADDNEWSUB(SUBINFO)
@@ -445,8 +445,6 @@ const ConfirmSub = async () => {
 }
 
 const resetSubProcess = () => {
-  step4.value = false
-  step1.value = true
   general.value = false
   scholarship.value = false
   intern.value = false
@@ -456,6 +454,8 @@ const resetSubProcess = () => {
   emailValue.value = ''
   status.value = 0
   closemodal('#Subcribe')
+  step4.value = false
+  step1.value = true
 }
 </script>
 
