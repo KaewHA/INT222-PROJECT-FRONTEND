@@ -48,7 +48,7 @@ async function ADDNEWSUB(INFO) {
       body: JSON.stringify(INFO),
     });
     if (res.ok) {
-      return res.json();
+      return 200;
     } else {
       return res.status
     }
@@ -56,5 +56,27 @@ async function ADDNEWSUB(INFO) {
     console.log(error);
   }
 }
-export { sendOTP,CHECKOTP,ADDNEWSUB };
+
+async function unsubcribe(deleteData) {
+  try {
+    const res = await fetch(
+      `${import.meta.env.VITE_BASE_URL}/api/sub`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(deleteData)
+      }
+    );
+    if (res.ok) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+export { sendOTP,CHECKOTP,ADDNEWSUB, unsubcribe };
 

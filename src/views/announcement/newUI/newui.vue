@@ -310,10 +310,12 @@ const getEmailToken = async () => {
     let input = document.querySelector('.input')
     if (emailObj) {
       input.classList.add('hidemodal-contentslide')
-      setTimeout(() => {
-        input.classList.add('hidden')
-        loading.value = true
-      }, "950");
+      // setTimeout(() => {
+      //   input.classList.add('hidden')
+      //   loading.value = true
+      // }, "950");
+      input.classList.add('hidden')
+      loading.value = true
       emailToken.value = await sendOTP(emailObj)
       input.classList.remove('hidden')
       input.classList.remove('hidemodal-contentslide')
@@ -401,35 +403,44 @@ const closeAlert = (ele) => {
   element.classList.add('hidden')
 }
 
-
 /////////////////////////////////////////
 
 //////////////SUBCRIBE/////////////////
-const general = ref(false)
-const scholarship = ref(false)
-const intern = ref(false)
-const job = ref(false)
+const subCategories = ref([])
 
-const toggleJOBselect = (option) => {
-  if (option === 1) {
-    general.value = !general.value
+const toggleJOBselect = (categoryId) => {
+  const index = subCategories.value.findIndex(existingId => existingId === categoryId);
+  const categoryItem = document.querySelector(`.category-item${categoryId}`)
+  const selected = ['bg-emerald-400', 'border-0', 'text-white']
+  const unselected = ['bg-white', 'text-gray-500']
+  if (index !== -1) {
+    subCategories.value.splice(index, 1);
+    selected.forEach(className => categoryItem.classList.remove(className));
+    unselected.forEach(className => categoryItem.classList.add(className));
+    categoryItem.classList.add('hover:border-green-400')
+    categoryItem.classList.add('hover:text-green-400')
+  } else {
+    subCategories.value.push(categoryId);
+    unselected.forEach(className => categoryItem.classList.remove(className));
+    selected.forEach(className => categoryItem.classList.add(className));
+    categoryItem.classList.remove('hover:border-green-400')
+    categoryItem.classList.remove('hover:text-green-400')
   }
-  if (option === 2) {
-    scholarship.value = !scholarship.value
-  }
-  if (option === 3) {
-    intern.value = !intern.value
-  }
-  if (option === 4) {
-    job.value = !job.value
-  }
+  console.log(subCategories.value);
 }
 
-const ConfirmSub = async () => {
-  let SUBINFO = { subcriberEmail: emailValue.value, categoryid: general.value}
-  if (general.value == 1 || scholarship.value == 1 || intern.value == 1 || job == 1) {
-    let subcribestatus = ref()
-    subcribestatus.value = await ADDNEWSUB(SUBINFO)
+const ConfirmSub = async (categoryArr) => {
+  if (categoryArr.length > 0) {
+    // for (const category of categoryArr) {
+    //   const subInfo = ref({ subcriberEmail: emailValue, categoriesid: category })
+    //   await ADDNEWSUB(subInfo.value)
+    //   console.log('category id' + category + 'has been subcribe!');
+    // }
+    const subInfo = ref({ subcriberEmail: emailValue.value, categoriesid: categoryArr })
+    let subStatus = null
+    loading.value = true
+    subStatus = await ADDNEWSUB(subInfo.value)
+    loading.value = false
     step3.value = false
     step4.value = true
   } else {
@@ -442,20 +453,42 @@ const ConfirmSub = async () => {
       subConAlert.classList.add('hidden')
     }, 3500)
   }
+
+  // let SUBINFO = { subcriberEmail: emailValue.value, categoryid: general.value }
+  // if (general.value == 1 || scholarship.value == 1 || intern.value == 1 || job == 1) {
+  //   let subcribestatus = ref()
+  //   subcribestatus.value = await ADDNEWSUB(SUBINFO)
+  //   step3.value = false
+  //   step4.value = true
+  // } else {
+  //   let subConAlert = document.querySelector('.sub-con-alert')
+  //   subConAlert.classList.remove('hidden')
+  //   subConAlert.classList.add('animate-jump')
+  //   subConAlert.classList.add('animate-once')
+  //   subConAlert.classList.add('animate-ease-in-out')
+  //   setTimeout(() => {
+  //     subConAlert.classList.add('hidden')
+  //   }, 3500)
+  // }
 }
 
+const loginWithDefault = () => {
+  step1.value = false
+  step3.value = true
+  emailValue.value = decodeJwt(localStorage.getItem('token')).email
+} 
+
 const resetSubProcess = () => {
-  general.value = false
-  scholarship.value = false
-  intern.value = false
-  job.value = false
-  inputEmail.value = ''
-  emailToken.value = ''
-  emailValue.value = ''
-  status.value = 0
   closemodal('#Subcribe')
-  step4.value = false
-  step1.value = true
+  setTimeout(() => {
+    inputEmail.value = ''
+    emailToken.value = ''
+    emailValue.value = ''
+    subCategories.value = []
+    status.value = 0
+    step4.value = false
+    step1.value = true
+  }, 200)
 }
 </script>
 
@@ -478,6 +511,9 @@ const resetSubProcess = () => {
           <button @click="getEmailToken"
             class="rounded-r-full bg-custom-blue text-white text-xs px-4 py-2">SUBSCRIBE</button>
         </div>
+        <h2 v-if="isAuthenticated" class="mt-4 text-sm text-gray-500"><span class="">Or</span> login with your account
+          <span @click="loginWithDefault"
+            class="text-custom-blue/90 underline font-semibold cursor-pointer hover:text-custom-blue">Email</span>.</h2>
         <div class="lds-dual-ring w-7 h-7" id="loading" v-if="loading"></div>
       </div>
       <div class="w-full flex flex-col justify-center items-center font-noto relative " v-show="step2">
@@ -507,53 +543,28 @@ const resetSubProcess = () => {
       <div class="w-full flex flex-col justify-center items-center font-noto relative h-full" v-show="step3">
         <div
           class="absolute top-0 left-6 rounded-full cursor-pointer w-[5%] border bg-slate-200 hover:bg-custom-blue hover:-translate-x-3 transition duration-400 flex justify-center hover:text-white px-4"
-          @click="backtoemail"><span class=" material-symbols-outlined  justify-center text-xl">arrow_back</span></div>
+          @click="backtoemail"><span class="material-symbols-outlined justify-center text-xl">arrow_back</span></div>
         <div class="w-full flex justify-center items-center space-x-3 text-custom-blue pt-3">
           <span class="material-symbols-outlined text-4xl">tune</span>
           <p class="text-3xl font-bold font-noto">Subcribe Options</p>
         </div>
         <p class="text-gray-500 text-xs">Select categories and Confirm for subcribe</p>
-        <div class=" w-full h-full flex flex-row flex-wrap justify-center gap-x-5 pt-10">
-          <div
-            class="w-[40%] h-[30%] rounded-xl transition duration-300 flex justify-center items-center flex-col border cursor-pointer"
-            :class="general ? 'bg-emerald-400 text-white border-0' : 'bg-white text-gray-500 hover:border-green-400 hover:text-green-400'"
-            @click="toggleJOBselect(1)">
+        <div class=" w-full h-full flex flex-row flex-wrap items-center justify-center gap-x-5 pt-10">
+          <div class="lds-dual-ring w-7 h-7" id="loading" v-if="loading"></div>
+          <div v-else v-for="category in allCategory"
+            class="w-[40%] h-[30%] rounded-xl transition duration-300 flex justify-center items-center flex-col text-gray-500 border cursor-pointer hover:border-green-400 hover:text-green-400"
+            :class="`${'category-item' + category.categoryID}`" @click="toggleJOBselect(category.categoryID)">
             <div class="w-full h-full flex items-center flex-row space-x-2 px-3">
-              <span class="material-symbols-outlined">info</span>
-              <p>ทั่วไป</p>
-            </div>
-          </div>
-          <div
-            class="w-[40%] h-[30%] rounded-xl transition duration-300 flex justify-center items-center flex-col border cursor-pointer"
-            :class="scholarship ? 'bg-emerald-400 text-white border-0' : 'bg-white text-gray-500 hover:border-green-400 hover:text-green-400'"
-            @click="toggleJOBselect(2)">
-            <div class="w-full h-full flex items-center flex-row space-x-2 px-3">
-              <span class="material-symbols-outlined">attach_money</span>
-              <p>ทุนการศึกษา</p>
-            </div>
-          </div>
-          <div
-            class="w-[40%] h-[30%]  rounded-xl  transition duration-300 flex justify-center items-center flex-col border cursor-pointer"
-            :class="intern ? 'bg-emerald-400 text-white border-0' : 'bg-white text-gray-500 hover:border-green-400 hover:text-green-400'"
-            @click="toggleJOBselect(3)">
-            <div class="w-full h-full flex items-center flex-row space-x-2 px-3">
-              <span class="material-symbols-outlined">work_history</span>
-              <p>ฝึกงาน</p>
-            </div>
-          </div>
-          <div
-            class="w-[40%] h-[30%] rounded-xl transition duration-300 flex justify-center items-center flex-col border cursor-pointer"
-            :class="job ? 'bg-emerald-400 text-white border-0' : 'bg-white text-gray-500 hover:border-green-400 hover:text-green-400'"
-            @click="toggleJOBselect(4)">
-            <div class="w-full h-full flex items-center flex-row space-x-2 px-3">
-              <span class="material-symbols-outlined">work</span>
-              <p>หางาน</p>
+              <span class="material-symbols-outlined">{{ category.categoryName === 'ทั่วไป' ? 'info' :
+                category.categoryName === 'ทุนการศึกษา' ? 'attach_money' : category.categoryName === 'ฝึกงาน' ?
+                  'work_history' : 'work' }}</span>
+              <p>{{ category.categoryName }}</p>
             </div>
           </div>
         </div>
         <button
           class="py-2 px-4 rounded-full bg-custom-blue/90 text-white hover:bg-custom-blue/100 active:scale-90 transition duration-200 shadow-2xl"
-          @click="ConfirmSub">Confirm</button>
+          @click="ConfirmSub(subCategories)">Confirm</button>
         <div class="bg-red-500 text-white text-xs rounded-md py-1 px-2 top-[4.6rem] absolute hidden sub-con-alert">
           <p class="">Select at least 1 category.</p>
         </div>
@@ -615,7 +626,7 @@ const resetSubProcess = () => {
           </div>
         </div>
         <div
-          class="w-2/12 h-3/6 hover:bg-custom-blue rounded-xl bg-white transition duration-300 flex justify-center items-center flex-col shadow-md  cursor-pointer"
+          class="w-2/12 h-3/6 hover:bg-custom-blue rounded-xl bg-white transition duration-300 flex justify-center items-center flex-col shadow-md cursor-pointer"
           @click="categoryselect(5)">
           <div
             class="hover:-translate-y-1 w-full h-full flex justify-center items-center flex-col transition hover:text-white duration-500">
@@ -962,4 +973,8 @@ const resetSubProcess = () => {
     transform: rotate(360deg);
   }
 }
+
+/* .category-item input[type="checkbox"] {
+  display: none;
+} */
 </style>

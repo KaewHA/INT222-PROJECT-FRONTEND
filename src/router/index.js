@@ -15,7 +15,7 @@ import EditUser from "../views/usermanage/EditUser.vue";
 import login from "../views/login.vue";
 import jwtDecode from "jwt-decode";
 import MatchPassword from "../views/usermanage/MatchPassword.vue"
-import { getToken, checkToken } from "../composable/Auth.js";
+import Unsubcribe from "../views/Unsubcribe.vue"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -94,6 +94,11 @@ const router = createRouter({
       path: "/admin/user/match",
       name: "MatchPassword",
       component: MatchPassword
+    },
+    {
+      path: "/unsub",
+      name: "Unsubcribe",
+      component: Unsubcribe
     }
   ],
 });
@@ -105,7 +110,7 @@ router.beforeEach(async (to, from, next) => {
   const isAuthenticated = () => {
     return token || refreshToken;
   };
-  if (!isAuthenticated() && to.name !== "login" && to.name !== "userview" && to.name !== "UserViewDetail" && to.name!== "Start") {
+  if (!isAuthenticated() && to.name !== "login" && to.name !== "userview" && to.name !== "UserViewDetail" && to.name!== "Start" && to.name !== "Unsubcribe") {
     next("/login");
   } else if (isAuthenticated()) {
     if (role !== 'admin' && to.path.startsWith('/admin/user')) {
