@@ -78,5 +78,27 @@ async function unsubcribe(deleteData) {
     console.log(error);
   }
 }
-export { sendOTP,CHECKOTP,ADDNEWSUB, unsubcribe };
+
+async function preunsubcribe(deleteData) {
+  try {
+    const res = await fetch(
+      `${import.meta.env.VITE_BASE_URL}/api/sub`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(deleteData)
+      }
+    );
+    if (res.ok) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+export { sendOTP,CHECKOTP,ADDNEWSUB, unsubcribe,preunsubcribe };
 

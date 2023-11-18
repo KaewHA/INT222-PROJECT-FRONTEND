@@ -48,6 +48,10 @@ const check = async () => {
     }, 1200)
   }
 }
+
+const back = () => {
+router.push('announcement')
+}
 </script>
 
 <template>
@@ -60,6 +64,9 @@ const check = async () => {
       <div
         class="w-[60%] h-4/6 flex flex-col bg-white/30 backdrop-blur-3xl justify-center items-center rounded-l-3xl p-14"
       >
+      <div
+          class="absolute top-5 left-6 rounded-full cursor-pointer w-[5%]  bg-slate-200 hover:bg-sky-700 hover:-translate-x-3 transition duration-400 flex justify-center hover:text-white px-4"
+          @click="back"><span class="material-symbols-outlined justify-center text-xl">arrow_back</span></div>
         <img src="/images/logo.png" class="w-[45%] mb-4 max-[769px]:w-full" />
 
         <h1
@@ -180,9 +187,13 @@ const check = async () => {
       class="w-full h-full flex flex-row justify-center items-center loginform relative"
     >
       <div
-        class="w-4/5 h-[70%] flex flex-col justify-center items-center rounded-3xl bg-white bg-opacity-80"
+        class="w-4/5 h-[70%] flex flex-col justify-center items-center rounded-3xl bg-white bg-opacity-80 relative"
       >
+      <div
+          class="absolute top-5 left-6 rounded-full cursor-pointer w-[5%]  bg-slate-400 hover:bg-sky-700 hover:-translate-x-3 transition duration-400 flex justify-center hover:text-white px-4"
+          @click="back"><span class="material-symbols-outlined justify-center text-xl">arrow_back</span></div>
         <img src="/images/logo.png" class="w-[25%] mb-6" />
+        
         <div class="pl-14 pr-14">
           <h1
             class="w-full text-2xl text-center text-gray-600 font-extrabold justify-center items-center max-[375px]:text-lg"

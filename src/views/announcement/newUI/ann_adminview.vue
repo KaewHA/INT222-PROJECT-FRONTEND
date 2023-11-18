@@ -24,6 +24,7 @@ onBeforeMount(async () => {
     } else {
       let newtoken = await getToken();
       if (newtoken == 401) {
+        localStorage.clear()
         router.push('/login')
       } else {
         localStorage.setItem("token", newtoken);

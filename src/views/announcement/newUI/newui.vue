@@ -59,7 +59,6 @@ const setOfPage = computed(() => {
   }
   return pages;
 });
-
 const setOfpagex = computed(() => {
   let range = 10
   let page = currentpage.value + 1
@@ -490,6 +489,11 @@ const resetSubProcess = () => {
     step1.value = true
   }, 200)
 }
+
+
+//////////loginanimation
+// const loginbutton=document.querySelector("#loginbt")
+// loginbutton.addEventListener('')
 </script>
 
 <template>
@@ -511,7 +515,7 @@ const resetSubProcess = () => {
           <button @click="getEmailToken"
             class="rounded-r-full bg-custom-blue text-white text-xs px-4 py-2">SUBSCRIBE</button>
         </div>
-        <h2 v-if="isAuthenticated" class="mt-4 text-sm text-gray-500"><span class="">Or</span> login with your account
+        <h2 v-if="isAuthenticated" class="mt-4 text-sm text-gray-500"><span class="">Or</span> subscribe with your 
           <span @click="loginWithDefault"
             class="text-custom-blue/90 underline font-semibold cursor-pointer hover:text-custom-blue">Email</span>.</h2>
         <div class="lds-dual-ring w-7 h-7" id="loading" v-if="loading"></div>
@@ -643,11 +647,13 @@ const resetSubProcess = () => {
         <div class="flex items-center space-x-4 w-full">
           <img src="/images/logo.png" alt="SIT Logo" class="h-14 w-14" />
           <div class="flex flex-col">
-            <h1 class="font-semibold text-custom-black min-[769px]:text-2xl min-[1025px]:text-3xl min-[1441px]:text-4xl">
-              SAS
-            </h1>
-            <h2 class="text-custom-blue font-medium min-[769px]:text-sm min-[1025px]:text-base">SIT Announcement System
-            </h2>
+            <div class="flex space-x-8 relative">
+            <h1 class="font-semibold text-custom-black min-[769px]:text-2xl min-[1025px]:text-3xl min-[1441px]:text-4xl">SAS</h1>
+            <div class="bg-slate-200 rounded-full hover:bg-custom-blue hover:text-white  transition duration-100 text-gray-500 hover:translate-x-1 " v-if="!isAuthenticated" @click="router.push('login')" >
+              <button class="  h-full flex items-center px-3  " id="loginbt"><span class="material-symbols-outlined mr-3 " >login</span>Login</button></div>
+            
+            </div>
+            <h2 class="text-custom-blue font-medium min-[769px]:text-sm min-[1025px]:text-base">SIT Announcement System</h2>
             <h1 class="text-custom-black flex min-[769px]:text-sm min-[1025px]:text-base">
               <span class="font-bold">Timezone:</span>&nbsp;{{ timezoneName }}
             </h1>
@@ -695,9 +701,8 @@ const resetSubProcess = () => {
             Category</span>
         </a>
       </div>
-      <button @click="isExpired"
-        class="absolute bottom-0 text-center text-lg text-gray-600 rounded-xl border-2 py-3 px-7 hover:bg-custom-blue hover:text-white">{{
-          isAuthenticated ? 'Back' : 'Login' }}</button>
+      <button @click="isExpired" v-if="isAuthenticated"
+        class="absolute bottom-0 text-center text-lg text-gray-600 rounded-xl border-2 py-3 px-7 hover:bg-custom-blue hover:text-white">BACK</button>
     </div>
     <div
       class="h-full bg-slate-50 rounded-2xl flex flex-col pr-12 space-y-2 min-[769px]:w-4/6 min-[1025px]:w-[75%] min-[1440px]:w-4/5">
@@ -706,8 +711,8 @@ const resetSubProcess = () => {
           <div class="flex flex-col justify-center items-center w-full h-full">
           </div>
           <div class="w-full justify-end flex font-noto">
-            <nav aria-label="Page navigation example" v-if="allAnnouncement.length != 0">
-              <ul class="inline-flex -space-x-px text-base h-10">
+            <nav aria-label="Page navigation example " v-if="allAnnouncement.length != 0">
+              <ul class="inline-flex -space-x-px text-base h-10" >
                 <li>
                   <button class="flex items-center justify-center px-4 h-10 ml-0 leading-tight
        text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-custom-blue hover:text-white disabled:bg-sky-700 disabled:text-zinc-400
