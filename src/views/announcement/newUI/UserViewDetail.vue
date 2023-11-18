@@ -83,7 +83,7 @@ const submodal=ref(false)
             </div>
             <div class="text-custom-black flex">
               <span class="font-bold w-full">Timezone :</span>
-              <earth class=""></earth>
+              <span class="material-symbols-outlined font-extralight">language</span>
               {{ timezoneName }}
             </div>
           </div>
