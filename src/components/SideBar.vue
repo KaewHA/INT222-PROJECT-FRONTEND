@@ -83,9 +83,9 @@ const showAlert = () => {
             </div>
             <div class="flex flex-col justify-center">
                 <p class="text-lg capitalize">{{ props.username }}</p>
-                <div @click="showAlert" class="flex flex-row items-center text-red-600 hover:scale-105 cursor-pointer">
+                <div @click="showAlert" class="flex flex-row items-center text-grey-500 hover:translate-x-3 transition duration-100 cursor-pointer bg-slate-300 hover:bg-red-500 hover:text-white px-3 rounded-b-2xl">
                     <span class="text-xl duration-200 material-symbols-outlined group-hover:ml-4">logout</span>
-                    <a href="#" class="text-sm">Logout</a>
+                    <a href="#" class="text-sm ">Logout</a>
                 </div>
             </div>
         </div>

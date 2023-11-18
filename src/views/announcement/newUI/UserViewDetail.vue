@@ -65,6 +65,25 @@ const closemodal = () => {
   }, 300)
 }
 const submodal=ref(false)
+
+
+const isAuthenticated = localStorage.getItem('refreshtoken')
+const isExpired = async () => {
+  const token = localStorage.getItem('token')
+
+  let result = await checkToken(token);
+  if (result !== 200) {
+    let newToken = await getToken()
+    if (newToken === 401) {
+      router.push('/login')
+    } else {
+      localStorage.setItem('token', newToken)
+      router.push('/admin/announcement')
+    }
+  } else {
+    router.push('/admin/announcement')
+  }
+}
 </script>
 
 <template>
@@ -76,16 +95,17 @@ const submodal=ref(false)
       <div class="flex flex-row items-center ann-app-title w-full h-1/6">
         <div class="flex items-center space-x-4 w-full">
           <img src="/images/logo.png" alt="SIT Logo" class="h-14 w-14" />
-          <div class="flex flex-col space-x-1">
-            <div class="text-3xl font-bold text-custom-black">SAS</div>
-            <div class="text-custom-blue font-bold">
-              SIT Announcement System
+          <div class="flex flex-col">
+            <div class="flex space-x-8 relative">
+            <h1 class="font-semibold text-custom-black min-[769px]:text-2xl min-[1025px]:text-3xl min-[1441px]:text-4xl">SAS</h1>
+            <div class="bg-slate-200 rounded-full hover:bg-custom-blue hover:text-white  transition duration-100 text-gray-500 hover:translate-x-1 " v-if="!isAuthenticated" @click="router.push('login')" >
+              <button class="  h-full flex items-center px-3  " id="loginbt"><span class="material-symbols-outlined mr-3 " >login</span>Login</button></div>
+            
             </div>
-            <div class="text-custom-black flex">
-              <span class="font-bold w-full">Timezone :</span>
-              <span class="material-symbols-outlined font-extralight">language</span>
-              {{ timezoneName }}
-            </div>
+            <h2 class="text-custom-blue font-medium min-[769px]:text-sm min-[1025px]:text-base">SIT Announcement System</h2>
+            <h1 class="text-custom-black flex min-[769px]:text-sm min-[1025px]:text-base">
+              <span class="">Timezone:</span><span class="material-symbols-outlined  font-thin">language</span>&nbsp;{{ timezoneName }}
+            </h1>
           </div>
         </div>
       </div>

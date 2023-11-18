@@ -347,7 +347,7 @@ const Choosecategory = ref(false)
             </div>
             <h2 class="text-custom-blue font-medium min-[769px]:text-sm min-[1025px]:text-base">SIT Announcement System</h2>
             <h1 class="text-custom-black flex min-[769px]:text-sm min-[1025px]:text-base">
-              <span class="font-bold">Timezone:</span><span class="material-symbols-outlined font-extralight">language</span>&nbsp;{{ timezoneName }}
+              <span class="">Timezone:</span><span class="material-symbols-outlined  font-thin">language</span>&nbsp;{{ timezoneName }}
             </h1>
           </div>
         </div>
