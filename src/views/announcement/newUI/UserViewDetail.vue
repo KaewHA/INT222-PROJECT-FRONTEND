@@ -9,7 +9,7 @@ import back from '../../../components/icon/back.vue'
 import views from '../../../components/icon/IcBaselineRemoveRedEye.vue'
 import Swal from 'sweetalert2'
 import earth from '../../../components/icon/SystemUiconsGlobe.vue'
-
+import modalsub from '../../../components/modalsunscribe.vue'
 const { params } = useRoute()
 const announcement = ref('')
 const status = ref(true)
@@ -58,9 +58,17 @@ const closedateshow = () => {
     return false
   }
 }
+const closemodal = () => {
+  console.log("ss");
+  setTimeout(() => {
+    submodal.value=false
+  }, 300)
+}
+const submodal=ref(false)
 </script>
 
 <template>
+  <modalsub @closeme="closemodal" v-if="submodal"/>
   <div
     class="w-screen h-screen bg-slate-50 flex flex-row font-noto pb-16 pt-4 max-[768px]:hidden"
   >
@@ -81,29 +89,28 @@ const closedateshow = () => {
           </div>
         </div>
       </div>
-
-      <div
-        class="w-full h-[10%] bg-slate-50 rounded-2xl shadow-md text-gray-400"
-      >
-        <a
-          href="#"
-          @click="router.push('/announcement')"
-          class="text-xl flex items-center space-x-2 hover:bg-slate-100 rounded-t-2xl hover:text-custom-blue active:text-custom-blue group"
-        >
+      <div class="w-full bg-white rounded-2xl shadow-md text-gray-400 ">
+        <a href="#" @click="router.push('/announcement')"
+          class="py-8 pr-4 text-xl flex items-center space-x-2 hover:bg-slate-100 rounded-t-2xl hover:text-custom-blue active:text-custom-blue group ann-menu">
+          <span class="w-4 h-8 bg-custom-blue invisible group-hover:visible rounded-r-lg"></span>
           <span
-            class="w-2 h-8 bg-custom-blue invisible group-hover:visible rounded-r-lg min-[1025px]:h-16"
-          ></span>
-
+            class="duration-200 material-symbols-outlined group-hover:ml-4 min-[769px]:text-2xl min-[1025px]:text-3xl min-[1441px]:text-4xl">arrow_back</span>
           <span
-            class="pl-8 text-4xl duration-200 material-symbols-outlined group-hover:ml-4 max-[1025px]:pl-2 min-[777px]:pl-1"
-            >arrow_back</span
-          >
-          <span
-            class="pt-1 flex items-center text-lg duration-200 font-bold group-hover:ml-4 max-[932px]:hidden"
-            >BACK</span
-          >
+            class="flex items-center duration-200 font-medium group-hover:ml-4 min-[769px]:text-base min-[1025px]:text-base min-[1441px]:text-lg">BACK</span>
         </a>
       </div>
+      <div class="w-full bg-white rounded-2xl shadow-md text-gray-400 ">
+        <a href="#" @click="submodal = !submodal"
+          class="py-8 pr-4 text-xl flex items-center space-x-2 hover:bg-slate-100 rounded-t-2xl hover:text-custom-blue active:text-custom-blue group ann-menu">
+          <span class="w-4 h-8 bg-custom-blue invisible group-hover:visible rounded-r-lg"></span>
+          <span
+            class="duration-200 material-symbols-outlined group-hover:ml-4 min-[769px]:text-2xl min-[1025px]:text-3xl min-[1441px]:text-4xl">stars</span>
+          <span
+            class="flex items-center duration-200 font-medium group-hover:ml-4 min-[769px]:text-base min-[1025px]:text-base min-[1441px]:text-lg">Subscribe</span>
+        </a>
+      </div>
+     
+      
     </div>
     <div
       class="w-4/5 h-full bg-slate-50 rounded-2xl flex flex-col pr-12 space-y-2 mt-10"
