@@ -13,6 +13,7 @@ import UserManagement from "../views/usermanage/UserManagement.vue";
 import AddUser from "../views/usermanage/AddUser.vue";
 import EditUser from "../views/usermanage/EditUser.vue";
 import login from "../views/login.vue";
+import test from "../views/test.vue";
 import jwtDecode from "jwt-decode";
 import MatchPassword from "../views/usermanage/MatchPassword.vue"
 import Unsubcribe from "../views/Unsubcribe.vue"
@@ -99,6 +100,11 @@ const router = createRouter({
       path: "/unsub",
       name: "Unsubcribe",
       component: Unsubcribe
+    },
+    {
+      path: "/test",
+      name: "test",
+      component: test
     }
   ],
 });
@@ -110,7 +116,7 @@ router.beforeEach(async (to, from, next) => {
   const isAuthenticated = () => {
     return token || refreshToken;
   };
-  if (!isAuthenticated() && to.name !== "login" && to.name !== "userview" && to.name !== "UserViewDetail" && to.name!== "Start" && to.name !== "Unsubcribe") {
+  if (!isAuthenticated() && to.name !== "login" && to.name !== "userview" && to.name !== "UserViewDetail" && to.name!== "Start" && to.name !== "Unsubcribe" && to.name!=="PageNotFound" && to.name!=="test" ) {
     next("/login");
   } else if (isAuthenticated()) {
     if (role !== 'admin' && to.path.startsWith('/admin/user')) {

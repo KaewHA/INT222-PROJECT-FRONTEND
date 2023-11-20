@@ -11,6 +11,9 @@ import Error from '../../../components/icon/Error.vue'
 import Correct from '../../../components/icon/Correct.vue'
 import { useToken } from "../../../stores/accresstoken.js";
 import { getToken } from "../../../composable/Auth.js";
+import { useView } from "../../../stores/adminView";
+
+const myView= useView()
 const myToken=useToken()
 const { params } = useRoute()
 const olddata = ref({})
@@ -64,6 +67,7 @@ onBeforeMount(async () => {
     //  let newtoken=localStorage.getItem("token")
     //  myToken.settoken(newtoken)
     //get new announcement
+    myView.view = "announcement";
     const receivedAnnouncement = ref()
     receivedAnnouncement.value = await getAnnouncementByIddata(params.id)
     for (const [key, value] of Object.entries(receivedAnnouncement.value)) {

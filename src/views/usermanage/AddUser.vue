@@ -9,11 +9,13 @@ import Info from '../../components/icon/Info.vue';
 import Swal from "sweetalert2";
 import { useToken } from "../../stores/accresstoken.js";
 import { getToken, checkToken } from "../../composable/Auth.js";
+import { useView } from "../../stores/adminView";
+
+const myView= useView()
 const myToken = useToken()
 
 onBeforeMount(async () => {
-    // let newtoken = localStorage.getItem("token")
-    // myToken.settoken(newtoken)
+    myView.view = "user";
 })
 myToken.settoken(localStorage.getItem("token"))
 myToken.decodeJwt()

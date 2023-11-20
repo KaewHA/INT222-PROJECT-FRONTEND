@@ -10,6 +10,9 @@ import Info from '../../components/icon/Info.vue'
 import Swal from 'sweetalert2'
 import { useToken } from "../../stores/accresstoken.js";
 import { getToken, checkToken } from "../../composable/Auth.js";
+import { useView } from "../../stores/adminView";
+
+const myView= useView()
 const { params } = useRoute()
 const oldUser = ref({})
 const updatedUser = ref({})
@@ -18,6 +21,7 @@ onBeforeMount(async () => {
     // let newtoken = localStorage.getItem("token")
     // myToken.settoken(newtoken)
     /////////
+    myView.view = "user";
     const receivedData = await getUserDetail(params.id, myToken.gettoken())
     Object.assign(updatedUser.value, receivedData)
     Object.assign(oldUser.value, receivedData)

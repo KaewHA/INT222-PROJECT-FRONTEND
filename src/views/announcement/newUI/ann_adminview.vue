@@ -42,8 +42,8 @@ onBeforeMount(async () => {
   receivedData.value.forEach((x) => allAnnouncement.value.push(x));
   const receivedCategory = await getCategory();
   receivedCategory.forEach((category) => allCategory.value.push(category));
-  console.log(receivedData.value)
-  console.log(myToken.jwtPayload);
+  // console.log(receivedData.value)
+  // console.log(myToken.jwtPayload);
 });
 myToken.settoken(localStorage.getItem("token"))
 myToken.decodeJwt()

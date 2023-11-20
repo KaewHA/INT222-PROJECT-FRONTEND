@@ -5,8 +5,11 @@ import { getAnnouncementById } from '../../../composable/annAuth.js';
 import { onBeforeMount } from 'vue';
 import router from '../../../router/index.js'
 import Swal from 'sweetalert2'
-import SideBar from '../../../components/SideBar.vue';
+import SideBar from '../../../components/Sidebar.vue';
 import { useToken } from "../../../stores/accresstoken.js";
+import { useView } from "../../../stores/adminView";
+
+const myView= useView()
 const { params } = useRoute()
 const announcement = ref('')
 const status = ref(true)
@@ -15,6 +18,7 @@ onBeforeMount(async () => {
     // let newtoken=localStorage.getItem("token")
     // myToken.settoken(newtoken)
     /////////////////////
+    myView.view = "announcement";
     announcement.value = await getAnnouncementById(params.id)
     status.value = announcement.value.status
     if (status.value !== 200) { showAlert() }

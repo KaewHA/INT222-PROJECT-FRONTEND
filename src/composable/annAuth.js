@@ -140,9 +140,9 @@ async function addAnnouncement(announcement, token) {
         }
       );
       if (res.status==200) {
-        return true;
+        return {data:res.json(),status:true};
       } else {
-        return false;
+        return {data:null,status:false}
       }
     } catch (error) {
       console.log(error);
