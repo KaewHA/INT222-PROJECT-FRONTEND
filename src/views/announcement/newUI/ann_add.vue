@@ -448,6 +448,7 @@ const enableinsertarea = computed(() => {
                       >
                         <th class="w-1/12 py-4 rounded-l-2xl">No.</th>
                         <th class="w-1/4 py-4">Filename</th>
+                        <th class="w-1/4 py-4">Type</th>
                         <th class="w-1/6 py-4">Size</th>
                         <th class="w-1/6 py-4 rounded-r-2xl">Action</th>
                       </tr>
@@ -460,6 +461,7 @@ const enableinsertarea = computed(() => {
                       >
                         <td class="text-center">{{ index + 1 }}</td>
                         <td class="text-center truncate">{{ file.name }}</td>
+                        <td class="text-center">{{ file.type }} </td>
                         <td class="text-center">{{ bytetokb(file.size) }} KB</td>
                         <td class="">
                           <button
