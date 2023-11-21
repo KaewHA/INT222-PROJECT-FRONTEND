@@ -8,7 +8,7 @@ import earth from '../../../components/icon/SystemUiconsGlobe.vue'
 import { getToken, checkToken } from "../../../composable/Auth";
 import { sendOTP, CHECKOTP, ADDNEWSUB } from "../../../composable/subscribe";
 import jwtDecode from "jwt-decode";
-
+import modalsub from '../../../components/modalsunscribe.vue'
 const totalpage = ref(0);
 const pageSize = ref(0);
 const currentpage = ref(0);
@@ -270,11 +270,16 @@ const closemodal = (id) => {
   }, "230");
 }
 const Choosecategory = ref(false)
-
+const submodal=ref(false)
+const closemodals = () => {
+  setTimeout(() => {
+    submodal.value=false
+  }, 300)
+}
 </script>
 
 <template>
-
+<modalsub @closeme="closemodals" v-if="submodal"/>
   <div class="fixed inset-0 bg-black bg-opacity-25 z-30 flex justify-center items-center" v-if="Choosecategory">
     <div class="modal-overlay bg-transparent w-full h-full z-40 modalscope" @click="closemodal('#Choose')">
     </div>
@@ -382,6 +387,16 @@ const Choosecategory = ref(false)
           <span
             class="flex items-center duration-200 font-medium group-hover:ml-4 min-[769px]:text-base min-[1025px]:text-base min-[1441px]:text-lg">Choose
             Category</span>
+        </a>
+      </div>
+      <div class="w-full bg-white rounded-2xl shadow-md text-gray-400 ">
+        <a href="#" @click="submodal = !submodal"
+          class="py-8 pr-4 text-xl flex items-center space-x-2 hover:bg-slate-100 rounded-t-2xl hover:text-custom-blue active:text-custom-blue group ann-menu">
+          <span class="w-4 h-8 bg-custom-blue invisible group-hover:visible rounded-r-lg"></span>
+          <span
+            class="duration-200 material-symbols-outlined group-hover:ml-4 min-[769px]:text-2xl min-[1025px]:text-3xl min-[1441px]:text-4xl">stars</span>
+          <span
+            class="flex items-center duration-200 font-medium group-hover:ml-4 min-[769px]:text-base min-[1025px]:text-base min-[1441px]:text-lg">Subscribe</span>
         </a>
       </div>
       <button @click="isExpired" v-if="isAuthenticated"

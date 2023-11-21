@@ -1,5 +1,5 @@
 <script setup>
-import { getCategory, addAnnouncement } from "../../../composable/annAuth.js";
+import { getCategory, addAnnouncement,deleteannocement } from "../../../composable/annAuth.js";
 import { onMounted, ref, computed, onBeforeMount } from "vue";
 import { QuillEditor } from "@vueup/vue-quill";
 import "@vueup/vue-quill/dist/vue-quill.snow.css";
@@ -236,9 +236,9 @@ const addnewdata = async () => {
         myToken.gettoken()
       );
     }
-  }
-   if(filedataslot.value<5){
-       ///ไม่อัพไฟล์
+  }else{
+   if(filedataslot.value>=5){
+    showAlert();
    }else{
     let mydata=await result.value.data
     var formData = new FormData();
@@ -247,10 +247,21 @@ const addnewdata = async () => {
       formData.append('files',prefiledata.value[i])
     }
      let filestatus= await tranferfile(formData,myToken.gettoken())
-
+     if(filestatus==true){
+      showAlert();
+     }else{
+      await deleteannocement(mydata.id,myToken.gettoken());
+      Swal.fire({
+      icon: "error",
+      title: "Cant create announcement",
+      text: "Cannot attach file",
+      confirmButtonText: "Try again",
+    });
+     }
      ////////////////////////////////////////////////FILEEEEEEE/////////////////////////////////////
   }
-   showAlert();
+  //  showAlert();
+}
 };
 function clearcd() {
   closeDate.value = null;
@@ -339,7 +350,6 @@ const filemnopen = () => {
       if (files[i].size > 20971520) {
         checksum ++;
       }
-      console.log(files[i].name);
       let oo= prefiledata.value.find((x)=>x.name==files[i].name)
       if(oo!=undefined){
         cheekun++
