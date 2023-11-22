@@ -13,8 +13,9 @@ import SideBar from "../../../components/Sidebar.vue";
 import { useView } from "../../../stores/adminView";
 import { useToken } from "../../../stores/accresstoken.js";
 import { getToken, checkToken } from "../../../composable/Auth.js";
-
+import { getfileslist } from '../../../composable/filetransfer.js'
 const myToken = useToken();
+const fileslist=ref(null)
 onBeforeMount(async () => {
   myView.view = "announcement";
   if (localStorage.getItem("token") != null || localStorage.getItem("token") != undefined) {
@@ -33,6 +34,7 @@ onBeforeMount(async () => {
   } else {
     router.push('/login')
   }
+  
   // let newtoken = localStorage.getItem("token")
   // myToken.settoken(newtoken)
   // myToken.decodeJwt()

@@ -6,7 +6,7 @@ import '@vueup/vue-quill/dist/vue-quill.snow.css'
 import { useRoute } from 'vue-router'
 import router from '../../../router'
 import Swal from 'sweetalert2'
-import SideBar from '../../../components/Sidebar.vue'
+import SideBar from "../../../components/Sidebar.vue";
 import Error from '../../../components/icon/Error.vue'
 import Correct from '../../../components/icon/Correct.vue'
 import { useToken } from "../../../stores/accresstoken.js";
