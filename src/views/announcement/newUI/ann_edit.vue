@@ -6,7 +6,7 @@ import '@vueup/vue-quill/dist/vue-quill.snow.css'
 import { useRoute } from 'vue-router'
 import router from '../../../router'
 import Swal from 'sweetalert2'
-import SideBar from '../../../components/SideBar.vue'
+import SideBar from '../../../components/Sidebar.vue'
 import Error from '../../../components/icon/Error.vue'
 import Correct from '../../../components/icon/Correct.vue'
 import { useToken } from "../../../stores/accresstoken.js";
@@ -460,7 +460,7 @@ const showAlert = () => {
                     </div>
                 </div>
                 <div class="flex flex-col w-1/6 px-4 py-2 space-y-1">
-                    <label for="category-select" class="flex text-base font-bold">Category
+                    <label for="category-select" class="flex text-base font-bold w-60">Category
                         <Correct v-show="newAnnouncement.categoryId !== ''" class="mt-0.5 ml-1 mr-1" />
                         <span v-show="newAnnouncement.categoryId !== ''" class="text-green-500">Category is valid</span>
                     </label>

@@ -9,7 +9,7 @@ import { onBeforeMount } from "vue";
 import router from "../../../router/index.js";
 import Swal from "sweetalert2";
 import AddIcon from "../../../components/icon/AddIcon.vue";
-import SideBar from "../../../components/SideBar.vue";
+import SideBar from "../../../components/Sidebar.vue";
 import { useView } from "../../../stores/adminView";
 import { useToken } from "../../../stores/accresstoken.js";
 import { getToken, checkToken } from "../../../composable/Auth.js";

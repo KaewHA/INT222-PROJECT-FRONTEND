@@ -1,11 +1,11 @@
 <script setup>
-import { getCategory, addAnnouncement,deleteannocement } from "../../../composable/annAuth.js";
+import { getCategory, addAnnouncement, deleteannocement } from "../../../composable/annAuth.js";
 import { onMounted, ref, computed, onBeforeMount } from "vue";
 import { QuillEditor } from "@vueup/vue-quill";
 import "@vueup/vue-quill/dist/vue-quill.snow.css";
 import router from "../../../router/index.js";
 import Swal from "sweetalert2";
-import SideBar from "../../../components/SideBar.vue";
+import SideBar from "../../../components/Sidebar.vue";
 import Error from "../../../components/icon/Error.vue";
 import Correct from "../../../components/icon/Correct.vue";
 import { useToken } from "../../../stores/accresstoken.js";
@@ -236,32 +236,32 @@ const addnewdata = async () => {
         myToken.gettoken()
       );
     }
-  }else{
-   if(filedataslot.value>=5){
-    showAlert();
-   }else{
-    let mydata=await result.value.data
-    var formData = new FormData();
-    formData.append('id',mydata.id)
-    for (var i = 0; i < prefiledata.value.length; i++) {
-      formData.append('files',prefiledata.value[i])
-    }
-     let filestatus= await tranferfile(formData,myToken.gettoken())
-     if(filestatus==true){
+  } else {
+    if (filedataslot.value >= 5) {
       showAlert();
-     }else{
-      await deleteannocement(mydata.id,myToken.gettoken());
-      Swal.fire({
-      icon: "error",
-      title: "Cant create announcement",
-      text: "Cannot attach file",
-      confirmButtonText: "Try again",
-    });
-     }
-     ////////////////////////////////////////////////FILEEEEEEE/////////////////////////////////////
+    } else {
+      let mydata = await result.value.data
+      var formData = new FormData();
+      formData.append('id', mydata.id)
+      for (var i = 0; i < prefiledata.value.length; i++) {
+        formData.append('files', prefiledata.value[i])
+      }
+      let filestatus = await tranferfile(formData, myToken.gettoken())
+      if (filestatus == true) {
+        showAlert();
+      } else {
+        await deleteannocement(mydata.id, myToken.gettoken());
+        Swal.fire({
+          icon: "error",
+          title: "Cant create announcement",
+          text: "Cannot attach file",
+          confirmButtonText: "Try again",
+        });
+      }
+      ////////////////////////////////////////////////FILEEEEEEE/////////////////////////////////////
+    }
+    //  showAlert();
   }
-  //  showAlert();
-}
 };
 function clearcd() {
   closeDate.value = null;
@@ -343,19 +343,19 @@ const filemnopen = () => {
     validate(listF)
   });
   function validate(files) {
-    let cheekun=0
+    let cheekun = 0
     let checksum = 0;
     for (var i = 0; i < files.length; i++) {
       // console.log(files[i].size);
       if (files[i].size > 20971520) {
-        checksum ++;
+        checksum++;
       }
-      let oo= prefiledata.value.find((x)=>x.name==files[i].name)
-      if(oo!=undefined){
+      let oo = prefiledata.value.find((x) => x.name == files[i].name)
+      if (oo != undefined) {
         cheekun++
       }
     }
-    if (checksum <= 0 && cheekun<=0) {
+    if (checksum <= 0 && cheekun <= 0) {
       if (files.length > filedataslot.value) {
         Swal.fire({
           icon: "warning",
@@ -369,21 +369,21 @@ const filemnopen = () => {
       }
       //  let selectedFiles = Array.from(files).slice(0, 5);
     } else {
-      if(checksum>0){
-      Swal.fire({
-        icon: "warning",
-        title: "File is too large!",
-        text: "Supports files up to 20 MB",
-        confirmButtonText: "Continue",
-      });
-    }else{
-      Swal.fire({
-        icon: "warning",
-        title: "You have attached the file",
-        text: "Duplicate file attachments are not allowed",
-        confirmButtonText: "Continue",
-      });
-    }
+      if (checksum > 0) {
+        Swal.fire({
+          icon: "warning",
+          title: "File is too large!",
+          text: "Supports files up to 20 MB",
+          confirmButtonText: "Continue",
+        });
+      } else {
+        Swal.fire({
+          icon: "warning",
+          title: "You have attached the file",
+          text: "Duplicate file attachments are not allowed",
+          confirmButtonText: "Continue",
+        });
+      }
     }
   }
   // Function to handle dropped or selected files
@@ -392,17 +392,17 @@ const filemnopen = () => {
       prefiledata.value.push(files[i]);
     }
   }
-  
+
 };
 
 const bytetokb = (input) => {
   let resl = input / 1024;
   return resl.toFixed(2);
 };
-const removefile=(index)=>{
- prefiledata.value.splice(index,1)
- filedataslot.value++
- 
+const removefile = (index) => {
+  prefiledata.value.splice(index, 1)
+  filedataslot.value++
+
 }
 
 const enableinsertarea = computed(() => {
@@ -426,298 +426,177 @@ const enableinsertarea = computed(() => {
       </div>
       <SideBar :username="username" :role="userRole" />
     </div>
-    <div
-      class="w-4/5 h-full bg-slate-50 rounded-2xl flex flex-col pr-12 space-y-2"
-    >
+    <div class="w-4/5 h-full bg-slate-50 rounded-2xl flex flex-col pr-12 space-y-2">
       <div class="flex flex-row items-center ann-app-title w-full h-1/6">
         <div class="flex w-full h-full justify-start items-end">
           <p class="font-bold text-2xl">Create Announcement</p>
         </div>
       </div>
 
-      <div
-        class="w-full h-5/6 bg-white shadow-md rounded-2xl overflow-y-auto relative"
-      >
+      <div class="w-full h-5/6 bg-white shadow-md rounded-2xl overflow-y-auto relative">
         <!-- <div class="absolute top-3 right-3 rounded-full  hover:scale-110 shadow-2xl cursor-pointer transition duration-150 z-50" @click="filemanage=false"><img src="/images/cross.png" alt="logo.png" class="h-14 w-14" v-if="filemanage"></div> -->
         <div class="w-full h-full bg-white" v-show="filemanage">
-          <div
-            class="w-full flex justify-center text-3xl pt-5 absolute h-1/4 items-start"
-          >
+          <div class="w-full flex justify-center text-3xl pt-5 absolute h-1/5 items-start">
             <h1>File Attachments</h1>
           </div>
           <div class="flex h-full w-full items-center">
             <div class="w-full flex justify-center h-[70%]">
               <div class="flex w-full space-x-3 pr-3 pl-3">
                 <div
-                  class="border w-[60%] h-full flex rounded-l-2xl rounded-r-2xl bg-white shadow-lg overflow-y-auto"
-                >
-                  <table class="w-full table-fixed">
-                    <thead class="w-full">
-                      <tr
-                        class="bg-custom-blue text-gray-50 text-lg font-medium sticky top-0 rounded-2xl"
-                      >
-                        <th class="w-1/12 py-4 rounded-l-2xl">No.</th>
-                        <th class="w-1/4 py-4">Filename</th>
-                        <th class="w-1/4 py-4">Type</th>
-                        <th class="w-1/6 py-4">Size</th>
-                        <th class="w-1/6 py-4 rounded-r-2xl">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody class="w-full">
-                      <tr
-                        v-for="(file, index) in prefiledata"
-                        :key="index"
-                        class="text-custom-black font-normal border-b last:border-0"
-                      >
-                        <td class="text-center">{{ index + 1 }}</td>
-                        <td class="text-center truncate">{{ file.name }}</td>
-                        <td class="text-center">{{ file.type }} </td>
-                        <td class="text-center">{{ bytetokb(file.size) }} KB</td>
-                        <td class="">
-                          <button
-                            class="material-symbols-outlined pt-2 text-gray-400 hover:text-red-500"
-                            @click="removefile(index)"
-                          >
-                            delete
-                          </button>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+                  class="border w-[60%] h-full flex flex-col rounded-l-2xl rounded-r-2xl items-center p-3 bg-white shadow-lg overflow-y-auto">
+                  <h1 class="w-1/3 text-center text-3xl text-gray-600">Uploaded Files</h1>
+                  <div v-for="(file, index) in prefiledata" :key="index"
+                    class="flex flex-row w-full justify-center items-center py-3 px-4 border-b">
+                    <img
+                      :src="file.type.startsWith('image/') ? '/images/imagefile.png' : file.name.endsWith('zip') || file.name.endsWith('rar') ? '/images/rar.png' : '/images/file.png'"
+                      alt="" width="52" height="52" class="w-[52px] h-[52px] mr-6">
+                    <div class="flex flex-col w-full">
+                      <p class="font-bold">{{ file.name }}</p>
+                      <p class="text-sm">{{ file.type }}</p>
+                      <p class="text-xs">{{ bytetokb(file.size) }} KB</p>
+                    </div>
+                    <button class="material-symbols-outlined pt-2 text-gray-400 hover:text-red-500"
+                      @click="removefile(index)">
+                      delete
+                    </button>
+                  </div>
                 </div>
-                <div
-                  id="dropArea"
-                  class="drop-area w-[40%] h-full flex items-center justify-center rounded-2xl"
-                  v-show="enableinsertarea"
-                >
+                <div id="dropArea" class="drop-area w-[40%] h-full flex items-center justify-center rounded-2xl"
+                  v-show="enableinsertarea">
                   <div class="flex-col">
-                    <span
-                      class="material-symbols-outlined text-6xl transition-colors duration-200 text-gray-300"
-                      id="iconupload"
-                      >cloud_upload</span
-                    >
+                    <span class="material-symbols-outlined text-6xl transition-colors duration-200 text-gray-300"
+                      id="iconupload">cloud_upload</span>
                     <p class="text-gray-300">
                       Drag and drop files here or click this area to select
                       files
                     </p>
                     <p class="text-gray-300">Maximum file size is 20MB</p>
                   </div>
-                  <input
-                    type="file"
-                    id="fileInput"
-                    multiple
-                    style="display: none"
-                  />
+                  <input type="file" id="fileInput" multiple style="display: none" />
                 </div>
-                <div
-                  id="filemax"
-                  class=" w-[40%] h-full flex items-center justify-center rounded-2xl "
-                  v-show="!enableinsertarea"
-                >
+                <div id="filemax" class=" w-[40%] h-full flex items-center justify-center rounded-2xl "
+                  v-show="!enableinsertarea">
                   <div class="flex-col">
-                    <span
-                      class="material-symbols-outlined text-6xl transition-colors duration-200 text-red-500"
-                      id="iconupload"
-                      >block</span
-                    >
+                    <span class="material-symbols-outlined text-6xl transition-colors duration-200 text-red-500"
+                      id="iconupload">block</span>
                     <p class="text-custom-black">File is maximum : 5 file</p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div
-            class="absolute top-3 right-4 hover:scale-110 transition duration-200 cursor-pointer"
-            @click="filemanage = false"
-          >
+          <div class="absolute top-3 right-4 hover:scale-110 transition duration-200 cursor-pointer"
+            @click="filemanage = false">
             <img src="/images/cross.png" alt="Close" class="h-14 w-14" />
           </div>
         </div>
         <div class="create" v-show="!filemanage">
           <div class="flex flex-col w-full px-4 py-2 space-y-1">
-            <label for="title" class="flex text-base font-bold"
-              >Title
-              <Correct
-                v-show="newAnnouncement.announcementTitle.trim().length >= 1"
-                class="mt-0.5 ml-1 mr-1"
-              />
-              <span
-                v-show="newAnnouncement.announcementTitle.trim().length >= 1"
-                class="text-green-500"
-                >Title is valid</span
-              >
+            <label for="title" class="flex text-base font-bold">Title
+              <Correct v-show="newAnnouncement.announcementTitle.trim().length >= 1" class="mt-0.5 ml-1 mr-1" />
+              <span v-show="newAnnouncement.announcementTitle.trim().length >= 1" class="text-green-500">Title is
+                valid</span>
             </label>
-            <input
-              v-model="newAnnouncement.announcementTitle"
-              @click="
-                showErrorMessageT =
-                  newAnnouncement.announcementTitle.trim().length === 0
-              "
-              type="text"
-              id="title"
-              maxlength="200"
-              class="rounded-md placeholder:text-gray-400"
-              placeholder="Learning Exchanging"
-            />
+            <input v-model="newAnnouncement.announcementTitle" @click="
+              showErrorMessageT =
+              newAnnouncement.announcementTitle.trim().length === 0
+              " type="text" id="title" maxlength="200" class="rounded-md placeholder:text-gray-400"
+              placeholder="Learning Exchanging" />
             <p class="flex justify-end">
               {{ newAnnouncement.announcementTitle.trim().length }}/200
             </p>
 
-             <p class="flex text-red-600 pb-4 font-bold" v-show="showErrorMessageT">
+            <p class="flex text-red-600 pb-4 font-bold" v-show="showErrorMessageT">
 
-          <div>
-            <span v-show="newAnnouncement.announcementTitle.trim().length === 0" class="flex">
-              <Error />PLEASE FILL THE TITLE
-            </span>
-          </div></p> 
+            <div>
+              <span v-show="newAnnouncement.announcementTitle.trim().length === 0" class="flex">
+                <Error />PLEASE FILL THE TITLE
+              </span>
+            </div>
+            </p>
           </div>
 
           <div class="flex -mt-5">
             <div class="flex flex-col w-full px-4 py-2 space-y-1">
               <label class="text-base font-bold">Publish Date</label>
               <div class="flex flex-row space-x-4">
-                <input
-                  v-model="publishDate"
-                  type="date"
-                  placeholder="01/05/2023"
-                  :min="startdate"
-                  :max="enddate"
+                <input v-model="publishDate" type="date" placeholder="01/05/2023" :min="startdate" :max="enddate"
                   class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-publish-date border-gray-600 text-gray-600"
-                  id="publishDate"
-                />
-                <input
-                  :disabled="!publishDate"
-                  v-model="publishTime"
-                  type="time"
-                  placeholder="12:30"
+                  id="publishDate" />
+                <input :disabled="!publishDate" v-model="publishTime" type="time" placeholder="12:30"
                   class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-publish-time border-gray-600 text-gray-600"
-                  id="publishDate"
-                />
-                <button
-                  :disabled="!publishDate"
+                  id="publishDate" />
+                <button :disabled="!publishDate"
                   class="px-4 py-2 rounded-md bg-orange-400 text-white text-base font-bold disabled:hidden"
-                  @click="clearpd()"
-                >
+                  @click="clearpd()">
                   clear
                 </button>
               </div>
-              <div
-                class="flex text-red-500 ml-3 font-bold"
-                v-show="fillcurdatepb"
-              >
+              <div class="flex text-red-500 ml-3 font-bold" v-show="fillcurdatepb">
                 <Error></Error><span>publishdate must be a future</span>
               </div>
             </div>
             <div class="flex flex-col w-full px-4 py-2 space-y-1 -ml-96">
               <label class="text-base font-bold">Close Date</label>
               <div class="flex flex-row space-x-4">
-                <input
-                  v-model="closeDate"
-                  type="date"
-                  placeholder="01/05/2023"
-                  :min="closestartdate"
+                <input v-model="closeDate" type="date" placeholder="01/05/2023" :min="closestartdate"
                   class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-close-date border-gray-600 text-gray-600"
-                  id="closeDate"
-                />
-                <input
-                  :disabled="!closeDate"
-                  v-model="closeTime"
-                  type="time"
-                  placeholder="12:30"
+                  id="closeDate" />
+                <input :disabled="!closeDate" v-model="closeTime" type="time" placeholder="12:30"
                   class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-close-time border-gray-600 text-gray-600"
-                  id="closeDate"
-                />
-                <button
-                  :disabled="!closeDate"
+                  id="closeDate" />
+                <button :disabled="!closeDate"
                   class="px-4 py-2 rounded-md bg-orange-400 text-white text-base font-bold disabled:hidden"
-                  @click="clearcd()"
-                >
+                  @click="clearcd()">
                   clear
                 </button>
               </div>
-              <div
-                class="flex text-red-500 ml-3 font-bold"
-                v-show="fillcurdatecl"
-              >
+              <div class="flex text-red-500 ml-3 font-bold" v-show="fillcurdatecl">
                 <Error></Error><span>must be later than publish date</span>
               </div>
             </div>
           </div>
           <div class="flex flex-col w-1/6 px-4 py-2 space-y-1">
-            <label for="category-select" class="flex text-base font-bold w-60"
-              >Category
-              <Correct
-                v-show="newAnnouncement.categoryId !== ''"
-                class="mt-0.5 ml-1 mr-1"
-              />
-              <span
-                v-show="newAnnouncement.categoryId !== ''"
-                class="text-green-500"
-                >Category is valid</span
-              >
+            <label for="category-select" class="flex text-base font-bold w-60">Category
+              <Correct v-show="newAnnouncement.categoryId !== ''" class="mt-0.5 ml-1 mr-1" />
+              <span v-show="newAnnouncement.categoryId !== ''" class="text-green-500">Category is valid</span>
             </label>
-            <select
-              v-model="newAnnouncement.categoryId"
-              name="category"
-              id="category-select"
+            <select v-model="newAnnouncement.categoryId" name="category" id="category-select"
               class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-category placeholder:text-gray-400"
-              @click="showErrorMessageC = newAnnouncement.categoryId == ''"
-            >
+              @click="showErrorMessageC = newAnnouncement.categoryId == ''">
               <option value="" disabled>Select a category</option>
-              <option
-                v-for="(item, index) in categoryAll"
-                :key="index"
-                :value="item.categoryID"
-              >
+              <option v-for="(item, index) in categoryAll" :key="index" :value="item.categoryID">
                 {{ item.categoryName }}
               </option>
             </select>
           </div>
-          <p
-            class="flex text-red-600 py-2 pl-4 font-bold"
-            v-show="showErrorMessageC"
-          >
+          <p class="flex text-red-600 py-2 pl-4 font-bold" v-show="showErrorMessageC">
             <Error />PLEASE SELECT CATEGORY
           </p>
           <div class="flex space-x-3">
-          <div
-            class="rounded-full bg-slate-100 px-4 py-1 justify-start hover:bg-custom-blue hover:text-white shadow-2xl cursor-pointer transition-colors duration-150 w-[10%] flex ml-3 text-gray-400 space-x-1 mt-2"
-            id="filemanagement"
-            @click="filemnopen"
-          >
-            <span class="material-symbols-outlined">attach_file</span>
-            <p>Attach File</p>
+            <div
+              class="rounded-full bg-slate-100 px-4 py-1 justify-start hover:bg-custom-blue hover:text-white shadow-2xl cursor-pointer transition-colors duration-150 w-[10%] flex ml-3 text-gray-400 space-x-1 mt-2"
+              id="filemanagement" @click="filemnopen">
+              <span class="material-symbols-outlined">attach_file</span>
+              <p>Attach File</p>
+            </div>
+            <p class="pt-3 text-green-500 font-bold" v-show="5 - filedataslot > 0">Attached {{ 5 - filedataslot }} File
+            </p>
           </div>
-          <p class="pt-3 text-green-500 font-bold" v-show="5-filedataslot>0">Attached {{ 5-filedataslot }} File</p>
-        </div>
           <div class="flex flex-col w-full h-2/6 px-4 py-2 space-y-1">
-            <label for="description" class="flex text-base font-bold"
-              >Description
-              <Correct
-                v-show="
-                  newAnnouncement.announcementDescription.trim().length >= 1
-                "
-                class="mt-0.5 ml-1 mr-1"
-              />
-              <span
-                v-show="
-                  newAnnouncement.announcementDescription.trim().length >= 1
-                "
-                class="text-green-500"
-                >Description is valid</span
-              >
+            <label class="flex text-base font-bold">Description
+              <Correct v-show="newAnnouncement.announcementDescription.trim().length >= 1
+                " class="mt-0.5 ml-1 mr-1" />
+              <span v-show="newAnnouncement.announcementDescription.trim().length >= 1
+                " class="text-green-500">Description is valid</span>
             </label>
-            <QuillEditor
-              v-model:content="newAnnouncement.announcementDescription"
-              theme="snow"
-              toolbar="full"
+            <QuillEditor v-model:content="newAnnouncement.announcementDescription" theme="snow" toolbar="full"
               contentType="html"
               class="h-[11.8rem] overflow-y-auto rounded-md placeholder:text-gray-400 border-gray-600 shadow-gray-500"
               @click="
                 showErrorMessageD =
-                  newAnnouncement.announcementDescription.trim().length == 0
-              "
-            ></QuillEditor>
+                newAnnouncement.announcementDescription.trim().length == 0
+                "></QuillEditor>
             <p class="flex justify-end">
               {{ newAnnouncement.announcementDescription.trim().length }}/10000
             </p>
@@ -725,16 +604,9 @@ const enableinsertarea = computed(() => {
 
           <div class="flex flex-col w-full px-4 py-2 space-y-1 -mt-8">
             <div>
-              <p
-                class="flex text-red-600 pb-2 font-bold"
-                v-show="showErrorMessageD"
-              >
-                <span
-                  class="flex"
-                  v-show="
-                    newAnnouncement.announcementDescription.trim().length === 0
-                  "
-                >
+              <p class="flex text-red-600 pb-2 font-bold" v-show="showErrorMessageD">
+                <span class="flex" v-show="newAnnouncement.announcementDescription.trim().length === 0
+                  ">
                   <Error />PLEASE FILL THE DESCRIPTION
                 </span>
               </p>
@@ -742,35 +614,23 @@ const enableinsertarea = computed(() => {
 
             <div class="space-x-2">
               <label class="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  value=""
-                  class="sr-only peer"
-                  v-model="display"
-                />
+                <input type="checkbox" value="" class="sr-only peer" v-model="display" />
                 <div
-                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
-                ></div>
-                <span
-                  class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300"
-                  >Display Announcement</span
-                >
+                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+                </div>
+                <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Display Announcement</span>
               </label>
             </div>
           </div>
 
           <div class="w-full flex justify-start p-4 space-x-2">
-            <button
-              :disabled="isDisabled"
+            <button :disabled="isDisabled"
               class="px-4 py-2 rounded-md bg-green-500 text-white text-base font-bold disabled:bg-zinc-500 ann-button"
-              @click="addnewdata()"
-            >
+              @click="addnewdata()">
               submit
             </button>
-            <button
-              class="px-4 py-2 rounded-md bg-red-500 text-white text-base font-bold"
-              @click="router.push('/admin/announcement')"
-            >
+            <button class="px-4 py-2 rounded-md bg-red-500 text-white text-base font-bold"
+              @click="router.push('/admin/announcement')">
               Cancel
             </button>
           </div>
