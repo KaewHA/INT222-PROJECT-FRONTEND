@@ -1,20 +1,21 @@
 <script setup>
-import {getCategory, updateAnnouncement, getAnnouncementByIddata} from '../../../composable/annAuth.js'
+import { getCategory, updateAnnouncement, getAnnouncementByIddata } from '../../../composable/annAuth.js'
 import { onBeforeMount, onMounted, ref, computed } from 'vue'
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
 import { useRoute } from 'vue-router'
 import router from '../../../router'
 import Swal from 'sweetalert2'
-import SideBar from "../../../components/Sidebar.vue";
+import SideBar from '../../../components/Sidebar.vue'
 import Error from '../../../components/icon/Error.vue'
 import Correct from '../../../components/icon/Correct.vue'
 import { useToken } from "../../../stores/accresstoken.js";
 import { getToken } from "../../../composable/Auth.js";
 import { useView } from "../../../stores/adminView";
-
-const myView= useView()
-const myToken=useToken()
+import { getfileslist, delFile, tranferfile } from '../../../composable/filetransfer.js'
+const myView = useView()
+const myToken = useToken()
+const fileslist = ref(null)
 const { params } = useRoute()
 const olddata = ref({})
 const publishDate = ref(null)
@@ -29,6 +30,8 @@ const fillcurdatecl = ref(false)
 const showErrorMessageT = ref(false)
 const showErrorMessageC = ref(false)
 const showErrorMessageD = ref(false)
+const oldfile = ref(null)
+const newfile = ref(null)
 const options = {
     day: 'numeric',
     month: 'short',
@@ -64,9 +67,12 @@ function createtime(H, M) {
     return hour + ':' + min
 }
 onBeforeMount(async () => {
-    //  let newtoken=localStorage.getItem("token")
-    //  myToken.settoken(newtoken)
-    //get new announcement
+    fileslist.value = await getfileslist(params.id)
+    fileslist.value.forEach((file) => {
+        file["checksum"] = 1
+        prefiledata.value.push(file)
+    })
+    filedataslot.value = 5 - fileslist.value.length
     myView.view = "announcement";
     const receivedAnnouncement = ref()
     receivedAnnouncement.value = await getAnnouncementByIddata(params.id)
@@ -111,6 +117,7 @@ onBeforeMount(async () => {
     for (const [key, value] of Object.entries(receivedAnnouncement.value)) {
         olddata.value[key] = value
     }
+
 })
 myToken.settoken(localStorage.getItem("token"))
 myToken.decodeJwt()
@@ -315,23 +322,34 @@ const newAnnouncement = ref({
 })
 
 const createanno = async () => {
-    status.value = await updateAnnouncement(newAnnouncement.value, params.id,myToken.gettoken())
-    if(status.value==false){
-    let newtoken= await getToken()
-      if(newtoken==401){
-        Swal.fire({
-      icon: 'error',
-      title: 'YOUR TOKEN HAS EXPIRE',
-      text: 'PLESE LOGIN AND TRY AGAIN',
-      confirmButtonText: 'OK',
-    }).then(()=>{
-      router.push("/login");
-    })
-      }else{
-        myToken.settoken(newtoken)
-        status.value = await updateAnnouncement(newAnnouncement.value, params.id,myToken.gettoken())
-      }
-  }
+    // status.value = await updateAnnouncement(newAnnouncement.value, params.id, myToken.gettoken())
+    // if (status.value == false) {
+    //     let newtoken = await getToken()
+    //     if (newtoken == 401) {
+    //         Swal.fire({
+    //             icon: 'error',
+    //             title: 'YOUR TOKEN HAS EXPIRE',
+    //             text: 'PLESE LOGIN AND TRY AGAIN',
+    //             confirmButtonText: 'OK',
+    //         }).then(() => {
+    //             router.push("/login");
+    //         })
+    //     } else {
+    //         myToken.settoken(newtoken)
+    //         status.value = await updateAnnouncement(newAnnouncement.value, params.id, myToken.gettoken())
+    //     }
+    // }
+    let fileterfile = prefiledata.value.filter((file) => file.checksum != 1)
+    console.log(fileterfile);
+    console.log(oldfiledel.value);
+    var formData = new FormData();
+    formData.append('id', params.id)
+    for (var i = 0; i < fileterfile.length; i++) {
+        formData.append('files', fileterfile[i])
+    }
+    //   await updatefile(formData,myToken.gettoken())
+    await delFile(oldfiledel.value, params.id, myToken.gettoken())
+    await tranferfile(formData, myToken.gettoken())
     showAlert()
 }
 
@@ -369,6 +387,122 @@ const showAlert = () => {
     }
     router.push('/admin/announcement')
 }
+
+//////////////////////////////
+
+const filedataslot = ref(5);
+const filemanage = ref(false);
+const prefiledata = ref([]);
+const filemnopen = () => {
+    filemanage.value = true;
+    var dropArea = document.getElementById("dropArea");
+    var fileInput = document.getElementById("fileInput");
+    var icon = document.getElementById("iconupload");
+    dropArea.addEventListener("dragover", function (e) {
+        e.preventDefault();
+        dropArea.classList.add("highlight");
+        icon.classList.remove("text-gray-300");
+        icon.classList.add("text-custom-blue");
+    });
+
+    // Remove the highlight when the drag leaves the drop area
+    dropArea.addEventListener("dragleave", function () {
+        dropArea.classList.remove("highlight");
+        icon.classList.remove("text-custom-blue");
+        icon.classList.add("text-gray-300");
+    });
+
+    // Handle dropped files
+    dropArea.addEventListener("drop", function (e) {
+        e.preventDefault();
+        dropArea.classList.remove("highlight");
+        icon.classList.remove("text-custom-blue");
+        icon.classList.add("text-gray-300");
+        var files = e.dataTransfer.files;
+        validate(files)
+    });
+
+    // Clicking on the drop area triggers the hidden file input
+    dropArea.addEventListener("click", function () {
+        fileInput.click();
+    });
+
+    // Handle selected files when using the file input
+    fileInput.addEventListener("change", function () {
+        var listF = fileInput.files;
+        validate(listF)
+    });
+    function validate(files) {
+        let cheekun = 0
+        let checksum = 0;
+        for (var i = 0; i < files.length; i++) {
+            // console.log(files[i].size);
+            if (files[i].size > 20971520) {
+                checksum++;
+            }
+            let oo = prefiledata.value.find((x) => x.name == files[i].name)
+            if (oo != undefined) {
+                cheekun++
+            }
+        }
+        if (checksum <= 0 && cheekun <= 0) {
+            if (files.length > filedataslot.value) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Cant insert file",
+                    text: "Maximum 5 file",
+                    confirmButtonText: "Continue",
+                });
+            } else {
+                handleFiles(files);
+                filedataslot.value = filedataslot.value - files.length;
+            }
+            //  let selectedFiles = Array.from(files).slice(0, 5);
+        } else {
+            if (checksum > 0) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "File is too large!",
+                    text: "Supports files up to 20 MB",
+                    confirmButtonText: "Continue",
+                });
+            } else {
+                Swal.fire({
+                    icon: "warning",
+                    title: "You have attached the file",
+                    text: "Duplicate file attachments are not allowed",
+                    confirmButtonText: "Continue",
+                });
+            }
+        }
+    }
+    // Function to handle dropped or selected files
+    function handleFiles(files) {
+        for (var i = 0; i < files.length; i++) {
+            prefiledata.value.push(files[i]);
+            newfileadd.value.push(files[i])
+            console.log(newfileadd.value);
+        }
+    }
+
+};
+const newfileadd = ref([])
+const bytetokb = (input) => {
+    let resl = input / 1024;
+    return resl.toFixed(2);
+};
+const oldfiledel = ref([])
+const removefile = (index) => {
+    if (prefiledata.value[index]["checksum"] == 1) {
+        oldfiledel.value.push(prefiledata.value[index])
+    }
+    prefiledata.value.splice(index, 1)
+    filedataslot.value++
+}
+
+const enableinsertarea = computed(() => {
+    return filedataslot.value > 0;
+});
 </script>
 
 <template>
@@ -383,144 +517,218 @@ const showAlert = () => {
                     </div>
                 </div>
             </div>
-            <SideBar :username="username" :role="userRole"/>
+            <SideBar :username="username" :role="userRole" />
         </div>
         <div class="w-4/5 h-full bg-slate-50 rounded-2xl flex flex-col pr-12 space-y-2">
             <div class="flex flex-row items-center ann-app-title w-full h-1/6">
-                <div class="flex flex-col items-center w-full h-full">
-                    <div class="flex flex-col justify-center items-center w-full h-full"></div>
+                <div class="flex w-full h-full justify-start items-end">
+                    <p class="font-bold text-2xl">Update Announcement</p>
                 </div>
             </div>
-            <div class="w-full h-5/6 bg-white shadow-md rounded-2xl overflow-y-scroll">
-                <div class="flex px-4 pt-4">
-                    <h2 class="font-bold text-2xl">Update Announcement</h2>
-                </div>
-                <div class="flex flex-col w-full px-4 py-2 space-y-1">
-                    <label for="title" class="flex text-base font-bold">Title
-                        <Correct v-show="newAnnouncement.announcementTitle.trim().length >= 1" class="mt-0.5 ml-1 mr-1" />
-                        <span v-show="newAnnouncement.announcementTitle.trim().length >= 1" class="text-green-500">Title is
-                            valid</span>
-                    </label>
-                    <input v-model="newAnnouncement.announcementTitle" type="text" id="title" maxlength="200"
-                        class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-title" placeholder="Learning Exchanging"
-                        @click="
-                            showErrorMessageT =
-                            newAnnouncement.announcementTitle.trim().length === 0
-                            " />
-                    <p class="flex justify-end">
-                        {{ newAnnouncement.announcementTitle.trim().length }}/200
-                    </p>
-                    <p class="flex text-red-600 pb-4 font-bold"
-                        v-show="showErrorMessageT || newAnnouncement.announcementTitle.trim().length === 0">
-
-                    <div>
-                        <span v-show="newAnnouncement.announcementTitle.trim().length === 0" class="flex">
-                            <Error />PLEASE FILL THE TITLE
-                        </span>
+            <div class="w-full h-5/6 bg-white shadow-md rounded-2xl overflow-y-auto relative">
+                <div class="w-full h-full bg-white" v-show="filemanage">
+                    <div class="w-full flex justify-center text-3xl pt-5 absolute h-1/5 items-start">
+                        <h1>File Attachments</h1>
                     </div>
-
-                    </p>
-                </div>
-                <div class="flex -mt-5">
-                    <div class="flex flex-col w-full px-4 py-2 space-y-1">
-                        <label class="text-base font-bold">Publish Date</label>
-                        <div class="flex flex-row space-x-4">
-                            <input v-model="publishDate" type="date" placeholder="01/05/2023" :min="startdate"
-                                :max="enddate" class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-publish-date"
-                                id="publishDate" />
-                            <input :disabled="!publishDate" v-model="publishTime" type="time" placeholder="12:30"
-                                class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-publish-time"
-                                id="publishDate" />
-                            <button :disabled="!publishDate"
-                                class="px-4 py-2 rounded-md bg-orange-400 text-white text-base font-bold disabled:hidden"
-                                @click="clearpd()">
-                                clear
-                            </button>
-                        </div>
-                        <div class="flex text-red-500 ml-3 font-bold" v-show="fillcurdatepb">
-                            <Error></Error>publishdate must be a future
-                        </div>
-                    </div>
-                    <div class="flex flex-col w-full px-4 py-2 space-y-1 -ml-96">
-                        <label class="text-base font-bold">Close Date</label>
-                        <div class="flex flex-row space-x-4">
-                            <input v-model="closeDate" type="date" placeholder="01/05/2023" :min="closestartdate"
-                                class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-close-date" id="closeDate" />
-                            <input :disabled="!closeDate" v-model="closeTime" type="time" placeholder="12:30"
-                                class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-close-time" id="closeDate" />
-                            <button :disabled="!closeDate"
-                                class="px-4 py-2 rounded-md bg-orange-400 text-white text-base font-bold disabled:hidden"
-                                @click="clearcd()">
-                                clear
-                            </button>
-                        </div>
-                        <div class="flex text-red-500 ml-3 font-bold" v-show="fillcurdatecl">
-                            <Error></Error><span>must be later than publish date</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex flex-col w-1/6 px-4 py-2 space-y-1">
-                    <label for="category-select" class="flex text-base font-bold w-60">Category
-                        <Correct v-show="newAnnouncement.categoryId !== ''" class="mt-0.5 ml-1 mr-1" />
-                        <span v-show="newAnnouncement.categoryId !== ''" class="text-green-500">Category is valid</span>
-                    </label>
-                    <select v-model="choosecategory" name="category" id="category-select"
-                        class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-category">
-                        <option value="0" disabled>Select a category</option>
-                        <option v-for="item in categoryAll">
-                            {{ item.categoryName }}
-                        </option>
-                    </select>
-                </div>
-                <p class="flex text-red-600 py-2 pl-4 font-bold" v-show="showErrorMessageC">
-                    <Error /> <span>PLEASE SELECT CATEGORY</span>
-                </p>
-                <div class="flex flex-col w-full h-2/6 px-4 py-2 space-y-1">
-                    <label for="description" class="flex text-base font-bold">Description
-                        <Correct v-show="newAnnouncement.announcementDescription.trim().length >= 1
-                            " class="mt-0.5 ml-1 mr-1" />
-                        <span v-show="newAnnouncement.announcementDescription.trim().length >= 1
-                            " class="text-green-500">Description is valid</span>
-                    </label>
-                    <QuillEditor v-model:content="newAnnouncement.announcementDescription" theme="snow" toolbar="full"
-                        contentType="html" class="h-[11.8rem] overflow-y-auto" @click="
-                            showErrorMessageD =
-                            newAnnouncement.announcementDescription.trim().length == 0
-                            "></QuillEditor>
-                    <p class="flex justify-end">
-                        {{ newAnnouncement.announcementDescription.trim().length }}/10000
-                    </p>
-                </div>
-                <div>
-                    <p class="flex text-red-600 pb-2 font-bold" v-show="showErrorMessageD">
-                        <span class="flex" v-show="newAnnouncement.announcementDescription.trim().length === 0
-                            ">
-                            <Error />PLEASE FILL THE DESCRIPTION
-                        </span>
-                    </p>
-                </div>
-                <div class="flex flex-col w-full px-4 py-2 space-y-1 -mt-8">
-                    <div class="space-x-2">
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" value="" class="sr-only peer" v-model="display" />
-                            <div
-                                class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+                    <div class="flex h-full w-full items-center">
+                        <div class="w-full flex justify-center h-[70%]">
+                            <div class="flex w-full space-x-3 pr-3 pl-3">
+                                <div
+                                    class="border w-[60%] h-full flex flex-col rounded-l-2xl rounded-r-2xl items-center pb-3 bg-white shadow-lg overflow-y-auto">
+                                    <h1 class="w-full text-center text-3xl bg-custom-blue text-white rounded-t-lg p-1">
+                                        Uploaded Files</h1>
+                                    <div v-for="(file, index) in prefiledata" :key="index"
+                                        class="flex flex-row w-full justify-center items-center py-3 px-4 border-b">
+                                        <img v-if="file.type !== null"
+                                            :src="file.type.startsWith('image/') ? '/images/imagefile.png' : file.name.endsWith('zip') || file.name.endsWith('rar') ? '/images/rar.png' : '/images/file.png'"
+                                            alt="" width="52" height="52" class="w-[52px] h-[52px] mr-6">
+                                        <img v-else src="/images/file.png" alt="" width="52" height="52"
+                                            class="w-[52px] h-[52px] mr-6">
+                                        <div class="flex flex-col w-full">
+                                            <p class="font-bold">{{ file.name }}</p>
+                                            <p class="text-sm">{{ file.type }}</p>
+                                            <p class="text-xs">{{ bytetokb(file.size) }} KB</p>
+                                        </div>
+                                        <button class="material-symbols-outlined pt-2 text-gray-400 hover:text-red-500"
+                                            @click="removefile(index)">
+                                            delete
+                                        </button>
+                                    </div>
+                                </div>
+                                <div id="dropArea"
+                                    class="drop-area w-[40%] h-full flex items-center justify-center rounded-2xl"
+                                    v-show="enableinsertarea">
+                                    <div class="flex-col">
+                                        <span
+                                            class="material-symbols-outlined text-6xl transition-colors duration-200 text-gray-300"
+                                            id="iconupload">cloud_upload</span>
+                                        <p class="text-gray-300">
+                                            Drag and drop files here or click this area to select
+                                            files
+                                        </p>
+                                        <p class="text-gray-300">Maximum file size is 20MB</p>
+                                    </div>
+                                    <input type="file" id="fileInput" multiple style="display: none" />
+                                </div>
+                                <div id="filemax" class=" w-[40%] h-full flex items-center justify-center rounded-2xl "
+                                    v-show="!enableinsertarea">
+                                    <div class="flex-col">
+                                        <span
+                                            class="material-symbols-outlined text-6xl transition-colors duration-200 text-red-500"
+                                            id="iconupload">block</span>
+                                        <p class="text-custom-black">File is maximum : 5 file</p>
+                                    </div>
+                                </div>
                             </div>
-                            <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Display
-                                Announcement</span>
-                        </label>
+                        </div>
+                    </div>
+                    <div class="absolute top-3 right-4 hover:scale-110 transition duration-200 cursor-pointer"
+                        @click="filemanage = false">
+                        <img src="/images/cross.png" alt="Close" class="h-14 w-14" />
                     </div>
                 </div>
-                <div class="w-full flex justify-start p-4 space-x-2">
-                    <button :disabled="isDisabled"
-                        class="px-4 py-2 rounded-md bg-green-500 text-white text-base font-bold disabled:bg-zinc-500 ann-button"
-                        @click="createanno()">
-                        Update
-                    </button>
-                    <button class="px-4 py-2 rounded-md bg-red-500 text-white text-base font-bold"
-                        @click="router.push(`/admin/announcement/${params.id}`)">
-                        Cancel
-                    </button>
+                <div v-show="!filemanage" class="update">
+                    <div class="flex flex-col w-full px-4 py-2 space-y-1">
+                        <label for="title" class="flex text-base font-bold">Title
+                            <Correct v-show="newAnnouncement.announcementTitle.trim().length >= 1"
+                                class="mt-0.5 ml-1 mr-1" />
+                            <span v-show="newAnnouncement.announcementTitle.trim().length >= 1" class="text-green-500">Title
+                                is
+                                valid</span>
+                        </label>
+                        <input v-model="newAnnouncement.announcementTitle" type="text" id="title" maxlength="200"
+                            class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-title"
+                            placeholder="Learning Exchanging" @click="
+                                showErrorMessageT =
+                                newAnnouncement.announcementTitle.trim().length === 0
+                                " />
+                        <p class="flex justify-end">
+                            {{ newAnnouncement.announcementTitle.trim().length }}/200
+                        </p>
+                        <p class="flex text-red-600 pb-4 font-bold"
+                            v-show="showErrorMessageT || newAnnouncement.announcementTitle.trim().length === 0">
+
+                        <div>
+                            <span v-show="newAnnouncement.announcementTitle.trim().length === 0" class="flex">
+                                <Error />PLEASE FILL THE TITLE
+                            </span>
+                        </div>
+
+                        </p>
+                    </div>
+                    <div class="flex -mt-5">
+                        <div class="flex flex-col w-full px-4 py-2 space-y-1">
+                            <label class="text-base font-bold">Publish Date</label>
+                            <div class="flex flex-row space-x-4">
+                                <input v-model="publishDate" type="date" placeholder="01/05/2023" :min="startdate"
+                                    :max="enddate" class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-publish-date"
+                                    id="publishDate" />
+                                <input :disabled="!publishDate" v-model="publishTime" type="time" placeholder="12:30"
+                                    class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-publish-time"
+                                    id="publishDate" />
+                                <button :disabled="!publishDate"
+                                    class="px-4 py-2 rounded-md bg-orange-400 text-white text-base font-bold disabled:hidden"
+                                    @click="clearpd()">
+                                    clear
+                                </button>
+                            </div>
+                            <div class="flex text-red-500 ml-3 font-bold" v-show="fillcurdatepb">
+                                <Error></Error>publishdate must be a future
+                            </div>
+                        </div>
+                        <div class="flex flex-col w-full px-4 py-2 space-y-1 -ml-96">
+                            <label class="text-base font-bold">Close Date</label>
+                            <div class="flex flex-row space-x-4">
+                                <input v-model="closeDate" type="date" placeholder="01/05/2023" :min="closestartdate"
+                                    class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-close-date"
+                                    id="closeDate" />
+                                <input :disabled="!closeDate" v-model="closeTime" type="time" placeholder="12:30"
+                                    class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-close-time"
+                                    id="closeDate" />
+                                <button :disabled="!closeDate"
+                                    class="px-4 py-2 rounded-md bg-orange-400 text-white text-base font-bold disabled:hidden"
+                                    @click="clearcd()">
+                                    clear
+                                </button>
+                            </div>
+                            <div class="flex text-red-500 ml-3 font-bold" v-show="fillcurdatecl">
+                                <Error></Error><span>must be later than publish date</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex flex-col w-1/6 px-4 py-2 space-y-1">
+                        <label for="category-select" class="flex text-base font-bold w-60">Category
+                            <Correct v-show="newAnnouncement.categoryId !== ''" class="mt-0.5 ml-1 mr-1" />
+                            <span v-show="newAnnouncement.categoryId !== ''" class="text-green-500">Category is valid</span>
+                        </label>
+                        <select v-model="choosecategory" name="category" id="category-select"
+                            class="border rounded-md bg-slate-100 text-lg py-2 px-4 ann-category">
+                            <option value="0" disabled>Select a category</option>
+                            <option v-for="item in categoryAll">
+                                {{ item.categoryName }}
+                            </option>
+                        </select>
+                    </div>
+                    <p class="flex text-red-600 py-2 pl-4 font-bold" v-show="showErrorMessageC">
+                        <Error /> <span>PLEASE SELECT CATEGORY</span>
+                    </p>
+                    <div class="flex space-x-3">
+                        <div class="rounded-full bg-slate-100 px-4 py-1 justify-start hover:bg-custom-blue hover:text-white shadow-2xl cursor-pointer transition-colors duration-150 w-[10%] flex ml-3 text-gray-400 space-x-1 mt-2"
+                            id="filemanagement" @click="filemnopen">
+                            <span class="material-symbols-outlined">attach_file</span>
+                            <p>Attach File</p>
+                        </div>
+                        <p class="pt-3 text-green-500 font-bold" v-show="5 - filedataslot > 0">Attached {{ 5 - filedataslot
+                        }} File
+                        </p>
+                    </div>
+                    <div class="flex flex-col w-full h-2/6 px-4 py-2 space-y-1">
+                        <label for="description" class="flex text-base font-bold">Description
+                            <Correct v-show="newAnnouncement.announcementDescription.trim().length >= 1
+                                " class="mt-0.5 ml-1 mr-1" />
+                            <span v-show="newAnnouncement.announcementDescription.trim().length >= 1
+                                " class="text-green-500">Description is valid</span>
+                        </label>
+                        <QuillEditor v-model:content="newAnnouncement.announcementDescription" theme="snow" toolbar="full"
+                            contentType="html" class="h-[11.8rem] overflow-y-auto" @click="
+                                showErrorMessageD =
+                                newAnnouncement.announcementDescription.trim().length == 0
+                                "></QuillEditor>
+                        <p class="flex justify-end">
+                            {{ newAnnouncement.announcementDescription.trim().length }}/10000
+                        </p>
+                    </div>
+                    <div>
+                        <p class="flex text-red-600 pb-2 font-bold" v-show="showErrorMessageD">
+                            <span class="flex" v-show="newAnnouncement.announcementDescription.trim().length === 0
+                                ">
+                                <Error />PLEASE FILL THE DESCRIPTION
+                            </span>
+                        </p>
+                    </div>
+                    <div class="flex flex-col w-full px-4 py-2 space-y-1 -mt-8">
+                        <div class="space-x-2">
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" value="" class="sr-only peer" v-model="display" />
+                                <div
+                                    class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+                                </div>
+                                <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Display
+                                    Announcement</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="w-full flex justify-start p-4 space-x-2">
+                        <button :disabled="isDisabled"
+                            class="px-4 py-2 rounded-md bg-green-500 text-white text-base font-bold disabled:bg-zinc-500 ann-button"
+                            @click="createanno()">
+                            Update
+                        </button>
+                        <button class="px-4 py-2 rounded-md bg-red-500 text-white text-base font-bold"
+                            @click="router.push(`/admin/announcement/${params.id}`)">
+                            Cancel
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -536,6 +744,22 @@ const showAlert = () => {
     align-items: center;
     justify-content: center;
     text-align: center;
+}
+
+#dropArea {
+    border: 2px dashed #ccc;
+    text-align: center;
+    cursor: pointer;
+}
+
+#filemax {
+    border: 2px dashed #ff0000;
+    text-align: center;
+    cursor: default;
+}
+
+#dropArea.highlight {
+    border-color: #2196f3;
 }
 
 ::-webkit-scrollbar {

@@ -20,7 +20,6 @@ async function tranferfile(data, token) {
       console.log(error);
     }
   }
-
   async function getfileslist(id) {
     try {
       const res = await fetch(
@@ -39,5 +38,27 @@ async function tranferfile(data, token) {
     }
   }
 
-
-  export {tranferfile,getfileslist}
+  async function delFile(data, id, token) {
+    try {
+      let auth = "Bearer "+token;
+      const res = await fetch(
+        `${import.meta.env.VITE_BASE_URL}/api/file/delete/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: auth,
+          },
+          body: JSON.stringify(data),
+        }
+      );
+      if (res.ok) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  export {tranferfile,getfileslist,delFile}

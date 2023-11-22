@@ -94,98 +94,63 @@ function download(id, filename) {
       </div>
       <SideBar :username="username" :role="userRole" />
     </div>
-    <div
-      class="w-4/5 h-full bg-slate-50 rounded-2xl flex flex-col pr-12 space-y-2"
-    >
+    <div class="w-4/5 h-full bg-slate-50 rounded-2xl flex flex-col pr-12 space-y-2">
       <div class="flex flex-row items-center ann-app-title w-full h-1/6">
         <div class="flex flex-col items-center w-full h-full">
-          <div
-            class="flex flex-col justify-center items-center w-full h-2/3"
-          ></div>
+          <div class="flex flex-col justify-center items-center w-full h-2/3"></div>
         </div>
       </div>
-      <div  class="w-full h-5/6 bg-white shadow-md rounded-2xl overflow-y-scroll relative">
+      <div class="w-full h-5/6 bg-white shadow-md rounded-2xl overflow-y-scroll relative">
         <div class="w-full" v-show="showfilevar">
           <div class="w-full h-full">
             <div class="w-full flex justify-start text-4xl pl-5 pt-10 bg-custom-blue text-white pb-3 relative">
               <h1>Attached Files</h1>
             </div>
-            <div class=" absolute bottom-3 w-full flex justify-center    "><span class=" text-5xl material-symbols-outlined text-gray-300 hover:text-red-500 cursor-pointer" @click="showfilevar=!showfilevar">cancel</span></div>
-            <div
-              v-for="(file, index) in fileslist"
-              :key="index"
-              class="flex flex-row w-full justify-start items-center py-3 px-4 border-b"
-            >
-              <img
-                :src="
-                  file.type.startsWith('image/')
-                    ? '/images/imagefile.png'
-                    : file.filename.endsWith('zip') ||
-                      file.filename.endsWith('rar')
-                    ? '/images/rar.png'
-                    : '/images/file.png'
-                "
-                alt=""
-                width="52"
-                height="52"
-                class="w-[52px] h-[52px] mr-6"
-              />
+            <div class=" absolute bottom-3 w-full flex justify-center    "><span
+                class=" text-5xl material-symbols-outlined text-gray-300 hover:text-red-500 cursor-pointer"
+                @click="showfilevar = !showfilevar">cancel</span></div>
+            <div v-for="(file, index) in fileslist" :key="index"
+              class="flex flex-row w-full justify-start items-center py-3 px-4 border-b">
+              <img v-if="file.type !== null"
+                :src="file.type.startsWith('image/') ? '/images/imagefile.png' : file.name.endsWith('zip') || file.name.endsWith('rar') ? '/images/rar.png' : '/images/file.png'"
+                alt="" width="52" height="52" class="w-[52px] h-[52px] mr-6">
+              <img v-else src="/images/file.png" alt="" width="52" height="52" class="w-[52px] h-[52px] mr-6">
               <div class="flex flex-col w-full">
-                <p class="font-semibold text-sm">{{ file.filename }}</p>
+                <p class="font-semibold text-sm">{{ file.name }}</p>
                 <p class="text-xs">{{ bytetokb(file.size) }} KB</p>
                 <p class="text-xs">{{ file.type }}</p>
               </div>
-              <button
-                class="material-symbols-outlined pt-2 text-gray-400 hover:text-custom-blue"
-                @click="download(params.id, file.filename)"
-              >
+              <button class="material-symbols-outlined pt-2 text-gray-400 hover:text-custom-blue"
+                @click="download(params.id, file.name)">
                 download
               </button>
             </div>
           </div>
         </div>
         <div v-show="!showfilevar">
-          <div
-            class="flex flex-row mt-8 w-full justify-center first:justify-start"
-          >
+          <div class="flex flex-row mt-8 w-full justify-center first:justify-start">
             <div
               class="w-36 h-12 bg-gray-200 text-slate-700 hover:bg-custom-blue hover:text-white rounded-full flex justify-center items-center absolute left-4 bottom-3 hover: transition duration-300 cursor-pointer"
-              @click="showfilevar = !showfilevar"
-              v-show="showornot"
-            >
+              @click="showfilevar = !showfilevar" v-show="showornot">
               <span class="material-symbols-outlined mr-1">list </span>
               <span class="text-sm">Attached Files</span>
             </div>
-            <span
-              @click="router.push('/admin/announcement')"
-              class="material-symbols-outlined flex items-center justify-center ml-12 p-2 text-slate-500 fixed cursor-pointer hover:rounded-full hover:bg-blue-500 hover:text-white duration-150"
-              >arrow_back</span
-            >
-            <h1
-              class="font-extrabold text-gray-600 text-3xl text-center w-full"
-            >
+            <span @click="router.push('/admin/announcement')"
+              class="material-symbols-outlined flex items-center justify-center ml-12 p-2 text-slate-500 fixed cursor-pointer hover:rounded-full hover:bg-blue-500 hover:text-white duration-150">arrow_back</span>
+            <h1 class="font-extrabold text-gray-600 text-3xl text-center w-full">
               Announcement Detail
             </h1>
             <p
-              class="text-center flex justify-center items-center absolute right-16 font-extrabold text-base rounded-3xl text-white px-4 py-2 from-cyan-500 to-blue-500 bg-gradient-to-r"
-            >
-              <span class="material-symbols-outlined">visibility</span
-              >&nbsp;&nbsp;
+              class="text-center flex justify-center items-center absolute right-16 font-extrabold text-base rounded-3xl text-white px-4 py-2 from-cyan-500 to-blue-500 bg-gradient-to-r">
+              <span class="material-symbols-outlined">visibility</span>&nbsp;&nbsp;
               {{ announcement.viewCount }}
             </p>
-            <p
-              class="text-center flex justify-center items-center absolute right-44 font-extrabold text-base rounded-3xl text-white px-4 py-2 bg-gradient-to-r"
-              :class="
-                announcement.announcementDisplay !== 'Y'
+            <p class="text-center flex justify-center items-center absolute right-44 font-extrabold text-base rounded-3xl text-white px-4 py-2 bg-gradient-to-r"
+              :class="announcement.announcementDisplay !== 'Y'
                   ? 'from-rose-700 to-red-600'
                   : 'from-green-500 to-emerald-600'
-              "
-            >
-              <span
-                v-if="announcement.announcementDisplay === 'Y'"
-                class="material-symbols-outlined"
-                >check_circle</span
-              >
+                ">
+              <span v-if="announcement.announcementDisplay === 'Y'" class="material-symbols-outlined">check_circle</span>
               <span v-else class="material-symbols-outlined">cancel</span>
               &nbsp;&nbsp;{{ announcement.announcementDisplay }}
             </p>
@@ -197,45 +162,32 @@ function download(id, filename) {
               </h1>
               <div class="w-full flex flex-row space-x-8">
                 <p
-                  class="w-1/12 font-bold py-2 rounded-3xl bg-gradient-to-r from-cyan-500 to-blue-500 text-white text-center"
-                >
+                  class="w-1/12 font-bold py-2 rounded-3xl bg-gradient-to-r from-cyan-500 to-blue-500 text-white text-center">
                   {{ announcement.announcementCategory }}
                 </p>
               </div>
 
               <div class="w-full flex flex-row space-x-6">
                 <p
-                  class="w-1/3 flex justify-center items-center font-bold py-2 rounded-3xl bg-gradient-to-r from-green-500 to-emerald-600 text-white text-center space-x-4"
-                >
+                  class="w-1/3 flex justify-center items-center font-bold py-2 rounded-3xl bg-gradient-to-r from-green-500 to-emerald-600 text-white text-center space-x-4">
                   <span class="material-symbols-outlined">event_available</span>
-                  <span
-                    >Published on :
-                    {{ dateformat(announcement.publishDate) }}</span
-                  >
+                  <span>Published on :
+                    {{ dateformat(announcement.publishDate) }}</span>
                 </p>
                 <p
-                  class="w-1/3 flex justify-center items-center font-bold py-2 rounded-3xl bg-gradient-to-r from-rose-700 to-red-600 text-white text-center space-x-4"
-                >
+                  class="w-1/3 flex justify-center items-center font-bold py-2 rounded-3xl bg-gradient-to-r from-rose-700 to-red-600 text-white text-center space-x-4">
                   <span class="material-symbols-outlined">event_busy</span>
-                  <span
-                    >Close on : {{ dateformat(announcement.closeDate) }}</span
-                  >
+                  <span>Close on : {{ dateformat(announcement.closeDate) }}</span>
                 </p>
               </div>
-              <div
-                class="w-full h-80 overflow-y-scroll break-words text-gray-700 border rounded-md py-6 px-8 ql-editor"
-              >
-                <p
-                  class="indent-8"
-                  v-html="announcement.announcementDescription"
-                ></p>
+              <div class="w-full h-80 overflow-y-scroll break-words text-gray-700 border rounded-md py-6 px-8 ql-editor">
+                <p class="indent-8" v-html="announcement.announcementDescription"></p>
               </div>
             </div>
           </div>
           <div
             class="w-16 h-16 bg-blue-500 rounded-full flex justify-center items-center absolute right-4 bottom-3 hover:scale-110 transition duration-75 cursor-pointer hover:bg-blue-700"
-            @click="router.push(`/admin/announcement/${params.id}/edit`)"
-          >
+            @click="router.push(`/admin/announcement/${params.id}/edit`)">
             <span class="material-symbols-outlined text-white">edit</span>
           </div>
         </div>

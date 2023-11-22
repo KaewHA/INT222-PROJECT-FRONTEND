@@ -150,20 +150,23 @@ function download(id, filename) {
           </a>
         </div>
 
-        <div class="w-full flex flex-col bg-white rounded-2xl   shadow-md  absolute bottom-0" v-show="!(fileslist == false)">
-          <h1 class="w-full flex justify-center text-2xl pt-2 bg-custom-blue text-white rounded-t-2xl p-1">File Attach</h1>
+        <div class="w-full flex flex-col bg-white rounded-2xl   shadow-md  absolute bottom-0"
+          v-show="!(fileslist == false)">
+          <h1 class="w-full flex justify-center text-2xl pt-2 bg-custom-blue text-white rounded-t-2xl p-1">File Attach
+          </h1>
           <div class="h-[22rem] overflow-y-auto">
             <div v-for="(file, index) in fileslist" :key="index"
               class="flex flex-row w-full justify-center items-center py-3 px-4 border-b">
-              <img
-                :src="file.type.startsWith('image/') ? '/images/imagefile.png' : file.filename.endsWith('zip') || file.filename.endsWith('rar') ? '/images/rar.png' : '/images/file.png'"
+              <img v-if="file.type !== null"
+                :src="file.type.startsWith('image/') ? '/images/imagefile.png' : file.name.endsWith('zip') || file.name.endsWith('rar') ? '/images/rar.png' : '/images/file.png'"
                 alt="" width="52" height="52" class="w-[52px] h-[52px] mr-6">
+              <img v-else src="/images/file.png" alt="" width="52" height="52" class="w-[52px] h-[52px] mr-6">
               <div class="flex flex-col w-full">
-                <p class="font-semibold text-sm">{{ file.filename }}</p>
+                <p class="font-semibold text-sm">{{ file.name }}</p>
                 <p class="text-xs">{{ bytetokb(file.size) }} KB</p>
               </div>
               <button class="material-symbols-outlined pt-2 text-gray-400 hover:text-custom-blue"
-                @click="download( params.id,file.filename)">
+                @click="download(params.id, file.name)">
                 download
               </button>
             </div>
