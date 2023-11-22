@@ -40,21 +40,4 @@ async function tranferfile(data, token) {
   }
 
 
-  async function downloadfile(id,filename) {
-    try {
-      const res = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/file/download?id=${id}&file=${filename}`,
-        {
-          method: "GET",
-        }
-      );
-      if (res.status==200) {
-        return res.json();
-      } else {
-        return false;
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
   export {tranferfile,getfileslist}
