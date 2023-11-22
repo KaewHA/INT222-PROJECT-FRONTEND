@@ -443,8 +443,8 @@ const enableinsertarea = computed(() => {
             <div class="w-full flex justify-center h-[70%]">
               <div class="flex w-full space-x-3 pr-3 pl-3">
                 <div
-                  class="border w-[60%] h-full flex flex-col rounded-l-2xl rounded-r-2xl items-center p-3 bg-white shadow-lg overflow-y-auto">
-                  <h1 class="w-1/3 text-center text-3xl text-gray-600">Uploaded Files</h1>
+                  class="border w-[60%] h-full flex flex-col rounded-l-2xl rounded-r-2xl items-center px-3 pb-3 bg-white shadow-lg overflow-y-auto">
+                  <h1 class="w-full text-center text-3xl bg-custom-blue text-white rounded-t-full p-1">Uploaded Files</h1>
                   <div v-for="(file, index) in prefiledata" :key="index"
                     class="flex flex-row w-full justify-center items-center py-3 px-4 border-b">
                     <img
