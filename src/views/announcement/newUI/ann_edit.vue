@@ -322,23 +322,23 @@ const newAnnouncement = ref({
 })
 
 const createanno = async () => {
-    // status.value = await updateAnnouncement(newAnnouncement.value, params.id, myToken.gettoken())
-    // if (status.value == false) {
-    //     let newtoken = await getToken()
-    //     if (newtoken == 401) {
-    //         Swal.fire({
-    //             icon: 'error',
-    //             title: 'YOUR TOKEN HAS EXPIRE',
-    //             text: 'PLESE LOGIN AND TRY AGAIN',
-    //             confirmButtonText: 'OK',
-    //         }).then(() => {
-    //             router.push("/login");
-    //         })
-    //     } else {
-    //         myToken.settoken(newtoken)
-    //         status.value = await updateAnnouncement(newAnnouncement.value, params.id, myToken.gettoken())
-    //     }
-    // }
+    status.value = await updateAnnouncement(newAnnouncement.value, params.id, myToken.gettoken())
+    if (status.value == false) {
+        let newtoken = await getToken()
+        if (newtoken == 401) {
+            Swal.fire({
+                icon: 'error',
+                title: 'YOUR TOKEN HAS EXPIRE',
+                text: 'PLESE LOGIN AND TRY AGAIN',
+                confirmButtonText: 'OK',
+            }).then(() => {
+                router.push("/login");
+            })
+        } else {
+            myToken.settoken(newtoken)
+            status.value = await updateAnnouncement(newAnnouncement.value, params.id, myToken.gettoken())
+        }
+    }
     let fileterfile = prefiledata.value.filter((file) => file.checksum != 1)
     console.log(fileterfile);
     console.log(oldfiledel.value);
@@ -434,7 +434,8 @@ const filemnopen = () => {
     });
     function validate(files) {
         let cheekun = 0
-        let checksum = 0;
+        let checksum = 0
+        let namevalid=0
         for (var i = 0; i < files.length; i++) {
             // console.log(files[i].size);
             if (files[i].size > 20971520) {
@@ -444,8 +445,11 @@ const filemnopen = () => {
             if (oo != undefined) {
                 cheekun++
             }
+            if(files[i].name.includes("%")){
+        namevalid++
+      }
         }
-        if (checksum <= 0 && cheekun <= 0) {
+        if (checksum <= 0 && cheekun <= 0 && namevalid <= 0) {
             if (files.length > filedataslot.value) {
                 Swal.fire({
                     icon: "warning",
@@ -466,14 +470,21 @@ const filemnopen = () => {
                     text: "Supports files up to 20 MB",
                     confirmButtonText: "Continue",
                 });
-            } else {
-                Swal.fire({
-                    icon: "warning",
-                    title: "You have attached the file",
-                    text: "Duplicate file attachments are not allowed",
-                    confirmButtonText: "Continue",
-                });
-            }
+            } else if(cheekun>0) {
+        Swal.fire({
+          icon: "warning",
+          title: "You have attached the file",
+          text: "Duplicate file attachments are not allowed",
+          confirmButtonText: "Continue",
+        });
+      }else{
+        Swal.fire({
+          icon: "warning",
+          title: "File name is not valid",
+          text: "Not support file name include % ",
+          confirmButtonText: "Continue",
+        });
+      }
         }
     }
     // Function to handle dropped or selected files
