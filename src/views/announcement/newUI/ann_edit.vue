@@ -73,6 +73,7 @@ onBeforeMount(async () => {
         prefiledata.value.push(file)
     })
     filedataslot.value = 5 - fileslist.value.length
+    oldFileData.value = fileslist.value
     myView.view = "announcement";
     const receivedAnnouncement = ref()
     receivedAnnouncement.value = await getAnnouncementByIddata(params.id)
@@ -290,13 +291,21 @@ const isDisabled = computed(() => {
         }
         return false
     }
+    const checkFile = () => {
+        if (oldFileData.value.length > prefiledata.value.length || oldFileData.value.length < prefiledata.value.length) {
+            return false;
+        } else {
+            return oldFileData.value.every((value, index) => value === prefiledata.value[index]);
+        }
+    }
+
     return (
-        checknewdata() ||
+        (checknewdata() && checkFile()) ||
         titlenull ||
         desnull ||
         lencheck() ||
         datecheckpb() ||
-        datecheckcl()
+        datecheckcl() 
     )
 })
 const convertDate = (date, time, deftime) => {
@@ -435,7 +444,7 @@ const filemnopen = () => {
     function validate(files) {
         let cheekun = 0
         let checksum = 0
-        let namevalid=0
+        let namevalid = 0
         for (var i = 0; i < files.length; i++) {
             // console.log(files[i].size);
             if (files[i].size > 20971520) {
@@ -445,9 +454,9 @@ const filemnopen = () => {
             if (oo != undefined) {
                 cheekun++
             }
-            if(files[i].name.includes("%")){
-        namevalid++
-      }
+            if (files[i].name.includes("%")) {
+                namevalid++
+            }
         }
         if (checksum <= 0 && cheekun <= 0 && namevalid <= 0) {
             if (files.length > filedataslot.value) {
@@ -470,21 +479,21 @@ const filemnopen = () => {
                     text: "Supports files up to 20 MB",
                     confirmButtonText: "Continue",
                 });
-            } else if(cheekun>0) {
-        Swal.fire({
-          icon: "warning",
-          title: "You have attached the file",
-          text: "Duplicate file attachments are not allowed",
-          confirmButtonText: "Continue",
-        });
-      }else{
-        Swal.fire({
-          icon: "warning",
-          title: "File name is not valid",
-          text: "Not support file name include % ",
-          confirmButtonText: "Continue",
-        });
-      }
+            } else if (cheekun > 0) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "You have attached the file",
+                    text: "Duplicate file attachments are not allowed",
+                    confirmButtonText: "Continue",
+                });
+            } else {
+                Swal.fire({
+                    icon: "warning",
+                    title: "File name is not valid",
+                    text: "Not support file name include % ",
+                    confirmButtonText: "Continue",
+                });
+            }
         }
     }
     // Function to handle dropped or selected files
@@ -497,6 +506,7 @@ const filemnopen = () => {
     }
 
 };
+const oldFileData = ref([])
 const newfileadd = ref([])
 const bytetokb = (input) => {
     let resl = input / 1024;
