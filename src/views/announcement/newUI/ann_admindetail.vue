@@ -14,7 +14,7 @@ const { params } = useRoute();
 const announcement = ref("");
 const status = ref(true);
 const myToken = useToken();
-const fileslist = ref(null);
+const fileslist = ref([]);
 onBeforeMount(async () => {
   // let newtoken=localStorage.getItem("token")
   // myToken.settoken(newtoken)

@@ -12,7 +12,7 @@ import Correct from '../../../components/icon/Correct.vue'
 import { useToken } from "../../../stores/accresstoken.js";
 import { getToken } from "../../../composable/Auth.js";
 import { useView } from "../../../stores/adminView";
-import { getfileslist, delFile, tranferfile } from '../../../composable/filetransfer.js'
+import { getfileslist, delFile, tranferfile, checkAnnFiles } from '../../../composable/filetransfer.js'
 const myView = useView()
 const myToken = useToken()
 const fileslist = ref(null)
@@ -66,14 +66,19 @@ function createtime(H, M) {
 
     return hour + ':' + min
 }
+
+const haveFile = ref(false)
 onBeforeMount(async () => {
-    fileslist.value = await getfileslist(params.id)
-    fileslist.value.forEach((file) => {
-        file["checksum"] = 1
-        prefiledata.value.push(file)
-    })
-    filedataslot.value = 5 - fileslist.value.length
-    oldFileData.value = fileslist.value
+    haveFile.value = await checkAnnFiles(params.id)
+    if (haveFile.value === 200) {
+        fileslist.value = await getfileslist(params.id)
+        fileslist.value.forEach((file) => {
+            file["checksum"] = 1
+            prefiledata.value.push(file)
+        })
+        filedataslot.value = 5 - fileslist.value.length
+        oldFileData.value = fileslist.value
+    }
     myView.view = "announcement";
     const receivedAnnouncement = ref()
     receivedAnnouncement.value = await getAnnouncementByIddata(params.id)
@@ -292,10 +297,12 @@ const isDisabled = computed(() => {
         return false
     }
     const checkFile = () => {
-        if (oldFileData.value.length > prefiledata.value.length || oldFileData.value.length < prefiledata.value.length) {
-            return false;
-        } else {
-            return oldFileData.value.every((value, index) => value === prefiledata.value[index]);
+        if (haveFile.value === 200) {
+            if (oldFileData.value.length > prefiledata.value.length || oldFileData.value.length < prefiledata.value.length) {
+                return false;
+            } else {
+                return oldFileData.value.every((value, index) => value === prefiledata.value[index]);
+            }
         }
     }
 
@@ -305,7 +312,7 @@ const isDisabled = computed(() => {
         desnull ||
         lencheck() ||
         datecheckpb() ||
-        datecheckcl() 
+        datecheckcl()
     )
 })
 const convertDate = (date, time, deftime) => {
