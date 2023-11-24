@@ -221,13 +221,22 @@ const isDisabled = computed(() => {
             }
             return false
         }
+        const filetest = () => {
+        if(newfileadd.value.length>0 ||removeoldfile.value){
+            return true
+        }
+        return false
+        }
         let datacheck = check()
         let catecheck = checkcate()
+        let filecheck = filetest()
         if (newAnnouncement.value.categoryId != undefined) {
             let id = newAnnouncement.value.categoryId.categoryID
             newAnnouncement.value.categoryId = id
         }
-        return !(datacheck || catecheck)
+        
+        return !(datacheck || catecheck ||filecheck)
+    
     }
     const lencheck = () => {
         if (newAnnouncement.value.announcementTitle.trim().length == 0) {
@@ -266,10 +275,6 @@ const isDisabled = computed(() => {
             }
             return false
         }
-    }
-    const filetest = () => {
-        console.log(oldFileData.value);
-        console.log(enalblefile.value);
         return false
     }
     const datecheckcl = () => {
@@ -313,7 +318,7 @@ const isDisabled = computed(() => {
         desnull ||
         lencheck() ||
         datecheckpb() ||
-        datecheckcl()||filetest()
+        datecheckcl()
     )
 })
 const convertDate = (date, time, deftime) => {
@@ -507,22 +512,28 @@ const filemnopen = () => {
     // Function to handle dropped or selected files
     function handleFiles(files) {
         for (var i = 0; i < files.length; i++) {
-            prefiledata.value.push(files[i]);
+            prefiledata.value.push(files[i])
             newfileadd.value.push(files[i])
         }
     }
 
-};
+}
 const newfileadd = ref([])
+const removeoldfile=ref(false)
 const bytetokb = (input) => {
     let resl = input / 1024;
     return resl.toFixed(2);
-};
+}
 const oldfiledel = ref([])
 const removefile = (index) => {
     if (prefiledata.value[index]["checksum"] == 1) {
         oldfiledel.value.push(prefiledata.value[index])
-        enalblefile.value.push(prefiledata.value[index])
+        removeoldfile.value=true
+    }else{
+        let addnewfilter=newfileadd.value.filter((file)=>file.name!= prefiledata.value[index].name)
+        newfileadd.value=addnewfilter
+        console.log(addnewfilter);
+        newfileadd.value.slice(index,1)
     }
     prefiledata.value.splice(index, 1)
     filedataslot.value++
