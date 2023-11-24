@@ -66,8 +66,8 @@ function createtime(H, M) {
 
     return hour + ':' + min
 }
-
 const haveFile = ref(false)
+const oldFileData = ref(null)
 onBeforeMount(async () => {
     haveFile.value = await checkAnnFiles(params.id)
     if (haveFile.value === 200) {
@@ -79,6 +79,12 @@ onBeforeMount(async () => {
         filedataslot.value = 5 - fileslist.value.length
         oldFileData.value = fileslist.value
     }
+    // fileslist.value = await getfileslist(params.id)
+    // fileslist.value.forEach((file) => {
+    //     file["checksum"] = 1
+    //     prefiledata.value.push(file)
+    // })
+    // filedataslot.value = 5 - fileslist.value.length
     myView.view = "announcement";
     const receivedAnnouncement = ref()
     receivedAnnouncement.value = await getAnnouncementByIddata(params.id)
@@ -261,6 +267,11 @@ const isDisabled = computed(() => {
             return false
         }
     }
+    const filetest = () => {
+        console.log(oldFileData.value);
+        console.log(enalblefile.value);
+        return false
+    }
     const datecheckcl = () => {
         if (publishDate.value == '' || publishDate.value == null) {
             if (closeDate.value != '' && closeDate.value != null) {
@@ -296,23 +307,13 @@ const isDisabled = computed(() => {
         }
         return false
     }
-    const checkFile = () => {
-        if (haveFile.value === 200) {
-            if (oldFileData.value.length > prefiledata.value.length || oldFileData.value.length < prefiledata.value.length) {
-                return false;
-            } else {
-                return oldFileData.value.every((value, index) => value === prefiledata.value[index]);
-            }
-        }
-    }
-
     return (
-        (checknewdata() && checkFile()) ||
+        checknewdata() ||
         titlenull ||
         desnull ||
         lencheck() ||
         datecheckpb() ||
-        datecheckcl()
+        datecheckcl()||filetest()
     )
 })
 const convertDate = (date, time, deftime) => {
@@ -451,7 +452,7 @@ const filemnopen = () => {
     function validate(files) {
         let cheekun = 0
         let checksum = 0
-        let namevalid = 0
+        let namevalid=0
         for (var i = 0; i < files.length; i++) {
             // console.log(files[i].size);
             if (files[i].size > 20971520) {
@@ -461,9 +462,9 @@ const filemnopen = () => {
             if (oo != undefined) {
                 cheekun++
             }
-            if (files[i].name.includes("%")) {
-                namevalid++
-            }
+            if(files[i].name.includes("%")){
+        namevalid++
+      }
         }
         if (checksum <= 0 && cheekun <= 0 && namevalid <= 0) {
             if (files.length > filedataslot.value) {
@@ -486,21 +487,21 @@ const filemnopen = () => {
                     text: "Supports files up to 20 MB",
                     confirmButtonText: "Continue",
                 });
-            } else if (cheekun > 0) {
-                Swal.fire({
-                    icon: "warning",
-                    title: "You have attached the file",
-                    text: "Duplicate file attachments are not allowed",
-                    confirmButtonText: "Continue",
-                });
-            } else {
-                Swal.fire({
-                    icon: "warning",
-                    title: "File name is not valid",
-                    text: "Not support file name include % ",
-                    confirmButtonText: "Continue",
-                });
-            }
+            } else if(cheekun>0) {
+        Swal.fire({
+          icon: "warning",
+          title: "You have attached the file",
+          text: "Duplicate file attachments are not allowed",
+          confirmButtonText: "Continue",
+        });
+      }else{
+        Swal.fire({
+          icon: "warning",
+          title: "File name is not valid",
+          text: "Not support file name include % ",
+          confirmButtonText: "Continue",
+        });
+      }
         }
     }
     // Function to handle dropped or selected files
@@ -508,12 +509,10 @@ const filemnopen = () => {
         for (var i = 0; i < files.length; i++) {
             prefiledata.value.push(files[i]);
             newfileadd.value.push(files[i])
-            console.log(newfileadd.value);
         }
     }
 
 };
-const oldFileData = ref([])
 const newfileadd = ref([])
 const bytetokb = (input) => {
     let resl = input / 1024;
@@ -523,6 +522,7 @@ const oldfiledel = ref([])
 const removefile = (index) => {
     if (prefiledata.value[index]["checksum"] == 1) {
         oldfiledel.value.push(prefiledata.value[index])
+        enalblefile.value.push(prefiledata.value[index])
     }
     prefiledata.value.splice(index, 1)
     filedataslot.value++
