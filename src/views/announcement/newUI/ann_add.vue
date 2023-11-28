@@ -459,10 +459,10 @@ const enableinsertarea = computed(() => {
                   <div v-for="(file, index) in prefiledata" :key="index"
                     class="flex flex-row w-full justify-center items-center py-3 px-4 border-b">
                     <img v-if="file.type !== null"
-                      :src="file.type.startsWith('image/') ? '/images/imagefile.png' : file.name.endsWith('zip') || file.name.endsWith('rar') ? '/images/rar.png' : '/images/file.png'"
+                    :src="file.type.startsWith('image/') ? '/assets/imagefile.png' : file.name.endsWith('zip') || file.name.endsWith('rar') ? '/assets/rar.png' : '/assets/file.png'"
                       alt="" width="52" height="52" class="w-[52px] h-[52px] mr-6">
                     <img v-else
-                      src="/images/file.png"
+                      src="/assets/file.png"
                       alt="" width="52" height="52" class="w-[52px] h-[52px] mr-6">
                     <div class="flex flex-col w-full">
                       <p class="font-bold">{{ file.name }}</p>
