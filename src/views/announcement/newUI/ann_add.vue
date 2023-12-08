@@ -355,7 +355,7 @@ const filemnopen = () => {
       if (oo != undefined) {
         cheekun++
       }
-      if(files[i].name.includes("%")){
+      if (files[i].name.includes("%")) {
         namevalid++
       }
     }
@@ -380,14 +380,14 @@ const filemnopen = () => {
           text: "Supports files up to 20 MB",
           confirmButtonText: "Continue",
         });
-      } else if(cheekun>0) {
+      } else if (cheekun > 0) {
         Swal.fire({
           icon: "warning",
           title: "You have attached the file",
           text: "Duplicate file attachments are not allowed",
           confirmButtonText: "Continue",
         });
-      }else{
+      } else {
         Swal.fire({
           icon: "warning",
           title: "File name is not valid",
@@ -419,6 +419,14 @@ const removefile = (index) => {
 const enableinsertarea = computed(() => {
   return filedataslot.value > 0;
 });
+
+const getFileImage = (file) => {
+  if (file.type.startsWith('image/')) {
+    return '/assets/imagefile.png'
+  } else if (file.name.endsWith('zip') || file.name.endsWith('rar')) {
+    return '/assets/rar.png'
+  } else return '/assets/file.png'
+}
 </script>
 
 <template>
@@ -455,15 +463,12 @@ const enableinsertarea = computed(() => {
               <div class="flex w-full space-x-3 pr-3 pl-3">
                 <div
                   class="border w-[60%] h-full flex flex-col rounded-l-2xl rounded-r-2xl items-center  pb-3 bg-white shadow-lg overflow-y-auto">
-                  <h1 class="w-full text-center text-3xl bg-custom-blue text-white rounded-t-2xl pt-2 ">Uploaded Files</h1>
+                  <h1 class="w-full text-center text-3xl bg-custom-blue text-white rounded-t-2xl pt-2 ">Uploaded Files
+                  </h1>
                   <div v-for="(file, index) in prefiledata" :key="index"
                     class="flex flex-row w-full justify-center items-center py-3 px-4 border-b">
-                    <img v-if="file.type !== null"
-                    :src="file.type.startsWith('image/') ? '/assets/imagefile.png' : file.name.endsWith('zip') || file.name.endsWith('rar') ? '/assets/rar.png' : '/assets/file.png'"
-                      alt="" width="52" height="52" class="w-[52px] h-[52px] mr-6">
-                    <img v-else
-                      src="/assets/file.png"
-                      alt="" width="52" height="52" class="w-[52px] h-[52px] mr-6">
+                    <img v-if="file.type !== null" :src="getFileImage(file)" alt="" width="52" height="52" class="w-[52px] h-[52px] mr-6">
+                    <img v-else src="/assets/file.png" alt="" width="52" height="52" class="w-[52px] h-[52px] mr-6">
                     <div class="flex flex-col w-full">
                       <p class="font-bold">{{ file.name }}</p>
                       <p class="text-sm">{{ file.type }}</p>

@@ -77,6 +77,14 @@ function download(id, filename) {
   // เปิดหน้าในแท็บใหม่
   window.open(`${import.meta.env.VITE_BASE_URL}/api/file/download?id=${id}&file=${filename}`, "_blank");
 }
+
+const getFileImage = (file) => {
+  if (file.type.startsWith('image/')) {
+    return '/assets/imagefile.png'
+  } else if (file.name.endsWith('zip') || file.name.endsWith('rar')) {
+    return '/assets/rar.png'
+  } else return '/assets/file.png'
+}
 </script>
 <template>
   <div class="w-screen h-screen bg-slate-50 flex flex-row font-noto pb-16 pt-4">
@@ -111,9 +119,7 @@ function download(id, filename) {
                 @click="showfilevar = !showfilevar">cancel</span></div>
             <div v-for="(file, index) in fileslist" :key="index"
               class="flex flex-row w-full justify-start items-center py-3 px-4 border-b">
-              <img v-if="file.type !== null"
-              :src="file.type.startsWith('image/') ? '/assets/imagefile.png' : file.name.endsWith('zip') || file.name.endsWith('rar') ? '/assets/rar.png' : '/assets/file.png'"
-                alt="" width="52" height="52" class="w-[52px] h-[52px] mr-6">
+              <img v-if="file.type !== null" :src="getFileImage(file)" alt="" width="52" height="52" class="w-[52px] h-[52px] mr-6">
               <img v-else src="/assets/file.png" alt="" width="52" height="52" class="w-[52px] h-[52px] mr-6">
               <div class="flex flex-col w-full">
                 <p class="font-semibold text-sm">{{ file.name }}</p>

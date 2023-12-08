@@ -542,6 +542,14 @@ const removefile = (index) => {
 const enableinsertarea = computed(() => {
     return filedataslot.value > 0;
 });
+
+const getFileImage = (file) => {
+  if (file.type.startsWith('image/')) {
+    return '/assets/imagefile.png'
+  } else if (file.name.endsWith('zip') || file.name.endsWith('rar')) {
+    return '/assets/rar.png'
+  } else return '/assets/file.png'
+}
 </script>
 
 <template>
@@ -578,9 +586,7 @@ const enableinsertarea = computed(() => {
                                         Uploaded Files</h1>
                                     <div v-for="(file, index) in prefiledata" :key="index"
                                         class="flex flex-row w-full justify-center items-center py-3 px-4 border-b">
-                                        <img v-if="file.type !== null"
-                                        :src="file.type.startsWith('image/') ? '/assets/imagefile.png' : file.name.endsWith('zip') || file.name.endsWith('rar') ? '/assets/rar.png' : '/assets/file.png'"
-                                            alt="" width="52" height="52" class="w-[52px] h-[52px] mr-6">
+                                        <img v-if="file.type !== null" :src="getFileImage(file)" alt="" width="52" height="52" class="w-[52px] h-[52px] mr-6">
                                         <img v-else src="/assets/file.png" alt="" width="52" height="52"
                                             class="w-[52px] h-[52px] mr-6">
                                         <div class="flex flex-col w-full">
