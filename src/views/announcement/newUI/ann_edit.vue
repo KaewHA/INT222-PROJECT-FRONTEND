@@ -586,9 +586,10 @@ const getFileImage = (file) => {
                                         Uploaded Files</h1>
                                     <div v-for="(file, index) in prefiledata" :key="index"
                                         class="flex flex-row w-full justify-center items-center py-3 px-4 border-b">
-                                        <img v-if="file.type !== null" :src="getFileImage(file)" alt="" width="52" height="52" class="w-[52px] h-[52px] mr-6">
-                                        <img v-else src="/assets/file.png" alt="" width="52" height="52"
-                                            class="w-[52px] h-[52px] mr-6">
+                                        <img v-if="file.type !== null && getFileImage(file) === 'fileImg'" src="../../../assets/img/file.png" alt="" width="52" height="52" class="w-[52px] h-[52px] mr-6">
+                                        <img v-else-if="file.type !== null && getFileImage(file) === 'imageImg'" src="../../../assets/img/imagefile.png" alt="" width="52" height="52" class="w-[52px] h-[52px] mr-6">
+                                        <img v-else-if="file.type !== null && getFileImage(file) === 'rarImg'" src="../../../assets/img/rar.png" alt="" width="52" height="52" class="w-[52px] h-[52px] mr-6">
+                                        <img v-else src="../../../assets/img/file.png" alt="" width="52" height="52" class="w-[52px] h-[52px] mr-6">
                                         <div class="flex flex-col w-full">
                                             <p class="font-bold">{{ file.name }}</p>
                                             <p class="text-sm">{{ file.type }}</p>
