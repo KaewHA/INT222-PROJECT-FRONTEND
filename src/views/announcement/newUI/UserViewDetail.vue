@@ -100,10 +100,10 @@ function download(id, filename) {
 
 const getFileImage = (file) => {
   if (file.type.startsWith('image/')) {
-    return '/assets/imagefile.png'
+    return 'imageImg'
   } else if (file.name.endsWith('zip') || file.name.endsWith('rar')) {
-    return '/assets/rar.png'
-  } else return '/assets/file.png'
+    return 'rarImg'
+  } else return 'fileImg'
 }
 </script>
 
