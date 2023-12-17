@@ -362,14 +362,11 @@ const createanno = async () => {
         }
     }
     let fileterfile = prefiledata.value.filter((file) => file.checksum != 1)
-    console.log(fileterfile);
-    console.log(oldfiledel.value);
     var formData = new FormData();
     formData.append('id', params.id)
     for (var i = 0; i < fileterfile.length; i++) {
         formData.append('files', fileterfile[i])
     }
-    //   await updatefile(formData,myToken.gettoken())
     await delFile(oldfiledel.value, params.id, myToken.gettoken())
     await tranferfile(formData, myToken.gettoken())
     showAlert()
@@ -544,7 +541,7 @@ const enableinsertarea = computed(() => {
 });
 
 const getFileImage = (file) => {
-  if (file.type.startsWith('image/')) {
+  if (file.name.endsWith('png') || file.name.endsWith('jpg') || file.name.endsWith('jpeg') || file.name.endsWith('svg')) {
     return 'imageImg'
   } else if (file.name.endsWith('zip') || file.name.endsWith('rar')) {
     return 'rarImg'

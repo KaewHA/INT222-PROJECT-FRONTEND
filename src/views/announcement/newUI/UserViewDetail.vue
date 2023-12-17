@@ -99,7 +99,7 @@ function download(id, filename) {
 }
 
 const getFileImage = (file) => {
-  if (file.type.startsWith('image/')) {
+  if (file.name.endsWith('png') || file.name.endsWith('jpg') || file.name.endsWith('jpeg') || file.name.endsWith('svg')) {
     return 'imageImg'
   } else if (file.name.endsWith('zip') || file.name.endsWith('rar')) {
     return 'rarImg'
