@@ -63,7 +63,6 @@ const closedateshow = () => {
   }
 }
 const closemodal = () => {
-  console.log("ss");
   setTimeout(() => {
     submodal.value = false
   }, 300)

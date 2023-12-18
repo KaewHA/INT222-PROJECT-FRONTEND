@@ -39,10 +39,6 @@ onBeforeMount(async () => {
   receivedCategory.forEach((category) => allCategory.value.push(category));
 });
 
-
- 
-
-
 const isAuthenticated = localStorage.getItem('refreshtoken')
 const isExpired = async () => {
   const token = localStorage.getItem('token')
@@ -108,10 +104,6 @@ const getEmailToken = async () => {
     let input = document.querySelector('.input')
     if (emailObj) {
       input.classList.add('hidemodal-contentslide')
-      // setTimeout(() => {
-      //   input.classList.add('hidden')
-      //   loading.value = true
-      // }, "950");
       input.classList.add('hidden')
       loading.value = true
       emailToken.value = await sendOTP(emailObj)
@@ -240,12 +232,12 @@ const ConfirmSub = async (categoryArr) => {
     subStatus = await ADDNEWSUB(subInfo.value)
     loading.value = false
     step3.value = false
-    if(subStatus==200){
-        step4.value=true
-    }else{
-        step4fail.value = true
+    if (subStatus == 200) {
+      step4.value = true
+    } else {
+      step4fail.value = true
     }
-   
+
   } else {
     let subConAlert = document.querySelector('.sub-con-alert')
     subConAlert.classList.remove('hidden')
@@ -279,7 +271,7 @@ const loginWithDefault = () => {
   step1.value = false
   step3.value = true
   emailValue.value = decodeJwt(localStorage.getItem('token')).email
-} 
+}
 
 const resetSubProcess = () => {
   closemodal('#Subcribe')
@@ -290,17 +282,18 @@ const resetSubProcess = () => {
     subCategories.value = []
     status.value = 0
     step4.value = false
-    step4fail.value=false
+    step4fail.value = false
     step1.value = true
   }, 200)
-  
+
 }
 
 </script>
 
 <template>
   <div class="fixed inset-0 bg-black bg-opacity-25 z-30 flex justify-center items-center">
-    <div class="modal-overlay bg-transparent w-full h-full z-40 modalscope" @click="closemodal('#Subcribe'),$emit('closeme')"></div>
+    <div class="modal-overlay bg-transparent w-full h-full z-40 modalscope"
+      @click="closemodal('#Subcribe'), $emit('closeme')"></div>
     <div
       class="w-[30%] flex flex-col justify-center items-center bg-white rounded-xl z-50 absolute py-8 px-4 modal-content h-[38%]"
       id="Subcribe">
@@ -317,9 +310,10 @@ const resetSubProcess = () => {
           <button @click="getEmailToken"
             class="rounded-r-full bg-custom-blue text-white text-xs px-4 py-2">SUBSCRIBE</button>
         </div>
-        <h2 v-if="isAuthenticated" class="mt-4 text-sm text-gray-500"><span class="">Or</span> subscribe with your 
+        <h2 v-if="isAuthenticated" class="mt-4 text-sm text-gray-500"><span class="">Or</span> subscribe with your
           <span @click="loginWithDefault"
-            class="text-custom-blue/90 underline font-semibold cursor-pointer hover:text-custom-blue">Email</span>.</h2>
+            class="text-custom-blue/90 underline font-semibold cursor-pointer hover:text-custom-blue">Email</span>.
+        </h2>
         <div class="lds-dual-ring w-7 h-7" id="loading" v-if="loading"></div>
       </div>
       <div class="w-full flex flex-col justify-center items-center font-noto relative " v-show="step2">
@@ -375,10 +369,10 @@ const resetSubProcess = () => {
         <div class="bg-red-500 text-white text-xs rounded-md py-1 px-2 top-[6.3rem] absolute hidden  sub-con-alert">
           <p class="">Select at least 1 category.</p>
         </div>
-        
+
       </div>
-      <div @click="resetSubProcess(),$emit('closeme')" class="w-full flex flex-col justify-center items-center font-noto space-y-12"
-        v-show="step4">
+      <div @click="resetSubProcess(), $emit('closeme')"
+        class="w-full flex flex-col justify-center items-center font-noto space-y-12" v-show="step4">
         <img src="/images/mailSuccess.png" alt="" width="128">
         <div class="flex flex-col items-center space-y-4">
           <p class="text-2xl font-semi-bold text-gray-600">Thank you for your subscribe.</p>
@@ -386,20 +380,18 @@ const resetSubProcess = () => {
             class="w-1/3 py-2 px-4 rounded-full bg-custom-blue/90 text-white hover:bg-custom-blue/100 active:scale-90 transition duration-200 shadow-2xl">Close</button>
         </div>
       </div>
-      <div @click="resetSubProcess(),$emit('closeme')" class="w-full flex flex-col justify-center items-center font-noto space-y-12"
-        v-show="step4fail">
+      <div @click="resetSubProcess(), $emit('closeme')"
+        class="w-full flex flex-col justify-center items-center font-noto space-y-12" v-show="step4fail">
         <img src="/images/emailfail.png" alt="" width="128">
         <div class="flex flex-col items-center space-y-4">
           <p class="text-2xl font-semi-bold text-red-500">Cant subscribe</p>
           <p class="text-xs font-semi-bold text-gray-600">Something went wrong! Prese try again.</p>
-          <button
-            class="w-1/3 py-2 px-4 rounded-full bg-custom-blue/90 text-white hover:bg-custom-blue/100 
+          <button class="w-1/3 py-2 px-4 rounded-full bg-custom-blue/90 text-white hover:bg-custom-blue/100 
             active:scale-90 transition duration-200 shadow-2xl flex justify-center">Close</button>
         </div>
       </div>
     </div>
   </div>
- 
 </template>
 
 <style scoped>

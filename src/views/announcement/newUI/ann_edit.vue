@@ -40,6 +40,7 @@ const options = {
     minute: 'numeric',
     hour12: false,
 }
+
 function createdate(data) {
     let dateStr = data
     let [day, month, year] = dateStr.split('/')
@@ -129,7 +130,6 @@ onBeforeMount(async () => {
     for (const [key, value] of Object.entries(receivedAnnouncement.value)) {
         olddata.value[key] = value
     }
-
 })
 myToken.settoken(localStorage.getItem("token"))
 myToken.decodeJwt()
@@ -222,10 +222,10 @@ const isDisabled = computed(() => {
             return false
         }
         const filetest = () => {
-        if(newfileadd.value.length>0 ||removeoldfile.value){
-            return true
-        }
-        return false
+            if (newfileadd.value.length > 0 || removeoldfile.value) {
+                return true
+            }
+            return false
         }
         let datacheck = check()
         let catecheck = checkcate()
@@ -234,9 +234,9 @@ const isDisabled = computed(() => {
             let id = newAnnouncement.value.categoryId.categoryID
             newAnnouncement.value.categoryId = id
         }
-        
-        return !(datacheck || catecheck ||filecheck)
-    
+
+        return !(datacheck || catecheck || filecheck)
+
     }
     const lencheck = () => {
         if (newAnnouncement.value.announcementTitle.trim().length == 0) {
@@ -367,10 +367,14 @@ const createanno = async () => {
     for (var i = 0; i < fileterfile.length; i++) {
         formData.append('files', fileterfile[i])
     }
+    loading.value = true
     await delFile(oldfiledel.value, params.id, myToken.gettoken())
     await tranferfile(formData, myToken.gettoken())
+    loading.value = false
     showAlert()
 }
+
+const loading = ref(false)
 
 function clearcd() {
     closeDate.value = null
@@ -454,7 +458,7 @@ const filemnopen = () => {
     function validate(files) {
         let cheekun = 0
         let checksum = 0
-        let namevalid=0
+        let namevalid = 0
         for (var i = 0; i < files.length; i++) {
             // console.log(files[i].size);
             if (files[i].size > 20971520) {
@@ -464,9 +468,9 @@ const filemnopen = () => {
             if (oo != undefined) {
                 cheekun++
             }
-            if(files[i].name.includes("%")){
-        namevalid++
-      }
+            if (files[i].name.includes("%")) {
+                namevalid++
+            }
         }
         if (checksum <= 0 && cheekun <= 0 && namevalid <= 0) {
             if (files.length > filedataslot.value) {
@@ -489,21 +493,21 @@ const filemnopen = () => {
                     text: "Supports files up to 20 MB",
                     confirmButtonText: "Continue",
                 });
-            } else if(cheekun>0) {
-        Swal.fire({
-          icon: "warning",
-          title: "You have attached the file",
-          text: "Duplicate file attachments are not allowed",
-          confirmButtonText: "Continue",
-        });
-      }else{
-        Swal.fire({
-          icon: "warning",
-          title: "File name is not valid",
-          text: "Not support file name include % ",
-          confirmButtonText: "Continue",
-        });
-      }
+            } else if (cheekun > 0) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "You have attached the file",
+                    text: "Duplicate file attachments are not allowed",
+                    confirmButtonText: "Continue",
+                });
+            } else {
+                Swal.fire({
+                    icon: "warning",
+                    title: "File name is not valid",
+                    text: "Not support file name include % ",
+                    confirmButtonText: "Continue",
+                });
+            }
         }
     }
     // Function to handle dropped or selected files
@@ -516,7 +520,7 @@ const filemnopen = () => {
 
 }
 const newfileadd = ref([])
-const removeoldfile=ref(false)
+const removeoldfile = ref(false)
 const bytetokb = (input) => {
     let resl = input / 1024;
     return resl.toFixed(2);
@@ -525,12 +529,12 @@ const oldfiledel = ref([])
 const removefile = (index) => {
     if (prefiledata.value[index]["checksum"] == 1) {
         oldfiledel.value.push(prefiledata.value[index])
-        removeoldfile.value=true
-    }else{
-        let addnewfilter=newfileadd.value.filter((file)=>file.name!= prefiledata.value[index].name)
-        newfileadd.value=addnewfilter
+        removeoldfile.value = true
+    } else {
+        let addnewfilter = newfileadd.value.filter((file) => file.name != prefiledata.value[index].name)
+        newfileadd.value = addnewfilter
         console.log(addnewfilter);
-        newfileadd.value.slice(index,1)
+        newfileadd.value.slice(index, 1)
     }
     prefiledata.value.splice(index, 1)
     filedataslot.value++
@@ -541,12 +545,13 @@ const enableinsertarea = computed(() => {
 });
 
 const getFileImage = (file) => {
-  if (file.name.endsWith('png') || file.name.endsWith('jpg') || file.name.endsWith('jpeg') || file.name.endsWith('svg')) {
-    return 'imageImg'
-  } else if (file.name.endsWith('zip') || file.name.endsWith('rar')) {
-    return 'rarImg'
-  } else return 'fileImg'
+    if (file.name.endsWith('png') || file.name.endsWith('jpg') || file.name.endsWith('jpeg') || file.name.endsWith('svg')) {
+        return 'imageImg'
+    } else if (file.name.endsWith('zip') || file.name.endsWith('rar')) {
+        return 'rarImg'
+    } else return 'fileImg'
 }
+
 </script>
 
 <template>
@@ -583,10 +588,17 @@ const getFileImage = (file) => {
                                         Uploaded Files</h1>
                                     <div v-for="(file, index) in prefiledata" :key="index"
                                         class="flex flex-row w-full justify-center items-center py-3 px-4 border-b">
-                                        <img v-if="file.type !== null && getFileImage(file) === 'fileImg'" src="../../../assets/img/file.png" alt="" width="52" height="52" class="w-[52px] h-[52px] mr-6">
-                                        <img v-else-if="file.type !== null && getFileImage(file) === 'imageImg'" src="../../../assets/img/imagefile.png" alt="" width="52" height="52" class="w-[52px] h-[52px] mr-6">
-                                        <img v-else-if="file.type !== null && getFileImage(file) === 'rarImg'" src="../../../assets/img/rar.png" alt="" width="52" height="52" class="w-[52px] h-[52px] mr-6">
-                                        <img v-else src="../../../assets/img/file.png" alt="" width="52" height="52" class="w-[52px] h-[52px] mr-6">
+                                        <img v-if="file.type !== null && getFileImage(file) === 'fileImg'"
+                                            src="../../../assets/img/file.png" alt="" width="52" height="52"
+                                            class="w-[52px] h-[52px] mr-6">
+                                        <img v-else-if="file.type !== null && getFileImage(file) === 'imageImg'"
+                                            src="../../../assets/img/imagefile.png" alt="" width="52" height="52"
+                                            class="w-[52px] h-[52px] mr-6">
+                                        <img v-else-if="file.type !== null && getFileImage(file) === 'rarImg'"
+                                            src="../../../assets/img/rar.png" alt="" width="52" height="52"
+                                            class="w-[52px] h-[52px] mr-6">
+                                        <img v-else src="../../../assets/img/file.png" alt="" width="52" height="52"
+                                            class="w-[52px] h-[52px] mr-6">
                                         <div class="flex flex-col w-full">
                                             <p class="font-bold">{{ file.name }}</p>
                                             <p class="text-sm">{{ file.type }}</p>
@@ -761,16 +773,18 @@ const getFileImage = (file) => {
                             </label>
                         </div>
                     </div>
-                    <div class="w-full flex justify-start p-4 space-x-2">
+                    <div v-if="loading === false" class="w-full flex justify-start p-4 space-x-2">
                         <button :disabled="isDisabled"
                             class="px-4 py-2 rounded-md bg-green-500 text-white text-base font-bold disabled:bg-zinc-500 ann-button"
-                            @click="createanno()">
-                            Update
+                            @click="createanno()">Update
                         </button>
                         <button class="px-4 py-2 rounded-md bg-red-500 text-white text-base font-bold"
                             @click="router.push(`/admin/announcement/${params.id}`)">
                             Cancel
                         </button>
+                    </div>
+                    <div v-else class="ml-3">
+                        <div class="lds-dual-ring w-7 h-7" id="loading" v-if="loading"></div>
                     </div>
                 </div>
             </div>
@@ -807,5 +821,31 @@ const getFileImage = (file) => {
 
 ::-webkit-scrollbar {
     display: none;
+}
+
+.lds-dual-ring {
+    display: inline-block;
+}
+
+.lds-dual-ring:after {
+    content: " ";
+    display: block;
+    width: 24px;
+    height: 24px;
+    margin: 8px;
+    border-radius: 50%;
+    border: 2px solid #4D9DE0;
+    border-color: #4D9DE0 transparent #4D9DE0 transparent;
+    animation: lds-dual-ring 1.2s linear infinite;
+}
+
+@keyframes lds-dual-ring {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 </style>

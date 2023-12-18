@@ -163,52 +163,52 @@ const movedown = (index) => {
   icon.classList.add("text-custom-blue")
 }
 
-const showAlert = async () => {
-  const { value: fruit } = await Swal.fire({
-    title: 'Select your category',
-    input: 'select',
-    inputOptions: {
-      'Category': {
-        all: 'ทั้งหมด',
-        general: 'ทั่วไป',
-        intern: 'ฝึกงาน',
-        jobs: 'หางาน',
-        scholarship: 'ทุนการศึกษา'
-      },
-    },
-    //   inputPlaceholder: 'Choose Category',
-    showCancelButton: true,
-    inputValidator: (value) => {
-      return new Promise((resolve) => {
-        if (value === 'all') {
-          category.value = 0
-          changeCategory()
-          resolve()
-        } else if (value === 'scholarship') {
-          let x = allCategory.value.find((x) => x.categoryName == "ทุนการศึกษา")
-          category.value = x.categoryID
-          changeCategory()
-          resolve()
-        } else if (value === 'general') {
-          let x = allCategory.value.find((x) => x.categoryName == "ทั่วไป")
-          category.value = x.categoryID
-          changeCategory()
-          resolve()
-        } else if (value === 'intern') {
-          let x = allCategory.value.find((x) => x.categoryName == "ฝึกงาน")
-          category.value = x.categoryID
-          changeCategory()
-          resolve()
-        } else if (value === 'jobs') {
-          let x = allCategory.value.find((x) => x.categoryName == "หางาน")
-          category.value = x.categoryID
-          changeCategory()
-          resolve()
-        }
-      })
-    }
-  })
-}
+// const showAlert = async () => {
+//   const { value: fruit } = await Swal.fire({
+//     title: 'Select your category',
+//     input: 'select',
+//     inputOptions: {
+//       'Category': {
+//         all: 'ทั้งหมด',
+//         general: 'ทั่วไป',
+//         intern: 'ฝึกงาน',
+//         jobs: 'หางาน',
+//         scholarship: 'ทุนการศึกษา'
+//       },
+//     },
+//     //   inputPlaceholder: 'Choose Category',
+//     showCancelButton: true,
+//     inputValidator: (value) => {
+//       return new Promise((resolve) => {
+//         if (value === 'all') {
+//           category.value = 0
+//           changeCategory()
+//           resolve()
+//         } else if (value === 'scholarship') {
+//           let x = allCategory.value.find((x) => x.categoryName == "ทุนการศึกษา")
+//           category.value = x.categoryID
+//           changeCategory()
+//           resolve()
+//         } else if (value === 'general') {
+//           let x = allCategory.value.find((x) => x.categoryName == "ทั่วไป")
+//           category.value = x.categoryID
+//           changeCategory()
+//           resolve()
+//         } else if (value === 'intern') {
+//           let x = allCategory.value.find((x) => x.categoryName == "ฝึกงาน")
+//           category.value = x.categoryID
+//           changeCategory()
+//           resolve()
+//         } else if (value === 'jobs') {
+//           let x = allCategory.value.find((x) => x.categoryName == "หางาน")
+//           category.value = x.categoryID
+//           changeCategory()
+//           resolve()
+//         }
+//       })
+//     }
+//   })
+// }
 const isActiveAnn = ref(true)
 const handleCheckboxChange = () => {
   isActiveAnn.value = !isActiveAnn.value
